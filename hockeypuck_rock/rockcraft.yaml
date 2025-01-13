@@ -1,5 +1,4 @@
 name: hockeypuck
-title: hockeypuck
 version: '0.3'
 summary: A summary of your Go application
 description: |
@@ -21,7 +20,8 @@ parts:
       -p ${CRAFT_PART_INSTALL}/hockeypuck/etc -p ${CRAFT_PART_INSTALL}/hockeypuck/data
   go-framework/install-app:
     plugin: go
-    source: .
+    source: https://github.com/hockeypuck/hockeypuck.git
+    source-subdir: src/hockeypuck/
     organize:
       bin/hockeypuck: hockeypuck/bin/hockeypuck
       bin/hockeypuck-dump: hockeypuck/bin/hockeypuck-dump
@@ -29,11 +29,11 @@ parts:
       bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
     build-snaps:
     - go
-    stage:
-    - hockeypuck/*
+    stage-packages:
+    - gettext-base
     build-environment:
     - CGO_ENABLED: '0'
-  copy-files:
+  copy-templates:
     plugin: dump
     source: https://github.com/hockeypuck/hockeypuck.git
     source-tag: 2.2.2
@@ -42,10 +42,12 @@ parts:
       contrib/webroot: /hockeypuck/lib/www
     prime:
     - hockeypuck/*
-  copy-files:
+  copy-conf:
     plugin: dump
     source: .
     organize:
-      templates/hockeypuck.conf.tmpl: /hockeypuck/etc/hockeypuck.conf.tmpl
+      hockeypuck.conf.tmpl: /hockeypuck/etc/hockeypuck.conf.tmpl
+      hockeypuck_wrapper.sh: /hockeypuck/bin/hockeypuck_wrapper.sh
     prime:
     - hockeypuck/*
+    

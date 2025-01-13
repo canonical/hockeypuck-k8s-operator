@@ -43,7 +43,7 @@ class HockeypuckCharm(ops.CharmBase):
         # If nothing is wrong, then the status is active.
         event.add_status(ops.ActiveStatus())
 
-    def _on_demo_server_pebble_ready(self, event: ops.PebbleReadyEvent) -> None:
+    def _on_hockeypuck_pebble_ready(self, event: ops.PebbleReadyEvent) -> None:
         self._update_layer_and_restart()
 
     def _on_database_created(self, event: DatabaseCreatedEvent) -> None:
@@ -78,28 +78,6 @@ class HockeypuckCharm(ops.CharmBase):
         except ops.pebble.APIError as e:
             logger.info("Unable to connect to Pebble: %s", e)
             return
-
-    def generate_config(self, env) -> None:
-        """
-        Substitutes values from the `env` dictionary into the configuration template
-        and writes the result to a file.
-        """
-        env = self.app_environment()
-        # Perform substitution using the dictionary
-        try:
-            template_path = "/hockeypuck/etc/hockeypuck.conf.tmpl"
-            output_conf = "/hockeypuck/etc/hockeypuck.conf"
-            with open(template_path, "r") as tmpl_file:
-                template_content = tmpl_file.read()
-                config_content = Template(template_content).safe_substitute(env)
-            with open(output_conf, "w") as conf_file:
-                conf_file.write(config_content)
-        except KeyError as e:
-            raise ValueError(f"Missing value for placeholder: {e}") from e
-        except FileNotFoundError:
-            print(f"Template file not found: {template_path}")
-        except Exception as e:
-            print(f"An error occurred: {e}")
 
     @property
     def app_environment(self) -> Dict[str, Optional[str]]:
@@ -149,10 +127,7 @@ class HockeypuckCharm(ops.CharmBase):
     @property
     def _pebble_layer(self) -> ops.pebble.Layer:
         """A Pebble layer for the FastAPI demo services."""
-        self.generate_config()
-        command = " ".join(
-            ["hockeypuck/bin/hockeypuck", "-config", "hockeypuck/etc/hockeypuck.conf"]
-        )
+        command = "bash hockeypuck/bin/hockeypuck_wrapper.sh"
         pebble_layer: ops.pebble.LayerDict = {
             "summary": "FastAPI demo service",
             "description": "pebble config layer for FastAPI demo server",
@@ -162,6 +137,7 @@ class HockeypuckCharm(ops.CharmBase):
                     "summary": "fastapi demo",
                     "command": command,
                     "startup": "enabled",
+                    "environment": self.app_environment,
                 }
             },
         }

@@ -8,8 +8,8 @@ indexTemplate="/hockeypuck/lib/templates/index.html.tmpl"
 vindexTemplate="/hockeypuck/lib/templates/index.html.tmpl"
 statsTemplate="/hockeypuck/lib/templates/stats.html.tmpl"
 webroot="/hockeypuck/lib/www"
-hostname="{{ .FQDN }}"
-contact="{{ .FINGERPRINT }}"
+hostname="${FQDN}"
+contact="${FINGERPRINT}"
 adminKeys=[
     # List your admin key fingerprint(s) here.
     # It is NOT RECOMMENDED to use the same key for both contact and admin.
@@ -30,7 +30,7 @@ blacklist=[
 
 [hockeypuck.openpgp.db]
 driver="postgres-jsonb"
-dsn="database=hkp host={{ POSTGRES_HOST }} user={{ POSTGRES_USER }} password={{ POSTGRES_PASSWORD }} port={{ POSTGRES_PORT }} sslmode=disable"
+dsn="database=hkp host=${POSTGRES_HOST} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} port=${POSTGRES_PORT} sslmode=disable"
 
 [hockeypuck.conflux.recon]
 allowCIDRs=["127.0.0.1/8"]
