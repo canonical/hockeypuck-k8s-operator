@@ -1,0 +1,51 @@
+name: hockeypuck
+title: hockeypuck
+version: '0.3'
+summary: A summary of your Go application
+description: |
+  This is hockeypuck's description. You have a paragraph or two to tell the
+  most important story about it. Keep it under 100 words though,
+  we live in tweetspace and your description wants to look good in the
+  container registries out there.
+base: ubuntu@24.04
+platforms:
+  amd64:
+    build-on:
+    - amd64
+    build-for:
+    - amd64
+parts:
+  go-framework/base-layout:
+    plugin: nil
+    override-build: mkdir -p ${CRAFT_PART_INSTALL}/hockeypuck/bin ${CRAFT_PART_INSTALL}/hockeypuck/lib
+      -p ${CRAFT_PART_INSTALL}/hockeypuck/etc -p ${CRAFT_PART_INSTALL}/hockeypuck/data
+  go-framework/install-app:
+    plugin: go
+    source: .
+    organize:
+      bin/hockeypuck: hockeypuck/bin/hockeypuck
+      bin/hockeypuck-dump: hockeypuck/bin/hockeypuck-dump
+      bin/hockeypuck-load: hockeypuck/bin/hockeypuck-load
+      bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
+    build-snaps:
+    - go
+    stage:
+    - hockeypuck/*
+    build-environment:
+    - CGO_ENABLED: '0'
+  copy-files:
+    plugin: dump
+    source: https://github.com/hockeypuck/hockeypuck.git
+    source-tag: 2.2.2
+    organize:
+      contrib/templates: /hockeypuck/lib/templates
+      contrib/webroot: /hockeypuck/lib/www
+    prime:
+    - hockeypuck/*
+  copy-files:
+    plugin: dump
+    source: .
+    organize:
+      templates/hockeypuck.conf.tmpl: /hockeypuck/etc/hockeypuck.conf.tmpl
+    prime:
+    - hockeypuck/*

@@ -1,117 +1,172 @@
 #!/usr/bin/env python3
-
 # Copyright 2025 Canonical Ltd.
-# See LICENSE file for licensing details.
-
-# Learn more at: https://juju.is/docs/sdk
-
-"""Charm the service.
-
-Refer to the following post for a quick-start guide that will help you
-develop a new k8s charm using the Operator Framework:
-
-https://discourse.charmhub.io/t/4208
-"""
 
 import logging
-import typing
+import os
+from string import Template
+from typing import Dict, Optional
 
 import ops
-from ops import pebble
+from charms.data_platform_libs.v0.data_interfaces import DatabaseCreatedEvent, DatabaseRequires
 
-# Log messages can be retrieved using juju debug-log
 logger = logging.getLogger(__name__)
 
-VALID_LOG_LEVELS = ["info", "debug", "warning", "error", "critical"]
 
+class HockeypuckCharm(ops.CharmBase):
+    """Charmed Hockeypuck"""
 
-class IsCharmsTemplateCharm(ops.CharmBase):
-    """Charm the service."""
+    def __init__(self, framework: ops.Framework) -> None:
+        super().__init__(framework)
+        self.pebble_service_name = "hockeypuck-service"
+        self.container = self.unit.get_container("hockeypuck")
+        framework.observe(self.on.hockeypuck_pebble_ready, self._on_hockeypuck_pebble_ready)
+        framework.observe(self.on.collect_unit_status, self._on_collect_status)
+        # Charm events defined in the database requires charm library:
+        self.database = DatabaseRequires(self, relation_name="database", database_name="hkp")
+        framework.observe(self.database.on.database_created, self._on_database_created)
+        framework.observe(self.database.on.endpoints_changed, self._on_database_created)
 
-    def __init__(self, *args: typing.Any):
-        """Construct.
+    def _on_collect_status(self, event: ops.CollectStatusEvent) -> None:
+        if not self.model.get_relation("database"):
+            # We need the user to do 'juju integrate'.
+            event.add_status(ops.BlockedStatus("Waiting for database relation"))
+        elif not self.database.fetch_relation_data():
+            # We need the charms to finish integrating.
+            event.add_status(ops.WaitingStatus("Waiting for database relation"))
+        try:
+            status = self.container.get_service(self.pebble_service_name)
+        except (ops.pebble.APIError, ops.ModelError):
+            event.add_status(ops.MaintenanceStatus("Waiting for Pebble in workload container"))
+        else:
+            if not status.is_running():
+                event.add_status(ops.MaintenanceStatus("Waiting for the service to start up"))
+        # If nothing is wrong, then the status is active.
+        event.add_status(ops.ActiveStatus())
 
-        Args:
-            args: Arguments passed to the CharmBase parent constructor.
-        """
-        super().__init__(*args)
-        self.framework.observe(self.on.httpbin_pebble_ready, self._on_httpbin_pebble_ready)
-        self.framework.observe(self.on.config_changed, self._on_config_changed)
+    def _on_demo_server_pebble_ready(self, event: ops.PebbleReadyEvent) -> None:
+        self._update_layer_and_restart()
 
-    def _on_httpbin_pebble_ready(self, event: ops.PebbleReadyEvent) -> None:
+    def _on_database_created(self, event: DatabaseCreatedEvent) -> None:
+        """Event is fired when postgres database is created."""
+        self._update_layer_and_restart()
+
+    def _update_layer_and_restart(self) -> None:
         """Define and start a workload using the Pebble API.
 
-        Change this example to suit your needs. You'll need to specify the right entrypoint and
-        environment configuration for your specific workload.
+        You'll need to specify the right entrypoint and environment
+        configuration for your specific workload. Tip: you can see the
+        standard entrypoint of an existing container using docker inspect
 
-        Learn more about interacting with Pebble at at https://juju.is/docs/sdk/pebble.
-
-        Args:
-            event: event triggering the handler.
+        Learn more about interacting with Pebble at https://juju.is/docs/sdk/pebble
+        Learn more about Pebble layers at
+            https://canonical-pebble.readthedocs-hosted.com/en/latest/reference/layers
         """
-        # Get a reference the container attribute on the PebbleReadyEvent
-        container = event.workload
-        # Add initial Pebble config layer using the Pebble API
-        container.add_layer("httpbin", self._pebble_layer, combine=True)
-        # Make Pebble reevaluate its plan, ensuring any services are started if enabled.
-        container.replan()
+
         # Learn more about statuses in the SDK docs:
         # https://juju.is/docs/sdk/constructs#heading--statuses
-        self.unit.status = ops.ActiveStatus()
+        self.unit.status = ops.MaintenanceStatus("Assembling Pebble layers")
+        try:
+            # Get the current pebble layer config
+            services = self.container.get_plan().to_dict().get("services", {})
+            if services != self._pebble_layer.to_dict().get("services", {}):
+                # Changes were made, add the new layer
+                self.container.add_layer("hockeypuck", self._pebble_layer, combine=True)
+                logger.info("Added updated layer 'hockeypuck' to Pebble plan")
 
-    def _on_config_changed(self, event: ops.ConfigChangedEvent) -> None:
-        """Handle changed configuration.
+                self.container.restart(self.pebble_service_name)
+                logger.info(f"Restarted '{self.pebble_service_name}' service")
+        except ops.pebble.APIError as e:
+            logger.info("Unable to connect to Pebble: %s", e)
+            return
 
-        Change this example to suit your needs. If you don't need to handle config, you can remove
-        this method.
-
-        Learn more about config at https://juju.is/docs/sdk/config
-
-        Args:
-            event: event triggering the handler.
+    def generate_config(self, env) -> None:
         """
-        # Fetch the new config value
-        log_level = str(self.model.config["log-level"]).lower()
-
-        # Do some validation of the configuration option
-        if log_level in VALID_LOG_LEVELS:
-            # The config is good, so update the configuration of the workload
-            container = self.unit.get_container("httpbin")
-            # Verify that we can connect to the Pebble API in the workload container
-            if container.can_connect():
-                # Push an updated layer with the new config
-                container.add_layer("httpbin", self._pebble_layer, combine=True)
-                container.replan()
-
-                logger.debug("Log level for gunicorn changed to '%s'", log_level)
-                self.unit.status = ops.ActiveStatus()
-            else:
-                # We were unable to connect to the Pebble API, so we defer this event
-                event.defer()
-                self.unit.status = ops.WaitingStatus("waiting for Pebble API")
-        else:
-            # In this case, the config option is bad, so block the charm and notify the operator.
-            self.unit.status = ops.BlockedStatus("invalid log level: '{log_level}'")
+        Substitutes values from the `env` dictionary into the configuration template
+        and writes the result to a file.
+        """
+        env = self.app_environment()
+        # Perform substitution using the dictionary
+        try:
+            template_path = "/hockeypuck/etc/hockeypuck.conf.tmpl"
+            output_conf = "/hockeypuck/etc/hockeypuck.conf"
+            with open(template_path, "r") as tmpl_file:
+                template_content = tmpl_file.read()
+                config_content = Template(template_content).safe_substitute(env)
+            with open(output_conf, "w") as conf_file:
+                conf_file.write(config_content)
+        except KeyError as e:
+            raise ValueError(f"Missing value for placeholder: {e}") from e
+        except FileNotFoundError:
+            print(f"Template file not found: {template_path}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
     @property
-    def _pebble_layer(self) -> pebble.LayerDict:
-        """Return a dictionary representing a Pebble layer."""
-        return {
-            "summary": "httpbin layer",
-            "description": "pebble config layer for httpbin",
+    def app_environment(self) -> Dict[str, Optional[str]]:
+        """This property method creates a dictionary containing environment variables
+        for the application. It retrieves the database authentication data by calling
+        the `fetch_postgres_relation_data` method and uses it to populate the dictionary.
+        If any of the values are not present, it will be set to None.
+        The method returns this dictionary as output.
+        """
+        db_data = self.fetch_postgres_relation_data()
+        if not db_data:
+            return {}
+        env = {
+            "POSTGRES_HOST": db_data.get("db_host", None),
+            "POSTGRES_PORT": db_data.get("db_port", None),
+            "POSTGRES_USER": db_data.get("db_username", None),
+            "POSTGRES_PASSWORD": db_data.get("db_password", None),
+        }
+        logger.info(f"ENV VARIABLES: {env}")
+        return env
+
+    def fetch_postgres_relation_data(self) -> Dict[str, str]:
+        """Fetch postgres relation data.
+
+        This function retrieves relation data from a postgres database using
+        the `fetch_relation_data` method of the `database` object. The retrieved data is
+        then logged for debugging purposes, and any non-empty data is processed to extract
+        endpoint information, username, and password. This processed data is then returned as
+        a dictionary. If no data is retrieved, the unit is set to waiting status and
+        the program exits with a zero status code."""
+        relations = self.database.fetch_relation_data()
+        logger.debug("Got following database data: %s", relations)
+        for data in relations.values():
+            if not data:
+                continue
+            logger.info("New PSQL database endpoint is %s", data["endpoints"])
+            host, port = data["endpoints"].split(":")
+            db_data = {
+                "db_host": host,
+                "db_port": port,
+                "db_username": data["username"],
+                "db_password": data["password"],
+            }
+            return db_data
+        return {}
+
+    @property
+    def _pebble_layer(self) -> ops.pebble.Layer:
+        """A Pebble layer for the FastAPI demo services."""
+        self.generate_config()
+        command = " ".join(
+            ["hockeypuck/bin/hockeypuck", "-config", "hockeypuck/etc/hockeypuck.conf"]
+        )
+        pebble_layer: ops.pebble.LayerDict = {
+            "summary": "FastAPI demo service",
+            "description": "pebble config layer for FastAPI demo server",
             "services": {
-                "httpbin": {
+                self.pebble_service_name: {
                     "override": "replace",
-                    "summary": "httpbin",
-                    "command": "gunicorn -b 0.0.0.0:80 httpbin:app -k gevent",
+                    "summary": "fastapi demo",
+                    "command": command,
                     "startup": "enabled",
-                    "environment": {
-                        "GUNICORN_CMD_ARGS": f"--log-level {self.model.config['log-level']}"
-                    },
                 }
             },
         }
+        return ops.pebble.Layer(pebble_layer)
 
 
-if __name__ == "__main__":  # pragma: nocover
-    ops.main.main(IsCharmsTemplateCharm)
+if __name__ == "__main__":
+    ops.main(HockeypuckCharm)
