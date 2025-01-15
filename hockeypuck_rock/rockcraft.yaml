@@ -1,12 +1,15 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
 name: hockeypuck
-version: '0.3'
-summary: A summary of your Go application
-description: |
-  This is hockeypuck's description. You have a paragraph or two to tell the
-  most important story about it. Keep it under 100 words though,
-  we live in tweetspace and your description wants to look good in the
-  container registries out there.
 base: ubuntu@24.04
+version: 0.9
+summary: Hockeypuck is an OpenPGP public keyserver.
+description: |
+  Hockeypuck is an openPGP public keyserver or a software tool
+  used to manage public key infrastructure for PGP (Pretty Good Privacy),
+  which is a system for securing communication through encryption and
+  digital signatures.
 platforms:
   amd64:
     build-on:
@@ -14,40 +17,28 @@ platforms:
     build-for:
     - amd64
 parts:
-  go-framework/base-layout:
-    plugin: nil
-    override-build: mkdir -p ${CRAFT_PART_INSTALL}/hockeypuck/bin ${CRAFT_PART_INSTALL}/hockeypuck/lib
-      -p ${CRAFT_PART_INSTALL}/hockeypuck/etc -p ${CRAFT_PART_INSTALL}/hockeypuck/data
-  go-framework/install-app:
-    plugin: go
-    source: https://github.com/hockeypuck/hockeypuck.git
-    source-subdir: src/hockeypuck/
-    organize:
-      bin/hockeypuck: hockeypuck/bin/hockeypuck
-      bin/hockeypuck-dump: hockeypuck/bin/hockeypuck-dump
-      bin/hockeypuck-load: hockeypuck/bin/hockeypuck-load
-      bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
-    build-snaps:
-    - go
-    stage-packages:
-    - gettext-base
-    build-environment:
-    - CGO_ENABLED: '0'
-  copy-templates:
-    plugin: dump
+  hockeypuck:
+    plugin: make
     source: https://github.com/hockeypuck/hockeypuck.git
     source-tag: 2.2.2
+    source-type: git
+    source-depth: 1
+    build-snaps:
+      - go
     organize:
-      contrib/templates: /hockeypuck/lib/templates
-      contrib/webroot: /hockeypuck/lib/www
-    prime:
-    - hockeypuck/*
-  copy-conf:
+      usr/bin/hockeypuck: hockeypuck/bin/hockeypuck
+      usr/bin/hockeypuck-dump: hockeypuck/bin/hockeypuck-dump
+      usr/bin/hockeypuck-load: hockeypuck/bin/hockeypuck-load
+      usr/bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
+      var/lib/hockeypuck/templates: hockeypuck/lib/templates
+      var/lib/hockeypuck/www: hockeypuck/lib/www
+    stage-packages:
+    - gettext-base
+  copy-files:
     plugin: dump
     source: .
     organize:
-      hockeypuck.conf.tmpl: /hockeypuck/etc/hockeypuck.conf.tmpl
-      hockeypuck_wrapper.sh: /hockeypuck/bin/hockeypuck_wrapper.sh
+      hockeypuck.conf.tmpl: hockeypuck/etc/hockeypuck.conf.tmpl
+      hockeypuck_wrapper.sh: hockeypuck/bin/hockeypuck_wrapper.sh
     prime:
     - hockeypuck/*
-    
