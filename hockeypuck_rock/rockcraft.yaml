@@ -6,7 +6,7 @@ base: ubuntu@24.04
 version: 0.1
 summary: Hockeypuck is an OpenPGP public keyserver.
 description: |
-  Hockeypuck is an openPGP public keyserver, a software tool
+  Hockeypuck is an OpenPGP public keyserver, a software tool
   used to manage public key infrastructure for PGP (Pretty Good Privacy).
   PGP is a system for securing communication through encryption and
   digital signatures.
