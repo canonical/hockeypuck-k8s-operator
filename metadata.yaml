@@ -5,17 +5,17 @@ assumes:
   - juju >= 3.1
   - k8s-api
 display-name: Hockeypuck K8s
-summary: Hockeypuck openPGP public keyserver
+summary: Hockeypuck OpenPGP public keyserver
 maintainers: 
   - https://launchpad.net/~canonical-is-devops
 description: |
   A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators)
-  for deploying and managin [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an
-  openPGP public keyserver or a software tool used to manage public key infrastructure for PGP 
-  (Pretty Good Privacy), which is a system for securing communication through encryption and 
+  for deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an
+  OpenPGP public keyserver, a software tool used to manage public key infrastructure for PGP 
+  (Pretty Good Privacy). PGP is a system for securing communication through encryption and 
   digital signatures.
 
-  The Server provides interfaces to add, lookup, replace and delete public keys from the keyserver.
+  The server provides interfaces to add, lookup, replace and delete public keys from the keyserver.
   Hockeypuck can synchronize public key material with SKS and other Hockeypuck servers. It 
   implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
 

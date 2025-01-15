@@ -7,7 +7,7 @@ TEMPLATE_FILE="/hockeypuck/etc/hockeypuck.conf.tmpl"
 OUTPUT_FILE="/hockeypuck/etc/hockeypuck.conf"
 
 if [[ ! -f $TEMPLATE_FILE ]]; then
-    echo "Template file $TEMPLATE_FILE not found."
+    echo "Template file $TEMPLATE_FILE not found." >&2
     exit 1
 fi
 
