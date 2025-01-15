@@ -30,8 +30,7 @@ parts:
       usr/bin/hockeypuck-dump: hockeypuck/bin/hockeypuck-dump
       usr/bin/hockeypuck-load: hockeypuck/bin/hockeypuck-load
       usr/bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
-      var/lib/hockeypuck/templates: hockeypuck/lib/templates
-      var/lib/hockeypuck/www: hockeypuck/lib/www
+      var/lib/hockeypuck/*: hockeypuck/lib/
     stage-packages:
     - gettext-base
   copy-files:
