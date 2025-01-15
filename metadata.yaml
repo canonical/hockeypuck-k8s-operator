@@ -21,7 +21,7 @@ description: |
 
   For DevOps and SRE teams, this charm will make operating Hockeypuck simple and straightforward
   through Juju's clean interface.
-docs: https://discourse.charmhub.io # TO BE UPDATED
+docs: https://discourse.charmhub.io/t/hockeypuck-documentation-overview/16591
 issues: https://github.com/canonical/hockeypuck-k8s-operator/issues
 source: https://github.com/canonical/hockeypuck-k8s-operator
 containers:
