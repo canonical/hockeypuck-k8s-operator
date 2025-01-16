@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
 TEMPLATE_FILE="/hockeypuck/etc/hockeypuck.conf.tmpl"
 OUTPUT_FILE="/hockeypuck/etc/hockeypuck.conf"
 
