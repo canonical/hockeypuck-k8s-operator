@@ -9,6 +9,8 @@ header:
     - '**'
   paths-ignore:
     - '.github/**'
+    - '**/*.json'
+    - '**/*.md'
     - '**/*.conf'
     - '**/*.txt'
     - '.jujuignore'
