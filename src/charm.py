@@ -2,8 +2,6 @@
 # Copyright 2025 Canonical Ltd.
 
 import logging
-import os
-from string import Template
 from typing import Dict, Optional
 
 import ops
@@ -12,12 +10,40 @@ from charms.data_platform_libs.v0.data_interfaces import DatabaseCreatedEvent, D
 logger = logging.getLogger(__name__)
 
 
+class MissingConfig(Exception):
+    """Missing charm configuration."""
+
+
+class InvalidConfig(Exception):
+    """Invalid content in charm configurations."""
+
+
+class MissingIntegration(Exception):
+    """Missing charm integration."""
+
+
+class InvalidIntegration(Exception):
+    """Invalid content in integrations."""
+
+
+class ContainerNotReady(Exception):
+    """Container (pebble) not ready."""
+
+
+class IntegrationNotReady(Exception):
+    """Charm integration not ready."""
+
+
+class PlatformNotReady(Exception):
+    """Hockeypuck service not ready."""
+
+
 class HockeypuckCharm(ops.CharmBase):
     """Charmed Hockeypuck"""
 
     def __init__(self, framework: ops.Framework) -> None:
         super().__init__(framework)
-        self.pebble_service_name = "hockeypuck-service"
+        self._pebble_service_name = "hockeypuck-service"
         self.container = self.unit.get_container("hockeypuck")
         framework.observe(self.on.hockeypuck_pebble_ready, self._on_hockeypuck_pebble_ready)
         framework.observe(self.on.collect_unit_status, self._on_collect_status)
@@ -25,6 +51,16 @@ class HockeypuckCharm(ops.CharmBase):
         self.database = DatabaseRequires(self, relation_name="database", database_name="hkp")
         framework.observe(self.database.on.database_created, self._on_database_created)
         framework.observe(self.database.on.endpoints_changed, self._on_database_created)
+
+    def _update_charm(self) -> None:
+        """Check for pre-conditions and update the charm"""
+        try:
+            self._check_preconditions()
+            self.unit.status = ops.ActiveStatus()
+        except (MissingIntegration, MissingConfig, InvalidIntegration, InvalidConfig) as exc:
+            self.unit.status = ops.BlockedStatus(str(exc))
+        except (ContainerNotReady, IntegrationNotReady, PlatformNotReady) as exc:
+            self.unit.status = ops.WaitingStatus(str(exc))
 
     def _on_collect_status(self, event: ops.CollectStatusEvent) -> None:
         if not self.model.get_relation("database"):
@@ -34,7 +70,7 @@ class HockeypuckCharm(ops.CharmBase):
             # We need the charms to finish integrating.
             event.add_status(ops.WaitingStatus("Waiting for database relation"))
         try:
-            status = self.container.get_service(self.pebble_service_name)
+            status = self.container.get_service(self._pebble_service_name)
         except (ops.pebble.APIError, ops.ModelError):
             event.add_status(ops.MaintenanceStatus("Waiting for Pebble in workload container"))
         else:
@@ -73,8 +109,8 @@ class HockeypuckCharm(ops.CharmBase):
                 self.container.add_layer("hockeypuck", self._pebble_layer, combine=True)
                 logger.info("Added updated layer 'hockeypuck' to Pebble plan")
 
-                self.container.restart(self.pebble_service_name)
-                logger.info(f"Restarted '{self.pebble_service_name}' service")
+                self.container.restart(self._pebble_service_name)
+                logger.info(f"Restarted '{self._pebble_service_name}' service")
         except ops.pebble.APIError as e:
             logger.info("Unable to connect to Pebble: %s", e)
             return
@@ -132,7 +168,7 @@ class HockeypuckCharm(ops.CharmBase):
             "summary": "FastAPI demo service",
             "description": "pebble config layer for FastAPI demo server",
             "services": {
-                self.pebble_service_name: {
+                self._pebble_service_name: {
                     "override": "replace",
                     "summary": "fastapi demo",
                     "command": command,
