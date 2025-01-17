@@ -6,7 +6,7 @@ name: hockeypuck-k8s
 title: Hockeypuck K8S Charm
 summary: Hockeypuck OpenPGP public keyserver
 links:
-  documentation: https://github.com/canonical/hockeypuck-k8s-operator/blob/main/README.md
+  documentation: https://discourse.charmhub.io/t/hockeypuck-documentation-overview/16591
   issues: https://github.com/canonical/hockeypuck-k8s-operator/issues
   source: https://github.com/canonical/hockeypuck-k8s-operator
   contact: https://launchpad.net/~canonical-is-devops
@@ -27,7 +27,7 @@ description: |
   through Juju's clean interface.
 
 assumes:
-  - juju >= 3.1
+  - juju >= 3.4
   - k8s-api
 
 containers:

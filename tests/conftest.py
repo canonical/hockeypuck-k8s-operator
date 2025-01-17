@@ -13,7 +13,7 @@ def pytest_addoption(parser: pytest.Parser):
         parser: Pytest parser.
     """
     # The prebuilt charm file.
-    parser.addoption("--charm-file", action="append", default=[])
+    parser.addoption("--charm-file", action="store", default="")
     # The Hockeypuck image name:tag.
     parser.addoption("--hockeypuck-image", action="store", default="")
     # The path to kubernetes config.
