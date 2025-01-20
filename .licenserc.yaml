@@ -12,7 +12,6 @@ header:
     - '**/*.json'
     - '**/*.md'
     - '**/*.conf'
-    - '**/*.conf.tmpl'
     - '**/*.txt'
     - '.jujuignore'
     - '.gitignore'
