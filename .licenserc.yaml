@@ -18,7 +18,6 @@ header:
     - '.licenserc.yaml'
     - '.trivyignore'
     - '.woke.yaml'
-    - '.woke.yml'
     - 'CODEOWNERS'
     - 'LICENSE'
     - 'trivy.yaml'
