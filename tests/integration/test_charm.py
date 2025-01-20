@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+
 # Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
 
 import logging
 from typing import Dict, Optional
@@ -11,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class HockeypuckCharm(ops.CharmBase):
-    """Charmed Hockeypuck"""
+    """Charmed Hockeypuck."""
 
     def __init__(self, framework: ops.Framework) -> None:
         super().__init__(framework)

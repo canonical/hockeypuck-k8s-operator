@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
+
 # Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+"""Hockeypuck Charm."""
 
 import logging
+import typing
 from typing import Dict, Optional
 
 import ops
@@ -39,28 +44,25 @@ class PlatformNotReady(Exception):
 
 
 class HockeypuckCharm(ops.CharmBase):
-    """Charmed Hockeypuck"""
+    """Charmed Hockeypuck."""
 
-    def __init__(self, framework: ops.Framework) -> None:
-        super().__init__(framework)
+    def __init__(self, *args: typing.Any) -> None:
+        """Construct.
+
+        Args:
+            args: Arguments passed to the CharmBase parent constructor.
+        """
+        super().__init__(*args)
         self._pebble_service_name = "hockeypuck-service"
         self.container = self.unit.get_container("hockeypuck")
-        framework.observe(self.on.hockeypuck_pebble_ready, self._on_hockeypuck_pebble_ready)
-        framework.observe(self.on.collect_unit_status, self._on_collect_status)
+        self.framework.observe(self.on.hockeypuck_pebble_ready, self._update_layer_and_restart())
+        self.framework.observe(self.on.collect_unit_status, self._on_collect_status)
         # Charm events defined in the database requires charm library:
         self.database = DatabaseRequires(self, relation_name="database", database_name="hkp")
-        framework.observe(self.database.on.database_created, self._on_database_created)
-        framework.observe(self.database.on.endpoints_changed, self._on_database_created)
-
-    def _update_charm(self) -> None:
-        """Check for pre-conditions and update the charm"""
-        try:
-            self._check_preconditions()
-            self.unit.status = ops.ActiveStatus()
-        except (MissingIntegration, MissingConfig, InvalidIntegration, InvalidConfig) as exc:
-            self.unit.status = ops.BlockedStatus(str(exc))
-        except (ContainerNotReady, IntegrationNotReady, PlatformNotReady) as exc:
-            self.unit.status = ops.WaitingStatus(str(exc))
+        self.framework.observe(self.database.on.database_created, self._update_layer_and_restart())
+        self.framework.observe(
+            self.database.on.endpoints_changed, self._update_layer_and_restart()
+        )
 
     def _on_collect_status(self, event: ops.CollectStatusEvent) -> None:
         if not self.model.get_relation("database"):
@@ -78,13 +80,6 @@ class HockeypuckCharm(ops.CharmBase):
                 event.add_status(ops.MaintenanceStatus("Waiting for the service to start up"))
         # If nothing is wrong, then the status is active.
         event.add_status(ops.ActiveStatus())
-
-    def _on_hockeypuck_pebble_ready(self, event: ops.PebbleReadyEvent) -> None:
-        self._update_layer_and_restart()
-
-    def _on_database_created(self, event: DatabaseCreatedEvent) -> None:
-        """Event is fired when postgres database is created."""
-        self._update_layer_and_restart()
 
     def _update_layer_and_restart(self) -> None:
         """Define and start a workload using the Pebble API.
