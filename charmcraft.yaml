@@ -29,10 +29,6 @@ description: |
 extensions:
   - go-framework
 
-assumes:
-  - juju >= 3.4
-  - k8s-api
-
 containers:
   hockeypuck:
     resource: hockeypuck-image
