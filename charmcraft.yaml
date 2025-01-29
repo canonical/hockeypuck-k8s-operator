@@ -26,6 +26,9 @@ description: |
   For DevOps and SRE teams, this charm will make operating Hockeypuck simple and straightforward
   through Juju's clean interface.
 
+extensions:
+  - go-framework
+
 assumes:
   - juju >= 3.4
   - k8s-api
@@ -40,9 +43,16 @@ resources:
     description: OCI image for Hockeypuck
 
 requires:
-  database:
+  postgresql:
     interface: postgresql_client
+    optional: false
     limit: 1
+
+config:
+  options:
+    external-peers:
+      type: string
+      description: comma-seperated list of external peer IPs or FQDNs
 
 base: ubuntu@24.04
 build-base: ubuntu@24.04
