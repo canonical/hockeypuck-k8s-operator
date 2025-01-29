@@ -4,4 +4,4 @@ rules:
 ignore_files:
   # Ignore redis charm library as it uses non compliant terminology:
   # master.
-  - charm/lib/charms/redis_k8s/v0/redis.py
+  - lib/charms/redis_k8s/v0/redis.py
