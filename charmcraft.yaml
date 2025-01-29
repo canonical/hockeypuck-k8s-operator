@@ -52,7 +52,7 @@ config:
   options:
     external-peers:
       type: string
-      description: comma-seperated list of external peer IPs or FQDNs
+      description: Comma-seperated list of external peer IPs or FQDNs
 
 base: ubuntu@24.04
 build-base: ubuntu@24.04
