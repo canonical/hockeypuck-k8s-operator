@@ -1,5 +1,3 @@
-# Copyright 2025 Canonical Ltd.
-# See LICENSE file for licensing details.
 """Library for the redis relation.
 
 This library contains the Requires and Provides classes for handling the
@@ -47,14 +45,12 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_REALTION_NAME = "redis"
 
-
 class RedisRelationUpdatedEvent(EventBase):
     """An event for the redis relation having been updated."""
 
 
 class RedisRelationCharmEvents(CharmEvents):
     """A class to carry custom charm events so requires can react to relation changes."""
-
     redis_relation_updated = EventSource(RedisRelationUpdatedEvent)
 
 
@@ -116,7 +112,7 @@ class RedisRequires(Object):
         """
         if not (relation_data := self.relation_data):
             return None
-
+            
         redis_host = relation_data.get("hostname")
 
         if app_data := self.app_data:
