@@ -29,15 +29,6 @@ description: |
 extensions:
   - go-framework
 
-containers:
-  hockeypuck:
-    resource: hockeypuck-image
-
-resources:
-  hockeypuck-image:
-    type: oci-image
-    description: OCI image for Hockeypuck
-
 requires:
   postgresql:
     interface: postgresql_client
