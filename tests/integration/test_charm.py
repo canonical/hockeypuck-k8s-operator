@@ -5,34 +5,30 @@
 
 """Integration tests."""
 
-import asyncio
 import logging
-from pathlib import Path
 
-import pytest
-import yaml
-from pytest_operator.plugin import OpsTest
+import requests
+from juju.application import Application
 
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.skip(reason="Will enable again while raising PR for integration tests")
-async def test_build_and_deploy(ops_test: OpsTest, pytestconfig: pytest.Config):
-    """Deploy the charm together with related charms.
-
-    Assert on the unit status before any relations/configurations take place.
+async def test_hockeypuck_health(hockeypuck_k8s_app: Application) -> None:
     """
-    # Deploy the charm and wait for active/idle status
-    metadata = yaml.safe_load(Path("./metadata.yaml").read_text(encoding="utf-8"))
-    app_name = metadata["name"]
-    charm = pytestconfig.getoption("--charm-file")
-    resources = {"httpbin-image": metadata["resources"]["httpbin-image"]["upstream-source"]}
-    assert ops_test.model
-    await asyncio.gather(
-        ops_test.model.deploy(
-            f"./{charm}", resources=resources, application_name=app_name, series="jammy"
-        ),
-        ops_test.model.wait_for_idle(
-            apps=[app_name], status="active", raise_on_blocked=True, timeout=1000
-        ),
-    )
+    arrange: Build and deploy the Hockeypuck charm.
+    act: Do a get request to the main page.
+    assert: Returns 200 and the page contains the correct data.
+    """
+    status = await hockeypuck_k8s_app.model.get_status()
+    unit_ips = [
+        unit.address for unit in status.applications[hockeypuck_k8s_app.name].units.values()
+    ]
+    for unit_ip in unit_ips:
+
+        url = f"http://{unit_ip}:11371"
+        res = requests.get(
+            url,
+            timeout=120,
+        )
+        assert res.status_code == 200
+        assert b"<title>OpenPGP Keyserver</title>" in res.content
