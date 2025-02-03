@@ -19,14 +19,10 @@ async def test_hockeypuck_health(hockeypuck_k8s_app: Application) -> None:
     act: Do a get request to the main page.
     assert: Returns 200 and the page contains the correct data.
     """
-    status = await hockeypuck_k8s_app.model.get_status()
-    app_units = status.applications[hockeypuck_k8s_app.name].units.values()  # type: ignore
-    unit_ips = [unit.address for unit in app_units]
-    for unit_ip in unit_ips:
-        url = f"http://{unit_ip}:11371"
-        res = requests.get(
-            url,
-            timeout=120,
-        )
-        assert res.status_code == 200
-        assert b"<title>OpenPGP Keyserver</title>" in res.content
+    response = requests.get(
+        "http://127.0.0.1/",
+        timeout=5,
+        headers={"Host": "hockeypuck.local"},
+    )
+    assert response.status_code == 200
+    assert "<title>OpenPGP Keyserver</title>" in response.text

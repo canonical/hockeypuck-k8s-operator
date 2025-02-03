@@ -40,9 +40,14 @@ async def nginx_app_fixture(
     model: Model,
 ) -> Application:
     """Deploy nginx charm."""
+    config = {"service-hostname": "hockeypuck.local", "path-routes": "/"}
     async with ops_test.fast_forward():
         app = await model.deploy(
-            "nginx-ingress-integrator", channel="latest/edge", revision=99, trust=True
+            "nginx-ingress-integrator",
+            channel="latest/edge",
+            revision=99,
+            trust=True,
+            config=config,
         )
         await model.wait_for_idle()
     return app
