@@ -5,7 +5,9 @@
 
 import logging
 from pathlib import Path
+from typing import Dict
 
+import gnupg
 import pytest_asyncio
 from juju.application import Application
 from juju.model import Model
@@ -30,7 +32,7 @@ async def postgresql_app_fixture(
     """Deploy postgresql-k8s charm."""
     async with ops_test.fast_forward():
         app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
-        await model.wait_for_idle(apps=["postgresql-k8s"], status="active")
+        await model.wait_for_idle(apps=["postgresql-k8s"])
     return app
 
 
@@ -97,3 +99,14 @@ async def hockeypuck_k8s_app_fixture(
     await model.add_relation(app.name, nginx_app.name)
     await model.wait_for_idle()
     return app
+
+
+@pytest_asyncio.fixture(scope="function", name="gpg_key")
+def gpg_key_fixture() -> Dict:
+    """Return a GPG key."""
+    gpg = gnupg.GPG()
+    input_data = gpg.gen_key_input(
+        name_real="Test User", name_email="test@gmail.com", passphrase="foo"
+    )
+    key = gpg.gen_key(input_data)
+    return key
