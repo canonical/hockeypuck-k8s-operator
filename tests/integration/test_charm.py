@@ -7,13 +7,15 @@
 
 import logging
 
+import pytest
 import requests
-from juju.application import Application
 
 logger = logging.getLogger(__name__)
 
 
-async def test_hockeypuck_health(hockeypuck_k8s_app: Application) -> None:
+@pytest.mark.abort_on_fail
+@pytest.mark.usefixtures("hockeypuck_k8s_app")
+async def test_hockeypuck_health() -> None:
     """
     arrange: Build and deploy the Hockeypuck charm.
     act: Do a get request to the main page.
