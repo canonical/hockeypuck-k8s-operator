@@ -6,7 +6,7 @@
 """Integration tests."""
 
 import logging
-from typing import Dict
+from typing import Any
 
 import pytest
 import requests
@@ -33,14 +33,15 @@ async def test_hockeypuck_health() -> None:
 
 
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
-async def test_adding_records(gpg_key: Dict) -> None:
+async def test_adding_records(gpg_key: Any) -> None:
     """
     arrange: Create a GPG Key
     act: Send a request to add a PGP key and lookup the key using the API
     assert: API is added successfully and lookup of key returns the key.
     """
     gpg = GPG()
-    public_key = gpg.export_keys(gpg_key.fingerprint)
+    fingerprint = gpg_key.fingerprint
+    public_key = gpg.export_keys(fingerprint)
     response = requests.post(
         "http://127.0.0.1/pks/add",
         timeout=20,
@@ -50,7 +51,7 @@ async def test_adding_records(gpg_key: Dict) -> None:
     assert response.status_code == 200
 
     response = requests.get(
-        f"http://127.0.0.1/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
+        f"http://127.0.0.1/pks/lookup?op=get&search=0x{fingerprint}",
         timeout=20,
         headers={"Host": "hockeypuck.local"},
     )

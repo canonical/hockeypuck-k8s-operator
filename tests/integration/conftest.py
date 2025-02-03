@@ -5,7 +5,7 @@
 
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Any
 
 import gnupg
 import pytest_asyncio
@@ -32,7 +32,7 @@ async def postgresql_app_fixture(
     """Deploy postgresql-k8s charm."""
     async with ops_test.fast_forward():
         app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
-        await model.wait_for_idle(apps=["postgresql-k8s"])
+        await model.wait_for_idle(apps=["postgresql-k8s"], timeout=15 * 60)
     return app
 
 
@@ -102,7 +102,7 @@ async def hockeypuck_k8s_app_fixture(
 
 
 @pytest_asyncio.fixture(scope="function", name="gpg_key")
-def gpg_key_fixture() -> Dict:
+def gpg_key_fixture() -> Any:
     """Return a GPG key."""
     gpg = gnupg.GPG()
     input_data = gpg.gen_key_input(
