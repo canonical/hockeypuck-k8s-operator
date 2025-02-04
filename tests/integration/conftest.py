@@ -106,7 +106,7 @@ def gpg_key_fixture() -> Any:
     """Return a GPG key."""
     gpg = gnupg.GPG()
     input_data = gpg.gen_key_input(
-        name_real="Test User", name_email="test@gmail.com", passphrase="foo"
+        name_real="Test User", name_email="test@gmail.com", passphrase="foo"  # nosec
     )
     key = gpg.gen_key(input_data)
     return key
