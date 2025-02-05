@@ -41,7 +41,6 @@ async def postgresql_app_fixture(
     """Deploy postgresql-k8s charm."""
     async with ops_test.fast_forward():
         app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
-        await model.wait_for_idle(apps=["postgresql-k8s"], timeout=15 * 60)
     return app
 
 
@@ -60,7 +59,6 @@ async def nginx_app_fixture(
             trust=True,
             config=config,
         )
-        await model.wait_for_idle()
     return app
 
 
@@ -145,7 +143,6 @@ async def hockeypuck_secondary_app_fixture(
         postgresql_app = await secondary_model.deploy(
             "postgresql-k8s", channel="14/stable", trust=True
         )
-        await secondary_model.wait_for_idle(apps=[postgresql_app.name], timeout=15 * 60)
         await secondary_model.add_relation(app.name, postgresql_app.name)
         await secondary_model.wait_for_idle()
         return app
