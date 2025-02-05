@@ -159,11 +159,19 @@ async def external_peer_config_fixture(
     """Set external peers on both hockeypuck servers for peer reconciliation."""
     # <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
     primary_unit_name = (hockeypuck_k8s_app.units[0].name).replace("/", "-")
-    hockeypuck_primary_fqdn = f"{primary_unit_name}.{hockeypuck_k8s_app.name}-endpoints.{hockeypuck_k8s_app.model.name}.svc.cluster.local"
+    hockeypuck_primary_fqdn = (
+        f"{primary_unit_name}."
+        f"{hockeypuck_k8s_app.name}-endpoints."
+        f"{hockeypuck_k8s_app.model.name}.svc.cluster.local"
+    )
     await hockeypuck_secondary_app.set_config({"external-peers": hockeypuck_primary_fqdn})
 
     secondary_unit_name = (hockeypuck_secondary_app.units[0].name).replace("/", "-")
-    hockeypuck_secondary_fqdn = f"{secondary_unit_name}.{hockeypuck_secondary_app.name}-endpoints.{hockeypuck_secondary_app.model.name}.svc.cluster.local"
+    hockeypuck_secondary_fqdn = (
+        f"{secondary_unit_name}."
+        f"{hockeypuck_secondary_app.name}-endpoints."
+        f"{hockeypuck_secondary_app.model.name}.svc.cluster.local"
+    )
     await hockeypuck_k8s_app.set_config({"external-peers": hockeypuck_secondary_fqdn})
 
     await hockeypuck_k8s_app.model.wait_for_idle()
