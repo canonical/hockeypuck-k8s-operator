@@ -39,7 +39,23 @@ config:
   options:
     external-peers:
       type: string
-      description: Comma-seperated list of external peer IPs or FQDNs
+      description: >
+        Comma-seperated list of external peer IPs or FQDNs without the ports.
+        Note that the http and reconcilliation ports are fixed and cannot be
+        edited.
+    contact-fingerprint:
+      type: string
+      description: >
+        Full fingerprint of the keyserver administrator. It is strongly
+        recommended that the server contact advertised on the stats page
+        is not one of the admin keys.
+    admin-keys:
+      type: string
+      description: >
+        A comma-separated list of fingerprints that identify keys that may
+        sign administration requests for this server. It is strongly
+        recommended that the server contact advertised on the stats page
+        is not one of the admin keys.
 
 base: ubuntu@24.04
 build-base: ubuntu@24.04
