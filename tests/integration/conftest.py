@@ -24,6 +24,15 @@ async def model_fixture(ops_test: OpsTest) -> Model:
     return ops_test.model
 
 
+@pytest_asyncio.fixture(scope="module", name="secondary_model_alias")
+async def secondary_model_fixture(ops_test: OpsTest) -> str:
+    """Create a secondary Juju model for external peer reconcilitation."""
+    model_alias = "secondary-model"
+    model_name = "hockeypuck-secondary"
+    await ops_test.track_model(model_alias, model_name=model_name)
+    return model_alias
+
+
 @pytest_asyncio.fixture(scope="module", name="postgresql_app")
 async def postgresql_app_fixture(
     ops_test: OpsTest,
@@ -101,7 +110,7 @@ async def hockeypuck_k8s_app_fixture(
     return app
 
 
-@pytest_asyncio.fixture(scope="function", name="gpg_key")
+@pytest_asyncio.fixture(scope="module", name="gpg_key")
 def gpg_key_fixture() -> Any:
     """Return a GPG key."""
     gpg = gnupg.GPG()
@@ -110,3 +119,52 @@ def gpg_key_fixture() -> Any:
     )
     key = gpg.gen_key(input_data)
     return key
+
+
+@pytest_asyncio.fixture(scope="module", name="hockeypuck_secondary_app")
+async def hockeypuck_secondary_app_fixture(
+    secondary_model_alias: str,
+    hockeypuck_charm: str | Path,
+    hockeypuck_app_image: str,
+    ops_test: OpsTest,
+) -> Application:
+    """Deploy the hockeypuck-k8s application in the secondary model and relate with Postgresql"""
+    resources = {
+        "app-image": hockeypuck_app_image,
+    }
+    # Switch context to the new model
+    with ops_test.model_context(secondary_model_alias) as secondary_model:
+        app = await secondary_model.deploy(
+            f"./{hockeypuck_charm}",
+            resources=resources,
+            config={
+                "app-port": 11371,
+                "metrics-port": 9626,
+            },
+        )
+        postgresql_app = await secondary_model.deploy(
+            "postgresql-k8s", channel="14/stable", trust=True
+        )
+        await secondary_model.wait_for_idle(apps=[postgresql_app.name], timeout=15 * 60)
+        await secondary_model.add_relation(app.name, postgresql_app.name)
+        await secondary_model.wait_for_idle()
+        return app
+
+
+@pytest_asyncio.fixture(scope="module", name="external_peer_config")
+async def external_peer_config_fixture(
+    hockeypuck_k8s_app: Application,
+    hockeypuck_secondary_app: Application,
+) -> None:
+    """Set external peers on both hockeypuck servers for peer reconciliation."""
+    # <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
+    primary_unit_name = (hockeypuck_k8s_app.units[0].name).replace("/", "-")
+    hockeypuck_primary_fqdn = f"{primary_unit_name}.{hockeypuck_k8s_app.name}-endpoints.{hockeypuck_k8s_app.model.name}.svc.cluster.local"
+    await hockeypuck_secondary_app.set_config({"external-peers": hockeypuck_primary_fqdn})
+
+    secondary_unit_name = (hockeypuck_secondary_app.units[0].name).replace("/", "-")
+    hockeypuck_secondary_fqdn = f"{secondary_unit_name}.{hockeypuck_secondary_app.name}-endpoints.{hockeypuck_secondary_app.model.name}.svc.cluster.local"
+    await hockeypuck_k8s_app.set_config({"external-peers": hockeypuck_secondary_fqdn})
+
+    await hockeypuck_k8s_app.model.wait_for_idle()
+    await hockeypuck_secondary_app.model.wait_for_idle()

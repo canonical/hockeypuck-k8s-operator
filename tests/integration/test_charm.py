@@ -11,6 +11,8 @@ from typing import Any
 import pytest
 import requests
 from gnupg import GPG
+from juju.action import Action
+from juju.application import Application
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,7 @@ async def test_hockeypuck_health() -> None:
     assert "<title>OpenPGP Keyserver</title>" in response.text
 
 
+@pytest.mark.abort_on_fail
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
 async def test_adding_records(gpg_key: Any) -> None:
     """
@@ -58,3 +61,20 @@ async def test_adding_records(gpg_key: Any) -> None:
 
     assert response.status_code == 200
     assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
+
+
+@pytest.mark.usefixtures("external_peer_config")
+@pytest.mark.flaky(reruns=10, reruns_delay=10)
+async def test_reconciliation(
+    hockeypuck_secondary_app: Application,
+) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm in the secondary model.
+    act: Reconcile the application.
+    assert: The application is reconciled successfully.
+    """
+    command = """curl "http://127.0.0.1:11371/pks/lookup?op=get&search=test" """
+    action: Action = await hockeypuck_secondary_app.units[0].run(command)
+    await action.wait()
+    assert action.results["return-code"] == 0
+    assert "BEGIN PGP PUBLIC KEY BLOCK" in action.results["stdout"]
