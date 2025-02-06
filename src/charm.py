@@ -18,14 +18,6 @@ RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to
 class HockeypuckK8SCharm(paas_charm.go.Charm):
     """Go Charm service."""
 
-    def __init__(self, *args: typing.Any) -> None:
-        """Initialize the instance.
-
-        Args:
-            args: passthrough to CharmBase.
-        """
-        super().__init__(*args)
-
     def restart(self, rerun_migrations: bool = False) -> None:
         """Open reconciliation port and call the parent restart method.
 

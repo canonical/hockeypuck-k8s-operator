@@ -26,10 +26,6 @@ description: |
   For DevOps and SRE teams, this charm will make operating Hockeypuck simple and straightforward
   through Juju's clean interface.
 
-assumes:
-  - juju >= 3.4
-  - k8s-api
-
 extensions:
   - go-framework
 

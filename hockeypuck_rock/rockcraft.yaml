@@ -43,4 +43,3 @@ services:
     command: "/hockeypuck/bin/hockeypuck -config /hockeypuck/etc/hockeypuck.conf"
     startup: enabled
     working-dir: /hockeypuck
-    
