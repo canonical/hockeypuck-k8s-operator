@@ -1,3 +1,7 @@
 rules:
 # Ignore "blacklist" - since the hockeypuck binaries look for this configuation option
   - name: blacklist
+ignore_files:
+  # Ignore redis charm library as it uses non compliant terminology:
+  # master.
+  - lib/charms/redis_k8s/v0/redis.py
