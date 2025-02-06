@@ -101,10 +101,9 @@ async def hockeypuck_k8s_app_fixture(
             "metrics-port": 9626,
         },
     )
-    await model.wait_for_idle(apps=[app.name], timeout=3 * 60, status="blocked")
     await model.add_relation(app.name, postgresql_app.name)
     await model.add_relation(app.name, nginx_app.name)
-    await model.wait_for_idle()
+    await model.wait_for_idle(status="active")
     return app
 
 
@@ -144,7 +143,7 @@ async def hockeypuck_secondary_app_fixture(
             "postgresql-k8s", channel="14/stable", trust=True
         )
         await secondary_model.add_relation(app.name, postgresql_app.name)
-        await secondary_model.wait_for_idle()
+        await secondary_model.wait_for_idle(status="active")
         return app
 
 
@@ -171,5 +170,5 @@ async def external_peer_config_fixture(
     )
     await hockeypuck_k8s_app.set_config({"external-peers": hockeypuck_secondary_fqdn})
 
-    await hockeypuck_k8s_app.model.wait_for_idle()
-    await hockeypuck_secondary_app.model.wait_for_idle()
+    await hockeypuck_k8s_app.model.wait_for_idle(status="active")
+    await hockeypuck_secondary_app.model.wait_for_idle(status="active")
