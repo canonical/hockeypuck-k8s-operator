@@ -74,11 +74,11 @@ async def test_reconciliation(
     """
     status = await hockeypuck_secondary_app.model.get_status()
     units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
-    unit = units.values()[0]
-    response = requests.get(
-        f"http://{unit.address}:11371/pks/lookup?op=get&search=test",
-        timeout=20,
-    )
+    for unit in units:
+        response = requests.get(
+            f"http://{unit.address}:11371/pks/lookup?op=get&search=test",
+            timeout=20,
+        )
 
-    assert response.status_code == 200
-    assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
+        assert response.status_code == 200
+        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
