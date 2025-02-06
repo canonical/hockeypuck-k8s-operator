@@ -74,7 +74,7 @@ async def test_reconciliation(
     """
     status = await hockeypuck_secondary_app.model.get_status()
     units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
-    for unit in units:
+    for unit in units.values():
         response = requests.get(
             f"http://{unit.address}:11371/pks/lookup?op=get&search=test",
             timeout=20,
