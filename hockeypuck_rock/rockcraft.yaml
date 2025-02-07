@@ -30,8 +30,6 @@ parts:
       usr/bin/hockeypuck-load: hockeypuck/bin/hockeypuck-load
       usr/bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
       var/lib/hockeypuck/*: hockeypuck/lib/
-    stage-packages:
-      - curl
   copy-files:
     plugin: dump
     source: .

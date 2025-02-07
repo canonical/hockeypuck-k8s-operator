@@ -35,30 +35,26 @@ async def secondary_model_fixture(ops_test: OpsTest) -> str:
 
 @pytest_asyncio.fixture(scope="module", name="postgresql_app")
 async def postgresql_app_fixture(
-    ops_test: OpsTest,
     model: Model,
 ) -> Application:
     """Deploy postgresql-k8s charm."""
-    async with ops_test.fast_forward():
-        app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
+    app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
     return app
 
 
 @pytest_asyncio.fixture(scope="module", name="nginx_app")
 async def nginx_app_fixture(
-    ops_test: OpsTest,
     model: Model,
 ) -> Application:
     """Deploy nginx charm."""
     config = {"service-hostname": "hockeypuck.local", "path-routes": "/"}
-    async with ops_test.fast_forward():
-        app = await model.deploy(
-            "nginx-ingress-integrator",
-            channel="latest/edge",
-            revision=99,
-            trust=True,
-            config=config,
-        )
+    app = await model.deploy(
+        "nginx-ingress-integrator",
+        channel="latest/edge",
+        revision=99,
+        trust=True,
+        config=config,
+    )
     return app
 
 
@@ -101,7 +97,6 @@ async def hockeypuck_k8s_app_fixture(
             "metrics-port": 9626,
         },
     )
-    await model.wait_for_idle(apps=[app.name], timeout=3 * 60, status="blocked")
     await model.add_relation(app.name, postgresql_app.name)
     await model.add_relation(app.name, nginx_app.name)
     await model.wait_for_idle(status="active")
@@ -171,5 +166,5 @@ async def external_peer_config_fixture(
     )
     await hockeypuck_k8s_app.set_config({"external-peers": hockeypuck_secondary_fqdn})
 
-    await hockeypuck_k8s_app.model.wait_for_idle()
-    await hockeypuck_secondary_app.model.wait_for_idle()
+    await hockeypuck_k8s_app.model.wait_for_idle(status="active")
+    await hockeypuck_secondary_app.model.wait_for_idle(status="active")

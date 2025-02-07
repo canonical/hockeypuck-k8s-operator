@@ -11,7 +11,6 @@ from typing import Any
 import pytest
 import requests
 from gnupg import GPG
-from juju.action import Action
 from juju.application import Application
 
 logger = logging.getLogger(__name__)
@@ -73,8 +72,13 @@ async def test_reconciliation(
     act: Reconcile the application.
     assert: The application is reconciled successfully.
     """
-    command = """curl "http://127.0.0.1:11371/pks/lookup?op=get&search=test" """
-    action: Action = await hockeypuck_secondary_app.units[0].run(command)
-    await action.wait()
-    assert action.results["return-code"] == 0
-    assert "BEGIN PGP PUBLIC KEY BLOCK" in action.results["stdout"]
+    status = await hockeypuck_secondary_app.model.get_status()
+    units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
+    for unit in units.values():
+        response = requests.get(
+            f"http://{unit.address}:11371/pks/lookup?op=get&search=test",
+            timeout=20,
+        )
+
+        assert response.status_code == 200
+        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
