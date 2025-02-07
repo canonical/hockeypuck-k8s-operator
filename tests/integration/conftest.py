@@ -35,30 +35,26 @@ async def secondary_model_fixture(ops_test: OpsTest) -> str:
 
 @pytest_asyncio.fixture(scope="module", name="postgresql_app")
 async def postgresql_app_fixture(
-    ops_test: OpsTest,
     model: Model,
 ) -> Application:
     """Deploy postgresql-k8s charm."""
-    async with ops_test.fast_forward():
-        app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
+    app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
     return app
 
 
 @pytest_asyncio.fixture(scope="module", name="nginx_app")
 async def nginx_app_fixture(
-    ops_test: OpsTest,
     model: Model,
 ) -> Application:
     """Deploy nginx charm."""
     config = {"service-hostname": "hockeypuck.local", "path-routes": "/"}
-    async with ops_test.fast_forward():
-        app = await model.deploy(
-            "nginx-ingress-integrator",
-            channel="latest/edge",
-            revision=99,
-            trust=True,
-            config=config,
-        )
+    app = await model.deploy(
+        "nginx-ingress-integrator",
+        channel="latest/edge",
+        revision=99,
+        trust=True,
+        config=config,
+    )
     return app
 
 
