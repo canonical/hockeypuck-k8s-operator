@@ -35,23 +35,42 @@ requires:
     optional: false
     limit: 1
 
+actions:
+  blacklist-and-delete-key:
+    description: |
+      Blacklist and delete a key fingerprint from the keyserver database.
+    properties:
+      fingerprint:
+        type: string
+        description: |
+          Full fingerprints of keys to ignore (minus the leading 0x) / 
+          List of new-line separated keys to be removed.
+    required: 
+      - fingerprint
+  rebuild-prefix-tree:
+    description: |
+      The prefix tree is used to manage the reconciliation process and 
+      must always be in sync with the database. If you suspect it has become 
+      corrupted or out of sync, or if the prefix tree needs to be removed and 
+      rebuilt after pg-restore, it can be done with this action. 
+
 config:
   options:
     external-peers:
       type: string
-      description: >
+      description: |
         Comma-seperated list of external peer IPs or FQDNs without the ports.
         Note that the http and reconcilliation ports are fixed and cannot be
         edited.
     contact-fingerprint:
       type: string
-      description: >
+      description: |
         Full fingerprint of the keyserver administrator. It is strongly
         recommended that the server contact advertised on the stats page
         is not one of the admin keys.
     admin-keys:
       type: string
-      description: >
+      description: |
         A comma-separated list of fingerprints that identify keys that may
         sign administration requests for this server. It is strongly
         recommended that the server contact advertised on the stats page
