@@ -35,6 +35,8 @@ parts:
     source: .
     organize:
       hockeypuck.conf: hockeypuck/etc/hockeypuck.conf
+      delete_keys: hockeypuck/bin/delete_keys
+      retrieve_blacklisted_keys: hockeypuck/bin/retrieve_blacklisted_keys
 services:
   go:
     override: replace

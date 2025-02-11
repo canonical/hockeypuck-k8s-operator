@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Retrieve blacklisted keys from the Hockeypuck postgres database
+
+set -euo pipefail
+
+SQLCMD="PGPASSWORD=${POSTGRESQL_DB_PASSWORD} psql -t -A -d ${POSTGRESQL_DB_NAME} -H ${POSTGRESQL_DB_HOSTNAME} -U ${POSTGRESQL_DB_USERNAME}"  > /dev/null 2>&1
+
+$SQLCMD -c 'create table if not exists deleted_keys (fingerprint text primary key not null, comment text not null);'
+
+FINGERPRINTS=$($SQLCMD -c "SELECT STRING_AGG(fingerprint, ',') FROM deleted_keys;")
+
+echo $FINGERPRINTS
