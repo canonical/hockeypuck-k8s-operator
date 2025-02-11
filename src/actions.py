@@ -38,9 +38,29 @@ class Observer(ops.Object):
         Args:
             event: the event triggering the original action.
         """
-        keys = event.params["fingerprint"]
-        keys_list = [key for key in keys.split("\n")]
-        pass
+        fingerprints = event.params["fingerprints"]
+        ticket_id = event.params["ticket-id"]
+        if not self.charm.is_ready():
+            event.fail("Service not yet ready.")
+        service_name = next(iter(self.charm._container.get_services()))
+        try:
+            _ = self.charm._container.pebble.stop_services(services=[service_name])
+            environment = self.charm._gen_environment().append(
+                {"TICKET_ID": ticket_id, "APP_DELETE_FINGERPRINTS": fingerprints}
+            )
+            command = [
+                "/hockeypuck/bin/delete_keys",
+            ]
+            process = self.charm._container.exec(
+                command,
+                environment=environment,
+            )
+            stdout, _ = process.wait_output()
+        except ops.pebble.ExecError as ex:
+            logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
+            event.fail(f"Failed: {ex.stderr!r}")
+        finally:
+            self.charm.restart()
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
         """Rebuild the prefix tree using the hockeypuck-pbuild binary.
