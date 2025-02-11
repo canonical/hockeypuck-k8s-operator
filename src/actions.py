@@ -43,22 +43,28 @@ class Observer(ops.Object):
         pass
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
-        """Rebuild the prefix tree.
+        """Rebuild the prefix tree using the hockeypuck-pbuild binary.
 
         Args:
             event: the event triggering the original action.
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        command = "hockeypuck-pbuild -config /hockeypuck/etc/hockeypuck.conf"
-        process = self.charm._container.exec(
-            command,
-            working_dir="/hockeypuck/bin/",
-            environment=self.charm._gen_environment(),
-        )
+        service_name = next(iter(self.charm._container.get_services()))
         try:
-            stdout, _ = process.wait_output()
-            event.set_results({"result": stdout})
+            _ = self.charm._container.pebble.stop_services(services=[service_name])
+            command = [
+                "/hockeypuck/bin/hockeypuck-pbuild",
+                "-config",
+                "/hockeypuck/etc/hockeypuck.conf",
+            ]
+            process = self.charm._container.exec(
+                command,
+                environment=self.charm._gen_environment(),
+            )
+            _, _ = process.wait_output()
         except ops.pebble.ExecError as ex:
             logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
             event.fail(f"Failed: {ex.stderr!r}")
+        finally:
+            _ = self.charm._container.pebble.start_services(services=[service_name])
