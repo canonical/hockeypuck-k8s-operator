@@ -30,16 +30,18 @@ parts:
       usr/bin/hockeypuck-load: hockeypuck/bin/hockeypuck-load
       usr/bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
       var/lib/hockeypuck/*: hockeypuck/lib/
+    stage-packages:
+      - postgresql-client
   copy-files:
     plugin: dump
     source: .
     organize:
       hockeypuck.conf: hockeypuck/etc/hockeypuck.conf
       delete_keys: hockeypuck/bin/delete_keys
-      retrieve_blacklisted_keys: hockeypuck/bin/retrieve_blacklisted_keys
+      hockeypuck_wrapper: hockeypuck/bin/hockeypuck_wrapper
 services:
   go:
     override: replace
-    command: "/hockeypuck/bin/hockeypuck -config /hockeypuck/etc/hockeypuck.conf"
+    command: "/hockeypuck/bin/hockeypuck-wrapper"
     startup: enabled
     working-dir: /hockeypuck

@@ -31,13 +31,6 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         super().__init__(*args)
         self.actions_observer = actions.Observer(self)
 
-    def _create_charm_state(self) -> CharmState:
-        charm_state = super()._create_charm_state()
-        blacklisted_fingerprints = utils.get_blacklisted_keys(self)
-        logging.info("Fingerprints: %s", blacklisted_fingerprints)
-        charm_state._app_config["APP_BLACKLIST_FINGERPRINTS"] = blacklisted_fingerprints
-        return charm_state
-
     def restart(self, rerun_migrations: bool = False) -> None:
         """Open reconciliation port and call the parent restart method.
 

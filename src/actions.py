@@ -45,9 +45,8 @@ class Observer(ops.Object):
         service_name = next(iter(self.charm._container.get_services()))
         try:
             _ = self.charm._container.pebble.stop_services(services=[service_name])
-            environment = self.charm._gen_environment().append(
-                {"TICKET_ID": ticket_id, "APP_DELETE_FINGERPRINTS": fingerprints}
-            )
+            environment = self.charm._gen_environment()
+            environment.update({"TICKET_ID": ticket_id, "APP_DELETE_FINGERPRINTS": fingerprints})
             command = [
                 "/hockeypuck/bin/delete_keys",
             ]
@@ -60,7 +59,7 @@ class Observer(ops.Object):
             logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
             event.fail(f"Failed: {ex.stderr!r}")
         finally:
-            self.charm.restart()
+            _ = self.charm._container.pebble.start_services(services=[service_name])
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
         """Rebuild the prefix tree using the hockeypuck-pbuild binary.
