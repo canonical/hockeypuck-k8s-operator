@@ -9,10 +9,8 @@ import typing
 
 import ops
 import paas_charm.go
-from paas_charm.charm_state import CharmState
 
 import actions
-import utils
 
 logger = logging.getLogger(__name__)
 

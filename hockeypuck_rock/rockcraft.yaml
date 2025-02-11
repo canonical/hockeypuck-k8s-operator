@@ -42,6 +42,6 @@ parts:
 services:
   go:
     override: replace
-    command: "/hockeypuck/bin/hockeypuck-wrapper"
+    command: "/hockeypuck/bin/hockeypuck_wrapper"
     startup: enabled
     working-dir: /hockeypuck
