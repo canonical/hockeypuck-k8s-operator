@@ -13,6 +13,8 @@ SQLCMD="psql -t -A -d ${POSTGRESQL_DB_NAME} -h ${POSTGRESQL_DB_HOSTNAME} -U ${PO
 
 $SQLCMD -c 'create table if not exists deleted_keys (fingerprint text primary key not null, comment text not null);'
 
-export APP_BLACKLIST_FINGERPRINTS=$($SQLCMD -c "SELECT STRING_AGG(fingerprint, ',') FROM deleted_keys;")
+BLACKLIST_FINGERPRINTS=$($SQLCMD -c "SELECT STRING_AGG(fingerprint, ',') FROM deleted_keys;")
+
+export APP_BLACKLIST_FINGERPRINTS="$BLACKLIST_FINGERPRINTS"
 
 /hockeypuck/bin/hockeypuck -config /hockeypuck/etc/hockeypuck.conf
