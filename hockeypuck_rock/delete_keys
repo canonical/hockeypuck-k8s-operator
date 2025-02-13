@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
 # Delete keys from the Hockeypuck postgres database by fingerprint
 
 set -euo pipefail

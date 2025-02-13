@@ -42,24 +42,26 @@ class Observer(ops.Object):
         ticket_id = event.params["ticket-id"]
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        service_name = next(iter(self.charm._container.get_services()))
+        hockeypuck_container = self.charm.unit.containers[HOCKEYPUCK_CONTAINER_NAME]
+        service_name = next(iter(hockeypuck_container.get_services()))
         try:
-            _ = self.charm._container.pebble.stop_services(services=[service_name])
+
+            _ = hockeypuck_container.pebble.stop_services(services=[service_name])
             environment = self.charm._gen_environment()
             environment.update({"TICKET_ID": ticket_id, "APP_DELETE_FINGERPRINTS": fingerprints})
             command = [
                 "/hockeypuck/bin/delete_keys",
             ]
-            process = self.charm._container.exec(
+            process = hockeypuck_container.exec(
                 command,
                 environment=environment,
             )
-            stdout, _ = process.wait_output()
+            _, _ = process.wait_output()
         except ops.pebble.ExecError as ex:
             logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
             event.fail(f"Failed: {ex.stderr!r}")
         finally:
-            _ = self.charm._container.pebble.start_services(services=[service_name])
+            _ = hockeypuck_container.pebble.start_services(services=[service_name])
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
         """Rebuild the prefix tree using the hockeypuck-pbuild binary.
@@ -69,15 +71,16 @@ class Observer(ops.Object):
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
+        hockeypuck_container = self.charm.unit.containers[HOCKEYPUCK_CONTAINER_NAME]
         service_name = next(iter(self.charm._container.get_services()))
         try:
-            _ = self.charm._container.pebble.stop_services(services=[service_name])
+            _ = hockeypuck_container.pebble.stop_services(services=[service_name])
             command = [
                 "/hockeypuck/bin/hockeypuck-pbuild",
                 "-config",
                 "/hockeypuck/etc/hockeypuck.conf",
             ]
-            process = self.charm._container.exec(
+            process = hockeypuck_container.exec(
                 command,
                 environment=self.charm._gen_environment(),
             )
@@ -86,4 +89,4 @@ class Observer(ops.Object):
             logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
             event.fail(f"Failed: {ex.stderr!r}")
         finally:
-            _ = self.charm._container.pebble.start_services(services=[service_name])
+            _ = hockeypuck_container.pebble.start_services(services=[service_name])
