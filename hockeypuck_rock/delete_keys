@@ -27,12 +27,12 @@ $SQLCMD -c 'create table if not exists deleted_keys (fingerprint text primary ke
 
 IFS=',' read -ra fp_array <<< "$APP_DELETE_FINGERPRINTS"
 for fp in "${fp_array[@]}"; do
-  $SQLCMD -c "insert into deleted_keys (fingerprint, comment) values ('$fp', '$TICKET_ID') on conflict do nothing;"
+  $SQLCMD -c "insert into deleted_keys (fingerprint, comment) values (lower('$fp'), '$TICKET_ID') on conflict do nothing;"
 done
 
 $SQLCMD -c '
-  delete from subkeys k using deleted_keys b where k.rfingerprint = lower(reverse(b.fingerprint));
+  delete from subkeys k using deleted_keys b where k.rfingerprint = reverse(b.fingerprint);
   alter table subkeys drop constraint subkeys_rfingerprint_fkey;
-  delete from keys k using deleted_keys b where k.rfingerprint = lower(reverse(b.fingerprint));
+  delete from keys k using deleted_keys b where k.rfingerprint = reverse(b.fingerprint);
   alter table subkeys add foreign key (rfingerprint) references keys(rfingerprint);
 ' 
