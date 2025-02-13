@@ -4,7 +4,7 @@
 """Hockeypuck charm actions."""
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import ops
 import paas_app_charmer.go
@@ -61,7 +61,7 @@ class Observer(ops.Object):
         self._execute_action(event, command)
 
     def _execute_action(
-        self, event: ops.ActionEvent, command: str, env: Dict[str, Any] = None
+        self, event: ops.ActionEvent, command: List[str], env: Dict[str, Any] | None = None
     ) -> None:
         """Execute the action.
 
