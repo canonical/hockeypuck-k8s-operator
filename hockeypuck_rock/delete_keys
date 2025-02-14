@@ -36,4 +36,3 @@ $SQLCMD -c '
   delete from keys k using deleted_keys b where k.rfingerprint = reverse(b.fingerprint);
   alter table subkeys add foreign key (rfingerprint) references keys(rfingerprint);
 '
- 

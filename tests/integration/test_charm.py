@@ -111,3 +111,14 @@ async def test_delete_and_blacklist_action(
         )
 
         assert response.status_code == 404
+
+
+async def test_rebuild_prefix_tree(hockeypuck_k8s_app: Application) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm and integrate with Postgres and Nginx.
+    act: Execute the rebuild prefix tree action.
+    assert: Action returns 0.
+    """
+    action = await hockeypuck_k8s_app.units[0].run_action("rebuild-prefix-tree")
+    await action.wait()
+    assert action.results["return-code"] == 0
