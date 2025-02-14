@@ -51,6 +51,7 @@ disable = "wrong-import-order"
 [tool.pytest.ini_options]
 minversion = "6.0"
 log_cli_level = "INFO"
+addopts = "--strict-markers"
 
 # Linting tools configuration
 [tool.ruff]

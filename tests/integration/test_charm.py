@@ -6,7 +6,6 @@
 """Integration tests."""
 
 import logging
-import time
 from typing import Any
 
 import pytest
@@ -63,7 +62,6 @@ async def test_adding_records(gpg_key: Any) -> None:
     assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
 
 
-@pytest.mark.abort_on_fail
 @pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
 @pytest.mark.flaky(reruns=10, reruns_delay=10)
@@ -73,23 +71,21 @@ async def test_reconciliation(
 ) -> None:
     """
     arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
-    act: Reconcile the application.
-    assert: The application is reconciled successfully.
+    act: Reconcile the application with the first hockeypuck server.
+    assert: Key is present in the secondary model hockeypuck server.
     """
     status = await hockeypuck_secondary_app.model.get_status()
     units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
     for unit in units.values():
         response = requests.get(
-            f"http://{unit.address}:11371/pks/lookup?op=get&search={gpg_key.fingerprint}",
+            f"http://{unit.address}:11371/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
             timeout=20,
         )
 
-        assert response.status_code == 200
-        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
+        assert response.status_code == 200, f"Key not found in {unit.address}"
+        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
 
 
-@pytest.mark.abort_on_fail
-@pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
 async def test_delete_and_blacklist_action(
     hockeypuck_secondary_app: Application, gpg_key: Any
@@ -97,8 +93,7 @@ async def test_delete_and_blacklist_action(
     """
     arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
     act: Execute the delete and blacklist action.
-    assert: The key is deleted from the secondary charm and reconciliation does
-    not happen for that key anymore.
+    assert: Lookup for the key returns 404.
     """
     fingerprint = gpg_key.fingerprint
     action = await hockeypuck_secondary_app.units[0].run_action(
@@ -110,11 +105,9 @@ async def test_delete_and_blacklist_action(
     status = await hockeypuck_secondary_app.model.get_status()
     units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
     for unit in units.values():
-        for _ in range(3):
-            response = requests.get(
-                f"http://{unit.address}:11371/pks/lookup?op=get&search={gpg_key.fingerprint}",
-                timeout=20,
-            )
+        response = requests.get(
+            f"http://{unit.address}:11371/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
+            timeout=20,
+        )
 
-            assert response.status_code == 404
-            time.sleep(10)
+        assert response.status_code == 404

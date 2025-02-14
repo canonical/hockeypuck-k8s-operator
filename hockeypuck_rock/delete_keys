@@ -35,4 +35,5 @@ $SQLCMD -c '
   alter table subkeys drop constraint subkeys_rfingerprint_fkey;
   delete from keys k using deleted_keys b where k.rfingerprint = reverse(b.fingerprint);
   alter table subkeys add foreign key (rfingerprint) references keys(rfingerprint);
-' 
+'
+ 
