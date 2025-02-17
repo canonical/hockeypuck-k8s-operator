@@ -42,8 +42,10 @@ parts:
   python:
     plugin: python
     source: .
-    stage-packages: [python3.12-venv]
-    python-packages: [psycopg2]
+    stage-packages: 
+      - python3.12-venv
+    python-packages: 
+      - psycopg2-binary
 
 services:
   go:
