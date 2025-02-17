@@ -6,7 +6,7 @@
 # pylint: disable=protected-access
 
 import logging
-from typing import Any, Dict, List
+from typing import List
 
 import ops
 import paas_app_charmer.go
@@ -29,25 +29,28 @@ class Observer(ops.Object):
         self.charm = charm
 
         charm.framework.observe(
-            charm.on.blacklist_and_delete_key_action, self._blacklist_and_delete_key_action
+            charm.on.blacklist_and_delete_keys_action, self._blacklist_and_delete_keys_action
         )
         charm.framework.observe(
             charm.on.rebuild_prefix_tree_action, self._rebuild_prefix_tree_action
         )
 
-    def _blacklist_and_delete_key_action(self, event: ops.ActionEvent) -> None:
+    def _blacklist_and_delete_keys_action(self, event: ops.ActionEvent) -> None:
         """Blacklist and delete keys from the database.
 
         Args:
             event: the event triggering the original action.
         """
         fingerprints = event.params["fingerprints"]
-        ticket_id = event.params["ticket-id"]
-        env = {"TICKET_ID": ticket_id, "APP_DELETE_FINGERPRINTS": fingerprints}
+        comment = event.params["comment"]
         command = [
-            "/hockeypuck/bin/delete_keys",
+            "/hockeypuck/bin/delete_keys.py",
+            "--fingerprints",
+            fingerprints,
+            "--comment",
+            comment,
         ]
-        self._execute_action(event, command, env)
+        self._execute_action(event, command)
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
         """Rebuild the prefix tree using the hockeypuck-pbuild binary.
@@ -62,15 +65,12 @@ class Observer(ops.Object):
         ]
         self._execute_action(event, command)
 
-    def _execute_action(
-        self, event: ops.ActionEvent, command: List[str], env: Dict[str, Any] | None = None
-    ) -> None:
+    def _execute_action(self, event: ops.ActionEvent, command: List[str]) -> None:
         """Execute the action.
 
         Args:
             event: the event triggering the original action.
             command: the command to be executed inside the hockeypuck container.
-            env (optional): Any extra environment variables to be passed to the command.
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
@@ -79,12 +79,9 @@ class Observer(ops.Object):
         try:
 
             _ = hockeypuck_container.pebble.stop_services(services=[service_name])
-            environment = self.charm._gen_environment()
-            if env is not None:
-                environment.update(env)
             process = hockeypuck_container.exec(
                 command,
-                environment=environment,
+                environment=self.charm._gen_environment(),
             )
             _, _ = process.wait_output()
         except ops.pebble.ExecError as ex:

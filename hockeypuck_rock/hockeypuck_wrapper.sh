@@ -11,8 +11,6 @@ export PGPASSWORD=${POSTGRESQL_DB_PASSWORD}
 
 SQLCMD="psql -t -A -d ${POSTGRESQL_DB_NAME} -h ${POSTGRESQL_DB_HOSTNAME} -U ${POSTGRESQL_DB_USERNAME}"
 
-$SQLCMD -c 'create table if not exists deleted_keys (fingerprint text primary key not null, comment text not null);'
-
 BLACKLIST_FINGERPRINTS=$($SQLCMD -c "SELECT STRING_AGG(fingerprint, ',') FROM deleted_keys;")
 
 export APP_BLACKLIST_FINGERPRINTS="$BLACKLIST_FINGERPRINTS"
