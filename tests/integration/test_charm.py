@@ -97,7 +97,7 @@ async def test_delete_and_blacklist_action(
     """
     fingerprint = gpg_key.fingerprint
     action = await hockeypuck_secondary_app.units[0].run_action(
-        "blacklist-and-delete-key", **{"fingerprints": fingerprint, "ticket-id": "R1234"}
+        "blacklist-and-delete-keys", **{"fingerprints": fingerprint, "comment": "R1234"}
     )
     await action.wait()
     assert action.results["return-code"] == 0

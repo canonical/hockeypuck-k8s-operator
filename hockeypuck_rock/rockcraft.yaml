@@ -15,6 +15,7 @@ platforms:
     - amd64
     build-for:
     - amd64
+run-user: _daemon_
 parts:
   hockeypuck:
     plugin: make
@@ -39,14 +40,14 @@ parts:
       hockeypuck.conf: hockeypuck/etc/hockeypuck.conf
       delete_keys.py: hockeypuck/bin/delete_keys.py
       hockeypuck_wrapper.sh: hockeypuck/bin/hockeypuck_wrapper.sh
+      migrate.sh: app/migrate.sh
   python:
     plugin: python
     source: .
     stage-packages: 
-      - python3.12-venv
+      - python3-venv
     python-packages: 
       - psycopg2-binary
-
 services:
   go:
     override: replace
