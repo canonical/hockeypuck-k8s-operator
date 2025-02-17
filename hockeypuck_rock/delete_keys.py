@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_db_connection():
+    """Connect to the Postgres database."""
     db_password = os.getenv("POSTGRESQL_DB_PASSWORD")
     db_name = os.getenv("POSTGRESQL_DB_NAME")
     db_host = os.getenv("POSTGRESQL_DB_HOSTNAME")
@@ -28,6 +29,11 @@ def get_db_connection():
 
 
 def delete_fingerprints(cursor, fingerprints, comment):
+    """Delete fingerprints from the database.
+    Args:
+        cursor: the database cursor.
+        fingerprints: list of fingerprints to delete.
+        comment: the comment associated with the deletion."""
     logging.info(f"Deleting fingerprints: {', '.join(fingerprints)}")
     try:
         for fp in fingerprints:
