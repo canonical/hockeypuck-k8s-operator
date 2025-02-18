@@ -95,7 +95,7 @@ async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key:
     """
     fingerprint = gpg_key.fingerprint
     action = await hockeypuck_secondary_app.units[0].run_action(
-        "blacklist-and-delete-keys", **{"fingerprints": fingerprint, "comment": "R1234"}
+        "block-keys", **{"fingerprints": fingerprint, "comment": "R1234"}
     )
     await action.wait()
     assert action.results["return-code"] == 0
