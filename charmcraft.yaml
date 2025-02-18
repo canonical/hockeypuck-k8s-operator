@@ -34,6 +34,9 @@ requires:
     interface: postgresql_client
     optional: false
     limit: 1
+  traefik-route:
+    interface: traefik_route
+    limit: 1
 
 actions:
   blacklist-and-delete-keys:
