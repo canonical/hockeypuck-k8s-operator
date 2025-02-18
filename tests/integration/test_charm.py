@@ -33,8 +33,8 @@ async def test_hockeypuck_health() -> None:
     assert "<title>OpenPGP Keyserver</title>" in response.text
 
 
-@pytest.mark.abort_on_fail
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
+@pytest.mark.dependency(name="test_adding_records")
 async def test_adding_records(gpg_key: Any) -> None:
     """
     arrange: Create a GPG Key
@@ -63,22 +63,62 @@ async def test_adding_records(gpg_key: Any) -> None:
 
 
 @pytest.mark.usefixtures("external_peer_config")
+@pytest.mark.dependency(depends=["test_adding_records"])
 @pytest.mark.flaky(reruns=10, reruns_delay=10)
 async def test_reconciliation(
     hockeypuck_secondary_app: Application,
+    gpg_key: Any,
 ) -> None:
     """
-    arrange: Deploy the Hockeypuck charm in the secondary model.
-    act: Reconcile the application.
-    assert: The application is reconciled successfully.
+    arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
+    act: Reconcile the application with the first hockeypuck server.
+    assert: Key is present in the secondary model hockeypuck server.
     """
     status = await hockeypuck_secondary_app.model.get_status()
     units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
     for unit in units.values():
         response = requests.get(
-            f"http://{unit.address}:11371/pks/lookup?op=get&search=test",
+            f"http://{unit.address}:11371/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
             timeout=20,
         )
 
-        assert response.status_code == 200
-        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
+        assert response.status_code == 200, f"Key not found in {unit.address}"
+        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
+
+
+@pytest.mark.dependency(depends=["test_adding_records"])
+async def test_delete_and_blacklist_action(
+    hockeypuck_secondary_app: Application, gpg_key: Any
+) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
+    act: Execute the delete and blacklist action.
+    assert: Lookup for the key returns 404.
+    """
+    fingerprint = gpg_key.fingerprint
+    action = await hockeypuck_secondary_app.units[0].run_action(
+        "blacklist-and-delete-keys", **{"fingerprints": fingerprint, "comment": "R1234"}
+    )
+    await action.wait()
+    assert action.results["return-code"] == 0
+
+    status = await hockeypuck_secondary_app.model.get_status()
+    units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
+    for unit in units.values():
+        response = requests.get(
+            f"http://{unit.address}:11371/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
+            timeout=20,
+        )
+
+        assert response.status_code == 404
+
+
+async def test_rebuild_prefix_tree(hockeypuck_k8s_app: Application) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm and integrate with Postgres and Nginx.
+    act: Execute the rebuild prefix tree action.
+    assert: Action returns 0.
+    """
+    action = await hockeypuck_k8s_app.units[0].run_action("rebuild-prefix-tree")
+    await action.wait()
+    assert action.results["return-code"] == 0

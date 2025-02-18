@@ -2,7 +2,7 @@
 # See LICENSE file for licensing details.
 
 type: charm
-name: hockeypuck-k8s
+name: hockeypuck
 title: Hockeypuck K8S Charm
 summary: Hockeypuck OpenPGP public keyserver
 links:
@@ -35,27 +35,43 @@ requires:
     optional: false
     limit: 1
 
+actions:
+  blacklist-and-delete-keys:
+    description: Blacklist and delete keys from the keyserver database.
+    properties:
+      fingerprints:
+        type: string
+        description: Comma-separated list of full fingerprints to ignore (minus the leading 0x).
+      comment:
+        type: string
+        description: Any comment to pass along with the action.
+    required: 
+      - fingerprints
+      - comment
+  rebuild-prefix-tree:
+    description: |
+      The prefix tree is used to manage the reconciliation process and 
+      must always be in sync with the database. If you suspect it is corrupted or out 
+      of sync, or if the prefix tree needs to be removed and rebuilt after pg-restore, 
+      it can be done with this action. 
+
 config:
   options:
     external-peers:
       type: string
-      description: >
+      description: |
         Comma-seperated list of external peer IPs or FQDNs without the ports.
-        Note that the http and reconcilliation ports are fixed and cannot be
-        edited.
+        Note that the HTTP and reconcilliation ports are fixed and cannot be edited.
     contact-fingerprint:
       type: string
-      description: >
-        Full fingerprint of the keyserver administrator. It is strongly
-        recommended that the server contact advertised on the stats page
-        is not one of the admin keys.
+      description: |
+        Full fingerprint of the keyserver administrator. It is strongly recommended 
+        that the server contact advertised on the stats page is not one of the admin keys.
     admin-keys:
       type: string
-      description: >
+      description: |
         A comma-separated list of fingerprints that identify keys that may
-        sign administration requests for this server. It is strongly
-        recommended that the server contact advertised on the stats page
-        is not one of the admin keys.
+        sign administration requests for this server.
 
 base: ubuntu@24.04
 build-base: ubuntu@24.04
