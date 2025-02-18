@@ -36,8 +36,8 @@ requires:
     limit: 1
 
 actions:
-  blacklist-and-delete-keys:
-    description: Blacklist and delete keys from the keyserver database.
+  block-keys:
+    description: Blocklist and delete keys from the keyserver database.
     properties:
       fingerprints:
         type: string

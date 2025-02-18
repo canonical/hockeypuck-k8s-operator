@@ -24,14 +24,12 @@ class Observer(ops.Object):
         super().__init__(charm, "actions-observer")
         self.charm = charm
 
-        charm.framework.observe(
-            charm.on.blacklist_and_delete_keys_action, self._blacklist_and_delete_keys_action
-        )
+        charm.framework.observe(charm.on.block_keys_action, self._block_keys_action)
         charm.framework.observe(
             charm.on.rebuild_prefix_tree_action, self._rebuild_prefix_tree_action
         )
 
-    def _blacklist_and_delete_keys_action(self, event: ops.ActionEvent) -> None:
+    def _block_keys_action(self, event: ops.ActionEvent) -> None:
         """Blacklist and delete keys from the database.
 
         Args:
