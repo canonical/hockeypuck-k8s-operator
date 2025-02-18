@@ -51,7 +51,7 @@ actions:
   rebuild-prefix-tree:
     description: |
       The prefix tree is used to manage the reconciliation process and 
-      must always be in sync with the database. If you suspect it has become corrupted or out 
+      must always be in sync with the database. If you suspect it is corrupted or out 
       of sync, or if the prefix tree needs to be removed and rebuilt after pg-restore, 
       it can be done with this action. 
 
@@ -61,7 +61,7 @@ config:
       type: string
       description: |
         Comma-seperated list of external peer IPs or FQDNs without the ports.
-        Note that the http and reconcilliation ports are fixed and cannot be edited.
+        Note that the HTTP and reconcilliation ports are fixed and cannot be edited.
     contact-fingerprint:
       type: string
       description: |
@@ -71,8 +71,7 @@ config:
       type: string
       description: |
         A comma-separated list of fingerprints that identify keys that may
-        sign administration requests for this server. It is strongly recommended that the server 
-        contact advertised on the stats page is not one of the admin keys.
+        sign administration requests for this server.
 
 base: ubuntu@24.04
 build-base: ubuntu@24.04

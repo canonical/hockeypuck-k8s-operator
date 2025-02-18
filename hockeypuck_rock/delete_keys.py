@@ -3,17 +3,26 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+"""Delete keys from the Hockeypuck Postgres database by fingerprint."""
+
 import argparse
 import logging
 import os
+import re
+import sys
+from typing import List
 
 import psycopg2
 
 logger = logging.getLogger(__name__)
 
 
-def get_db_connection():
-    """Connect to the Postgres database."""
+def get_db_connection() -> psycopg2.extensions.connection | None:
+    """Connect to the Postgres database.
+
+    Returns:
+        psycopg2.extensions.connection: the database connection.
+    """
     db_password = os.getenv("POSTGRESQL_DB_PASSWORD")
     db_name = os.getenv("POSTGRESQL_DB_NAME")
     db_host = os.getenv("POSTGRESQL_DB_HOSTNAME")
@@ -23,27 +32,31 @@ def get_db_connection():
         conn = psycopg2.connect(dsn)
         conn.autocommit = True
         return conn
-    except Exception as e:
-        print(f"Failed to connect to database: {e}")
-        exit(1)
+    except psycopg2.OperationalError as e:
+        logging.error("Failed to connect to database: %s", e)
+        return None
 
 
-def delete_fingerprints(cursor, fingerprints, comment):
+def delete_fingerprints(
+    cursor: psycopg2.extensions.cursor, fingerprints: List[str], comment: str
+) -> None:
     """Delete fingerprints from the database.
+
     Args:
         cursor: the database cursor.
         fingerprints: list of fingerprints to delete.
-        comment: the comment associated with the deletion."""
-    logging.info(f"Deleting fingerprints: {', '.join(fingerprints)}")
+        comment: the comment associated with the deletion.
+    """
+    logging.info("Deleting fingerprints: %s", ", ".join(fingerprints))
     try:
-        for fp in fingerprints:
+        for fingerprint in fingerprints:
             cursor.execute(
                 """
                 INSERT INTO deleted_keys (fingerprint, comment)
                 VALUES (LOWER(%s), %s)
                 ON CONFLICT DO NOTHING;
             """,
-                (fp, comment),
+                (fingerprint, comment),
             )
 
         cursor.execute(
@@ -67,12 +80,13 @@ def delete_fingerprints(cursor, fingerprints, comment):
             REFERENCES keys(rfingerprint);
             """
         )
-        print("Deletion process completed successfully.")
-    except Exception as e:
-        print(f"Error executing SQL commands: {e}")
+        logging.info("Deletion process completed successfully.")
+    except psycopg2.Error as e:
+        logging.error("Error executing SQL commands: %s", e)
 
 
-def main():
+def main() -> None:
+    """Main entrypoint."""
     parser = argparse.ArgumentParser(
         description="Delete keys from the Hockeypuck Postgres database by fingerprint."
     )
@@ -82,9 +96,18 @@ def main():
     parser.add_argument("--comment", required=True, help="Comment associated with the deletion")
     args = parser.parse_args()
     fingerprints = args.fingerprints.split(",")
+    for fingerprint in fingerprints:
+        # fingperints are usually of length 40 or 64 depending on the hash algorithm, and
+        # consist of hexadecimal characters only.
+        if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
+            logging.error("Invalid fingerprint format: %s", fingerprint)
+            sys.exit(1)
+
     comment = args.comment
 
     conn = get_db_connection()
+    if conn is None:
+        sys.exit(1)
     cursor = conn.cursor()
     try:
         delete_fingerprints(cursor, fingerprints, comment)
