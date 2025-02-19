@@ -3,6 +3,8 @@
 
 """Traefik route observer module."""
 
+import socket
+
 import ops
 from charms.traefik_k8s.v0.traefik_route import TraefikRouteRequirer
 
@@ -28,9 +30,9 @@ class TraefikRouteObserver(ops.Object):
             The TraefikRoute instance.
         """
         traefik_route = TraefikRouteRequirer(
-            self._charm, self.model.relations.get(RELATION_NAME), RELATION_NAME
+            self._charm, self.model.get_relation(RELATION_NAME), RELATION_NAME
         )
-        if self._charm.unit.is_leader() and self.traefik_route.is_ready():
+        if self._charm.unit.is_leader() and traefik_route.is_ready():
             traefik_route.submit_to_traefik(self._route_config, static=self._static_config)
         return traefik_route
 
@@ -61,7 +63,7 @@ class TraefikRouteObserver(ops.Object):
                 },
                 "services": {
                     "hockeypuck-tcp-service": {
-                        "loadBalancer": {"servers": [{"address": f"{self.hostname}:11370"}]}
+                        "loadBalancer": {"servers": [{"address": f"{socket.getfqdn()}:11370"}]}
                     }
                 },
             }

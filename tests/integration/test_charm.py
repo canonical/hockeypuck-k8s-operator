@@ -5,7 +5,9 @@
 
 """Integration tests."""
 
+import json
 import logging
+import socket
 from typing import Any
 
 import pytest
@@ -122,3 +124,23 @@ async def test_rebuild_prefix_tree(hockeypuck_k8s_app: Application) -> None:
     action = await hockeypuck_k8s_app.units[0].run_action("rebuild-prefix-tree")
     await action.wait()
     assert action.results["return-code"] == 0
+
+
+async def test_traefik_integration(traefik_integration: Application) -> None:
+    """
+    arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
+    act: Test connectivity to the reconciliation port using netcat.
+    assert: Connection request is successful.
+    """
+    action = await traefik_integration.units[0].run_action("show-proxied-endpoints")
+    await action.wait()
+    assert action.results["return-code"] == 0
+    result = json.loads(action.results["proxied-endpoints"])
+    host = result["traefik-k8s"]["url"].removeprefix("http://")
+    port = 11370
+    try:
+        with socket.create_connection((host, port), timeout=5):
+            connected = True
+    except (socket.timeout, socket.error):
+        connected = False
+    assert connected, f"Failed to connect to {host}:{port}"
