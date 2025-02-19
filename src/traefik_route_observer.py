@@ -26,6 +26,7 @@ class TraefikRouteObserver(ops.Object):
 
     def _register_traefik_route(self) -> TraefikRouteRequirer:
         """Create a TraefikRouteRequirer instance submit traefik route configuration.
+
         Returns:
             The TraefikRoute instance.
         """
@@ -49,9 +50,8 @@ class TraefikRouteObserver(ops.Object):
         }
 
     @property
-    def _route_config(self) -> None:
+    def _route_config(self) -> dict[str, dict[str, object]]:
         """Return the Traefik route configuration for the Hockeypuck service."""
-
         route_config = {
             "tcp": {
                 "routers": {
