@@ -3,12 +3,15 @@
 
 """Traefik route observer module."""
 
+import logging
 import socket
 
 import ops
 from charms.traefik_k8s.v0.traefik_route import TraefikRouteRequirer
 
 RELATION_NAME = "traefik-route"
+
+logger = logging.getLogger(__name__)
 
 
 class TraefikRouteObserver(ops.Object):
@@ -52,6 +55,19 @@ class TraefikRouteObserver(ops.Object):
     @property
     def _route_config(self) -> dict[str, dict[str, object]]:
         """Return the Traefik route configuration for the Hockeypuck service."""
+        address_list = []
+        address_list.append({"address": f"{socket.getfqdn()}:11370"})
+        unit_names = [unit.name for unit in self.model.get_relation("secret-storage").units]
+        # unit fqdn format: <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
+        for unit_name in unit_names:
+            unit_name = unit_name.replace("/", "-")
+            unit_fqdn = (
+                f"{unit_name}."
+                f"{self._charm.app.name}-endpoints."
+                f"{self._charm.app.name}.svc.cluster.local"
+            )
+            address_list.append({"address": f"{unit_fqdn}:11370"})
+            logging.info("Address list: %s", address_list)
         route_config = {
             "tcp": {
                 "routers": {
@@ -63,7 +79,7 @@ class TraefikRouteObserver(ops.Object):
                 },
                 "services": {
                     "hockeypuck-tcp-service": {
-                        "loadBalancer": {"servers": [{"address": f"{socket.getfqdn()}:11370"}]}
+                        "loadBalancer": {"servers": address_list},
                     }
                 },
             }

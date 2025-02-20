@@ -22,4 +22,6 @@ jobs:
       self-hosted-runner-label: "edge"
       juju-channel: '3/stable'
       channel: '1.32-strict/stable'
-      microk8s-addons: "dns ingress rbac storage metallb:192.168.0.1-192.168.0.1"
+      pre-run-script: |
+        chmod +x ./tests/integration/pre-run-script.sh
+        ./tests/integration/pre-run-script.sh
