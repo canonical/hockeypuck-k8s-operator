@@ -6,6 +6,7 @@ skips = ["*/*test.py", "*/test_*.py", "*tests/*.py"]
 # Testing tools configuration
 [tool.coverage.run]
 branch = true
+disable_warnings = ["no-data-collected"]
 
 # Formatting tools configuration
 [tool.black]
@@ -50,6 +51,7 @@ disable = "wrong-import-order"
 [tool.pytest.ini_options]
 minversion = "6.0"
 log_cli_level = "INFO"
+addopts = "--strict-markers"
 
 # Linting tools configuration
 [tool.ruff]
