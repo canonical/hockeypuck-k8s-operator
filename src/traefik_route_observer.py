@@ -64,7 +64,7 @@ class TraefikRouteObserver(ops.Object):
             unit_fqdn = (
                 f"{unit_name}."
                 f"{self._charm.app.name}-endpoints."
-                f"{self._charm.app.name}.svc.cluster.local"
+                f"{self._charm.model.name}.svc.cluster.local"
             )
             address_list.append({"address": f"{unit_fqdn}:11370"})
             logging.info("Address list: %s", address_list)
