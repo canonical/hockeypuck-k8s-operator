@@ -168,3 +168,15 @@ async def external_peer_config_fixture(
 
     await hockeypuck_k8s_app.model.wait_for_idle(status="active")
     await hockeypuck_secondary_app.model.wait_for_idle(status="active")
+
+
+@pytest_asyncio.fixture(scope="module", name="traefik_integration")
+async def traefik_integration_fixture(
+    model: Model,
+    hockeypuck_k8s_app: Application,
+) -> Application:
+    """Deploy traefik-k8s charm and integrate with hockeypuck-k8s"""
+    traefik_app = await model.deploy("traefik-k8s", channel="latest/stable", trust=True)
+    await model.add_relation(hockeypuck_k8s_app.name, f"{traefik_app.name}:traefik-route")
+    await model.wait_for_idle(status="active")
+    return traefik_app
