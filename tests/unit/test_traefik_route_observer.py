@@ -52,7 +52,6 @@ def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.Monkey
     requirer_mock.units = set()
     monkeypatch.setattr(harness.charm.traefik_route, "traefik_route", requirer_mock)
     monkeypatch.setattr(socket, "getfqdn", lambda: "hockeypuck.local")
-
     monkeypatch.setattr(harness.charm.model, "get_relation", lambda _: requirer_mock)
 
     harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=W0212
