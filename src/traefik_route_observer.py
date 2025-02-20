@@ -3,15 +3,21 @@
 
 """Traefik route observer module."""
 
-import logging
 import socket
+import typing
 
 import ops
 from charms.traefik_k8s.v0.traefik_route import TraefikRouteRequirer
+from juju.relation import Relation
 
 RELATION_NAME = "traefik-route"
-
-logger = logging.getLogger(__name__)
+HOCKEYPUCK_TCP_ROUTER = {
+    "hockeypuck-tcp-router": {
+        "rule": "ClientIP(`0.0.0.0/0`)",
+        "service": "hockeypuck-tcp-service",
+        "entryPoints": ["reconciliation-port"],
+    }
+}
 
 
 class TraefikRouteObserver(ops.Object):
@@ -25,20 +31,15 @@ class TraefikRouteObserver(ops.Object):
         """
         super().__init__(charm, RELATION_NAME)
         self._charm = charm
-        self.traefik_route = self._register_traefik_route()
-
-    def _register_traefik_route(self) -> TraefikRouteRequirer:
-        """Create a TraefikRouteRequirer instance submit traefik route configuration.
-
-        Returns:
-            The TraefikRoute instance.
-        """
-        traefik_route = TraefikRouteRequirer(
+        self.traefik_route = TraefikRouteRequirer(
             self._charm, self.model.get_relation(RELATION_NAME), RELATION_NAME
         )
-        if self._charm.unit.is_leader() and traefik_route.is_ready():
-            traefik_route.submit_to_traefik(self._route_config, static=self._static_config)
-        return traefik_route
+        self._configure_traefik_route()
+
+    def _configure_traefik_route(self) -> None:
+        """Build the traefik-route configuration."""
+        if self._charm.unit.is_leader() and self.traefik_route.is_ready():
+            self.traefik_route.submit_to_traefik(self._route_config, static=self._static_config)
 
     @property
     def _static_config(self) -> dict[str, dict[str, dict[str, str]]]:
@@ -57,7 +58,8 @@ class TraefikRouteObserver(ops.Object):
         """Return the Traefik route configuration for the Hockeypuck service."""
         address_list = []
         address_list.append({"address": f"{socket.getfqdn()}:11370"})
-        unit_names = [unit.name for unit in self.model.get_relation("secret-storage").units]
+        secret_storage_relation = typing.cast(Relation, self.model.get_relation("secret-storage"))
+        unit_names = [unit.name for unit in secret_storage_relation.units]
         # unit fqdn format: <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
         for unit_name in unit_names:
             unit_name = unit_name.replace("/", "-")
@@ -67,16 +69,9 @@ class TraefikRouteObserver(ops.Object):
                 f"{self._charm.model.name}.svc.cluster.local"
             )
             address_list.append({"address": f"{unit_fqdn}:11370"})
-            logging.info("Address list: %s", address_list)
         route_config = {
             "tcp": {
-                "routers": {
-                    "hockeypuck-tcp-router": {
-                        "rule": "ClientIP(`0.0.0.0/0`)",
-                        "service": "hockeypuck-tcp-service",
-                        "entryPoints": ["reconciliation-port"],
-                    }
-                },
+                "routers": HOCKEYPUCK_TCP_ROUTER,
                 "services": {
                     "hockeypuck-tcp-service": {
                         "loadBalancer": {"servers": address_list},

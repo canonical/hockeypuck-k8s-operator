@@ -35,7 +35,6 @@ class ObservedCharm(ops.CharmBase):
         self.traefik_route = traefik_route_observer.TraefikRouteObserver(self)
 
 
-@pytest.mark.skip()
 def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     arrange: instantiate a charm with leadership implementing the traefik-route relation.
@@ -46,28 +45,25 @@ def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.Monkey
     harness.set_model_name("testing")
     harness.begin_with_initial_hooks()
     harness.set_leader(True)
-    harness.add_relation(traefik_route_observer.RELATION_NAME, "traefik-route")
+    harness.add_relation(traefik_route_observer.RELATION_NAME, "traefik-route-provider")
 
     requirer_mock = mock.MagicMock()
     requirer_mock.is_ready.return_value = True
+    requirer_mock.units = set()
     monkeypatch.setattr(harness.charm.traefik_route, "traefik_route", requirer_mock)
     monkeypatch.setattr(socket, "getfqdn", lambda: "hockeypuck.local")
 
-    harness.charm.traefik_route._register_traefik_route()  # pylint: disable=W0212
+    monkeypatch.setattr(harness.charm.model, "get_relation", lambda _: requirer_mock)
+
+    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=W0212
 
     requirer_mock.submit_to_traefik.assert_called_once_with(
         {
             "tcp": {
-                "routers": {
-                    "hockeypuck-tcp-router": {
-                        "rule": "ClientIP(`0.0.0.0/0`)",
-                        "service": "hockeypuck-tcp-service",
-                        "entryPoints": ["reconciliation-port"],
-                    }
-                },
+                "routers": traefik_route_observer.HOCKEYPUCK_TCP_ROUTER,
                 "services": {
                     "hockeypuck-tcp-service": {
-                        "loadBalancer": [{"servers": "hockeypuck.local:11370"}],
+                        "loadBalancer": {"servers": [{"address": "hockeypuck.local:11370"}]},
                     }
                 },
             }
@@ -85,10 +81,10 @@ def test_on_traefik_route_relation_joined_when_not_leader(monkeypatch: pytest.Mo
     harness = Harness(ObservedCharm, meta=REQUIRER_METADATA)
     harness.begin_with_initial_hooks()
     harness.set_leader(False)
-    harness.add_relation(traefik_route_observer.RELATION_NAME, "traefik-route")
+    harness.add_relation(traefik_route_observer.RELATION_NAME, "traefik-route-provider")
     mock_obj = mock.Mock()
     monkeypatch.setattr(harness.charm.traefik_route.traefik_route, "submit_to_traefik", mock_obj)
 
-    harness.charm.traefik_route._register_traefik_route()  # pylint: disable=W0212
+    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=W0212
 
     mock_obj.assert_not_called()
