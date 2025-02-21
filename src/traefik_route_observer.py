@@ -8,7 +8,6 @@ import typing
 
 import ops
 from charms.traefik_k8s.v0.traefik_route import TraefikRouteRequirer
-from juju.relation import Relation
 
 RELATION_NAME = "traefik-route"
 HOCKEYPUCK_TCP_ROUTER = {
@@ -58,7 +57,9 @@ class TraefikRouteObserver(ops.Object):
         """Return the Traefik route configuration for the Hockeypuck service."""
         address_list = []
         address_list.append({"address": f"{socket.getfqdn()}:11370"})
-        secret_storage_relation = typing.cast(Relation, self.model.get_relation("secret-storage"))
+        secret_storage_relation = typing.cast(
+            ops.Relation, self.model.get_relation("secret-storage")
+        )
         unit_names = [unit.name for unit in secret_storage_relation.units]
         # unit fqdn format: <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
         for unit_name in unit_names:
