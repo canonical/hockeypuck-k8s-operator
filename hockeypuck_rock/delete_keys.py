@@ -3,12 +3,14 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""This script deletes keys from the Hockeypuck by fingerprint. The script performs the following
-actions:
+"""This script deletes keys from Hockeypuck by fingerprint.
+
+The script performs the following actions:
 
 1. Deleting the keys and subkeys corresponding to the fingerprint from the Postgres database.
-2. Delete all the files in /hockeypuck/data/ptree directory.
-3. Invoke the hockeypuck-pbuild binary to rebuild the prefix tree."""
+2. Delete all the files in /hockeypuck/data/ptree directory to remove the key from leveldb.
+3. Invoke the hockeypuck-pbuild binary to rebuild the prefix tree.
+"""
 
 import argparse
 import logging
@@ -43,11 +45,13 @@ def remove_ptree_data() -> None:
 
 def invoke_rebuild_prefix_tree() -> None:
     """Invoke the prefix_tree_rebuild binary."""
-    command = [
-        "/hockeypuck/bin/hockeypuck-pbuild",
-        "-config",
-        "/hockeypuck/etc/hockeypuck.conf",
-    ].join(" ")
+    command = " ".join(
+        [
+            "/hockeypuck/bin/hockeypuck-pbuild",
+            "-config",
+            "/hockeypuck/etc/hockeypuck.conf",
+        ]
+    )
     result = os.system(command)
     if result != 0:
         logging.error("Failed to invoke prefix_tree_rebuild, return code: %d", result)

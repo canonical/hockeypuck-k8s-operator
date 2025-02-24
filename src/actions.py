@@ -72,7 +72,7 @@ class Observer(ops.Object):
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        hockeypuck_container = self.unit.get_container(HOCKEYPUCK_CONTAINER_NAME)
+        hockeypuck_container = self.charm.unit.get_container(HOCKEYPUCK_CONTAINER_NAME)
         service_name = next(iter(hockeypuck_container.get_services()))
         try:
             _ = hockeypuck_container.pebble.stop_services(services=[service_name])
