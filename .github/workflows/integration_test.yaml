@@ -24,4 +24,4 @@ jobs:
       channel: '1.32-strict/stable'
       pre-run-script: |
         -c "chmod +x ./tests/integration/pre_run_script.sh
-        ./tests/integration/pre_run_script.sh"
+        sudo ./tests/integration/pre_run_script.sh"

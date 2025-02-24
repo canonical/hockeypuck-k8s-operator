@@ -5,6 +5,9 @@
 # <kbd>module</kbd> `actions.py`
 Hockeypuck charm actions. 
 
+**Global Variables**
+---------------
+- **HOCKEYPUCK_CONTAINER_NAME**
 
 
 ---
@@ -12,7 +15,7 @@ Hockeypuck charm actions.
 ## <kbd>class</kbd> `Observer`
 Charm actions observer. 
 
-<a href="../src/actions.py#L18"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/actions.py#L20"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `__init__`
 

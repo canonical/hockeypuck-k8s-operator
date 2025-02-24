@@ -22,12 +22,13 @@ from typing import List
 
 import psycopg2
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 PTREE_DATA_DIR = "/hockeypuck/data/ptree"
 
 
-def remove_ptree_data() -> None:
+def remove_ptree_data() -> None | FileNotFoundError | OSError:
     """Remove all data from the ptree directory."""
     if os.path.exists(PTREE_DATA_DIR):
         for filename in os.listdir(PTREE_DATA_DIR):
@@ -39,11 +40,12 @@ def remove_ptree_data() -> None:
                     shutil.rmtree(file_path)
             except OSError as e:
                 logging.error("Failed to delete %s: %s", file_path, e)
+                raise e
     else:
-        logging.error("Ptree data directory does not exist: %s", PTREE_DATA_DIR)
+        raise FileNotFoundError(f"Ptree data directory does not exist: {PTREE_DATA_DIR}")
 
 
-def invoke_rebuild_prefix_tree() -> None:
+def invoke_rebuild_prefix_tree() -> None | RuntimeError:
     """Invoke the prefix_tree_rebuild binary."""
     command = " ".join(
         [
@@ -55,11 +57,12 @@ def invoke_rebuild_prefix_tree() -> None:
     result = os.system(command)
     if result != 0:
         logging.error("Failed to invoke prefix_tree_rebuild, return code: %d", result)
+        raise RuntimeError(f"prefix_tree_rebuild failed with return code: {result}")
     else:
         logging.info("prefix_tree_rebuild invoked successfully.")
 
 
-def get_db_connection() -> psycopg2.extensions.connection | None:
+def get_db_connection() -> psycopg2.extensions.connection | psycopg2.OperationalError:
     """Connect to the Postgres database.
 
     Returns:
@@ -76,12 +79,12 @@ def get_db_connection() -> psycopg2.extensions.connection | None:
         return conn
     except psycopg2.OperationalError as e:
         logging.error("Failed to connect to database: %s", e)
-        return None
+        raise e
 
 
 def delete_fingerprints(
     cursor: psycopg2.extensions.cursor, fingerprints: List[str], comment: str
-) -> None:
+) -> None | psycopg2.Error:
     """Delete fingerprints from the database.
 
     Args:
@@ -107,6 +110,7 @@ def delete_fingerprints(
             WHERE subkeys.rfingerprint = REVERSE(deleted_keys.fingerprint);
         """
         )
+        cursor.execute("SET ROLE postgres;")
         cursor.execute("SET session_replication_role = 'replica';")
         cursor.execute(
             """
@@ -118,6 +122,7 @@ def delete_fingerprints(
         logging.info("Deletion process completed successfully.")
     except psycopg2.Error as e:
         logging.error("Error executing SQL commands: %s", e)
+        raise e
 
 
 def main() -> None:
@@ -143,17 +148,22 @@ def main() -> None:
 
     comment = args.comment
 
-    conn = get_db_connection()
-    if conn is None:
-        sys.exit(1)
-    cursor = conn.cursor()
-    try:
-        delete_fingerprints(cursor, fingerprints, comment)
-        remove_ptree_data()
-        invoke_rebuild_prefix_tree()
-    finally:
-        cursor.close()
-        conn.close()
+    with get_db_connection() as conn:
+        if conn is None:
+            logging.error("Database connection failed. Exiting.")
+            sys.exit(1)
+        else:
+            with conn.cursor() as cursor:
+                try:
+                    delete_fingerprints(cursor, fingerprints, comment)
+                    remove_ptree_data()
+                    invoke_rebuild_prefix_tree()
+                except psycopg2.Error as e:
+                    logging.error("Failed to delete fingerprints: %s", e)
+                except (OSError, FileNotFoundError) as e:
+                    logging.error("Failed to remove ptree data: %s", e)
+                except RuntimeError as e:
+                    logging.error("Failed to invoke rebuild prefix tree: %s", e)
 
 
 if __name__ == "__main__":  # pragma: no cover

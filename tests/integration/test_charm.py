@@ -89,9 +89,7 @@ async def test_reconciliation(
 
 
 @pytest.mark.dependency(depends=["test_adding_records"])
-async def test_delete_and_blacklist_action(
-    hockeypuck_secondary_app: Application, gpg_key: Any
-) -> None:
+async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key: Any) -> None:
     """
     arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
     act: Execute the delete and blacklist action.
@@ -99,7 +97,7 @@ async def test_delete_and_blacklist_action(
     """
     fingerprint = gpg_key.fingerprint
     action = await hockeypuck_secondary_app.units[0].run_action(
-        "blacklist-and-delete-keys", **{"fingerprints": fingerprint, "comment": "R1234"}
+        "block-keys", **{"fingerprints": fingerprint, "comment": "R1234"}
     )
     await action.wait()
     assert action.results["return-code"] == 0
@@ -115,7 +113,7 @@ async def test_delete_and_blacklist_action(
         assert response.status_code == 404
 
 
-async def test_rebuild_prefix_tree(hockeypuck_k8s_app: Application) -> None:
+async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> None:
     """
     arrange: Deploy the Hockeypuck charm and integrate with Postgres and Nginx.
     act: Execute the rebuild prefix tree action.

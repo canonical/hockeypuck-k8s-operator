@@ -16,7 +16,7 @@ Traefik route observer module.
 ## <kbd>class</kbd> `TraefikRouteObserver`
 Traefik route relation observer. 
 
-<a href="../src/traefik_route_observer.py#L26"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/traefik_route_observer.py#L25"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `__init__`
 
