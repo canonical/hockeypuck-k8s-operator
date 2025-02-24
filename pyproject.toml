@@ -6,7 +6,6 @@ skips = ["*/*test.py", "*/test_*.py", "*tests/*.py"]
 # Testing tools configuration
 [tool.coverage.run]
 branch = true
-disable_warnings = ["no-data-collected"]
 
 # Formatting tools configuration
 [tool.black]

@@ -67,7 +67,7 @@ class TraefikRouteObserver(ops.Object):
             unit_fqdn = (
                 f"{unit_name}."
                 f"{self._charm.app.name}-endpoints."
-                f"{self._charm.model.name}.svc.cluster.local"
+                f"{self._charm.model.name}.svc"
             )
             address_list.append({"address": f"{unit_fqdn}:11370"})
         route_config = {

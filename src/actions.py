@@ -11,6 +11,8 @@ import paas_app_charmer.go
 
 logger = logging.getLogger(__name__)
 
+HOCKEYPUCK_CONTAINER_NAME = "app"
+
 
 class Observer(ops.Object):
     """Charm actions observer."""
@@ -70,14 +72,13 @@ class Observer(ops.Object):
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        hockeypuck_container = self.charm._container  # pylint: disable=protected-access
+        hockeypuck_container = self.unit.get_container(HOCKEYPUCK_CONTAINER_NAME)
         service_name = next(iter(hockeypuck_container.get_services()))
         try:
-
             _ = hockeypuck_container.pebble.stop_services(services=[service_name])
             process = hockeypuck_container.exec(
                 command,
-                environment=self.charm._gen_environment(),  # pylint: disable=protected-access
+                service_context=service_name,
             )
             _, _ = process.wait_output()
         except ops.pebble.ExecError as ex:

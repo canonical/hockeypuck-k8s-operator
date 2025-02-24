@@ -3,18 +3,56 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Delete keys from the Hockeypuck Postgres database by fingerprint."""
+"""This script deletes keys from the Hockeypuck by fingerprint. The script performs the following
+actions:
+
+1. Deleting the keys and subkeys corresponding to the fingerprint from the Postgres database.
+2. Delete all the files in /hockeypuck/data/ptree directory.
+3. Invoke the hockeypuck-pbuild binary to rebuild the prefix tree."""
 
 import argparse
 import logging
 import os
 import re
+import shutil
 import sys
 from typing import List
 
 import psycopg2
 
 logger = logging.getLogger(__name__)
+
+PTREE_DATA_DIR = "/hockeypuck/data/ptree"
+
+
+def remove_ptree_data() -> None:
+    """Remove all data from the ptree directory."""
+    if os.path.exists(PTREE_DATA_DIR):
+        for filename in os.listdir(PTREE_DATA_DIR):
+            file_path = os.path.join(PTREE_DATA_DIR, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.remove(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except OSError as e:
+                logging.error("Failed to delete %s: %s", file_path, e)
+    else:
+        logging.error("Ptree data directory does not exist: %s", PTREE_DATA_DIR)
+
+
+def invoke_rebuild_prefix_tree() -> None:
+    """Invoke the prefix_tree_rebuild binary."""
+    command = [
+        "/hockeypuck/bin/hockeypuck-pbuild",
+        "-config",
+        "/hockeypuck/etc/hockeypuck.conf",
+    ].join(" ")
+    result = os.system(command)
+    if result != 0:
+        logging.error("Failed to invoke prefix_tree_rebuild, return code: %d", result)
+    else:
+        logging.info("prefix_tree_rebuild invoked successfully.")
 
 
 def get_db_connection() -> psycopg2.extensions.connection | None:
@@ -49,15 +87,15 @@ def delete_fingerprints(
     """
     logging.info("Deleting fingerprints: %s", ", ".join(fingerprints))
     try:
-        for fingerprint in fingerprints:
-            cursor.execute(
-                """
-                INSERT INTO deleted_keys (fingerprint, comment)
-                VALUES (LOWER(%s), %s)
-                ON CONFLICT DO NOTHING;
-            """,
-                (fingerprint, comment),
-            )
+        insert_args = ",".join(
+            cursor.mogrify("(LOWER(%s), %s)", (fingerprint, comment)).decode("utf-8")
+            for fingerprint in fingerprints
+        )
+        query = (
+            "INSERT INTO deleted_keys (fingerprint, comment) VALUES "
+            f"{insert_args} ON CONFLICT DO NOTHING;"
+        )
+        cursor.execute(query)
 
         cursor.execute(
             """
@@ -65,21 +103,14 @@ def delete_fingerprints(
             WHERE subkeys.rfingerprint = REVERSE(deleted_keys.fingerprint);
         """
         )
-        cursor.execute("ALTER TABLE subkeys DROP CONSTRAINT IF EXISTS subkeys_rfingerprint_fkey;")
+        cursor.execute("SET session_replication_role = 'replica';")
         cursor.execute(
             """
             DELETE FROM keys USING deleted_keys
             WHERE keys.rfingerprint = REVERSE(deleted_keys.fingerprint);
         """
         )
-        cursor.execute(
-            """
-            ALTER TABLE subkeys
-            ADD CONSTRAINT subkeys_rfingerprint_fkey
-            FOREIGN KEY (rfingerprint)
-            REFERENCES keys(rfingerprint);
-            """
-        )
+        cursor.execute("SET session_replication_role = 'origin';")
         logging.info("Deletion process completed successfully.")
     except psycopg2.Error as e:
         logging.error("Error executing SQL commands: %s", e)
@@ -96,12 +127,15 @@ def main() -> None:
     parser.add_argument("--comment", required=True, help="Comment associated with the deletion")
     args = parser.parse_args()
     fingerprints = args.fingerprints.split(",")
+    invalid = 0
     for fingerprint in fingerprints:
         # fingperints are usually of length 40 or 64 depending on the hash algorithm, and
         # consist of hexadecimal characters only.
         if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
             logging.error("Invalid fingerprint format: %s", fingerprint)
-            sys.exit(1)
+            invalid = 1
+    if invalid:
+        sys.exit(1)
 
     comment = args.comment
 
@@ -111,6 +145,8 @@ def main() -> None:
     cursor = conn.cursor()
     try:
         delete_fingerprints(cursor, fingerprints, comment)
+        remove_ptree_data()
+        invoke_rebuild_prefix_tree()
     finally:
         cursor.close()
         conn.close()
