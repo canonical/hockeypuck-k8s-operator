@@ -9,6 +9,7 @@ from typing import List
 import ops
 import paas_app_charmer.go
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 HOCKEYPUCK_CONTAINER_NAME = "app"
@@ -78,10 +79,12 @@ class Observer(ops.Object):
                 command,
                 service_context=service_name,
             )
+            _, _ = process.wait_output()
             stdout, stderr = process.wait_output()
-            logging.info(stdout)
-            if stderr is None:
-                logging.error("Action %s failed: %s", " ".join(command), stderr)
+            if stderr:
+                logging.error(
+                    "Action %s failed: stdout: %s, stderr: %s", " ".join(command), stdout, stderr
+                )
         except ops.pebble.ExecError as ex:
             logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
             event.fail(f"Failed: {ex.stderr!r}")

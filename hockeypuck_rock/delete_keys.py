@@ -75,7 +75,6 @@ def get_db_connection() -> psycopg2.extensions.connection | psycopg2.Operational
     dsn = f"dbname={db_name} user={db_user} password={db_password} host={db_host}"
     try:
         conn = psycopg2.connect(dsn)
-        conn.autocommit = True
         return conn
     except psycopg2.OperationalError as e:
         logging.error("Failed to connect to database: %s", e)
@@ -94,6 +93,8 @@ def delete_fingerprints(
     """
     logging.info("Deleting fingerprints: %s", ", ".join(fingerprints))
     try:
+        cursor.execute("BEGIN;")
+
         insert_args = ",".join(
             cursor.mogrify("(LOWER(%s), %s)", (fingerprint, comment)).decode("utf-8")
             for fingerprint in fingerprints
@@ -104,21 +105,24 @@ def delete_fingerprints(
         )
         cursor.execute(query)
 
+        cursor.execute("SET CONSTRAINTS ALL DEFERRED;")
+
         cursor.execute(
             """
             DELETE FROM subkeys USING deleted_keys
             WHERE subkeys.rfingerprint = REVERSE(deleted_keys.fingerprint);
         """
         )
-        cursor.execute("SET ROLE postgres;")
-        cursor.execute("SET session_replication_role = 'replica';")
+
         cursor.execute(
             """
             DELETE FROM keys USING deleted_keys
             WHERE keys.rfingerprint = REVERSE(deleted_keys.fingerprint);
         """
         )
-        cursor.execute("SET session_replication_role = 'origin';")
+
+        cursor.connection.commit()
+
         logging.info("Deletion process completed successfully.")
     except psycopg2.Error as e:
         logging.error("Error executing SQL commands: %s", e)
@@ -160,10 +164,13 @@ def main() -> None:
                     invoke_rebuild_prefix_tree()
                 except psycopg2.Error as e:
                     logging.error("Failed to delete fingerprints: %s", e)
+                    raise
                 except (OSError, FileNotFoundError) as e:
                     logging.error("Failed to remove ptree data: %s", e)
+                    raise
                 except RuntimeError as e:
                     logging.error("Failed to invoke rebuild prefix tree: %s", e)
+                    raise
 
 
 if __name__ == "__main__":  # pragma: no cover
