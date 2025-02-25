@@ -4,7 +4,7 @@
 """Hockeypuck charm actions."""
 
 import logging
-from typing import List, cast
+from typing import List
 
 import ops
 import paas_app_charmer.go
@@ -62,35 +62,28 @@ class Observer(ops.Object):
         ]
         self._execute_action(event, command)
 
-    def _execute_action(
-        self, event: ops.ActionEvent, command: List[str], all_units: bool = True
-    ) -> None:
+    def _execute_action(self, event: ops.ActionEvent, command: List[str]) -> None:
         """Execute the action.
 
         Args:
             event: the event triggering the original action.
             command: the command to be executed inside the hockeypuck container.
-            all_units: whether or not to execute the action on all units.
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        secret_storage_relation = cast(ops.Relation, self.model.get_relation("secret-storage"))
-        units = [self.charm.unit]
-        if all_units:
-            for unit in secret_storage_relation.units:
-                units.append(unit)
-        for unit in units:
-            hockeypuck_container = unit.get_container(HOCKEYPUCK_CONTAINER_NAME)
-            service_name = next(iter(hockeypuck_container.get_services()))
-            try:
-                hockeypuck_container.pebble.stop_services(services=[service_name])
-                process = hockeypuck_container.exec(
-                    command,
-                    service_context=service_name,
-                )
-                process.wait_output()
-            except ops.pebble.ExecError as ex:
-                logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
-                event.fail(f"Failed: {ex.stderr!r}")
-            finally:
-                hockeypuck_container.pebble.start_services(services=[service_name])
+        hockeypuck_container = self.charm.unit.get_container(HOCKEYPUCK_CONTAINER_NAME)
+        service_name = next(iter(hockeypuck_container.get_services()))
+        env = {"LEADER": str(self.charm.unit.is_leader()).lower()}
+        try:
+            hockeypuck_container.pebble.stop_services(services=[service_name])
+            process = hockeypuck_container.exec(
+                command,
+                service_context=service_name,
+                environment=env,
+            )
+            process.wait_output()
+        except ops.pebble.ExecError as ex:
+            logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
+            event.fail(f"Failed: {ex.stderr!r}")
+        finally:
+            hockeypuck_container.pebble.start_services(services=[service_name])

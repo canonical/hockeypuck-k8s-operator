@@ -56,30 +56,14 @@ class KeyDeletionError(Exception):
     """Exception raised for errors in the key deletion operation."""
 
 
-class PtreeDataError(Exception):
-    """Exception raised for errors in the ptree data deletion operations."""
-
-
-class DatabaseConnectionError(Exception):
-    """Exception raised for errors in the database connection."""
-
-
-class DatabaseOperationError(Exception):
-    """Exception raised for errors in the database operations."""
-
-
-class PrefixTreeRebuildError(Exception):
-    """Exception raised for errors in the prefix tree rebuild operation."""
-
-
 def remove_ptree_data() -> None:
     """Remove all data from the ptree directory.
 
     Raises:
-        PtreeDataError: if the ptree data directory does not exist or deletion fails.
+        KeyDeletionError: if the ptree data directory does not exist or deletion fails.
     """
     if not os.path.exists(PTREE_DATA_DIR):
-        raise PtreeDataError(f"Ptree data directory does not exist: {PTREE_DATA_DIR}")
+        raise KeyDeletionError(f"Ptree data directory does not exist: {PTREE_DATA_DIR}")
     for filename in os.listdir(PTREE_DATA_DIR):
         file_path = os.path.join(PTREE_DATA_DIR, filename)
         try:
@@ -88,14 +72,14 @@ def remove_ptree_data() -> None:
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except OSError as e:
-            raise PtreeDataError(f"Failed to delete {file_path}: {e}") from e
+            raise KeyDeletionError(f"Failed to delete {file_path}: {e}") from e
 
 
 def invoke_rebuild_prefix_tree() -> None:
     """Invoke the prefix_tree_rebuild binary.
 
     Raises:
-        PrefixTreeRebuildError: if the rebuild operation fails.
+        KeyDeletionError: if the rebuild operation fails.
     """
     command = " ".join(
         [
@@ -107,7 +91,7 @@ def invoke_rebuild_prefix_tree() -> None:
     result = os.system(command)
     if result != 0:
         logging.error("Failed to invoke prefix_tree_rebuild, return code: %d", result)
-        raise PrefixTreeRebuildError(f"prefix_tree_rebuild failed with return code: {result}")
+        raise KeyDeletionError(f"prefix_tree_rebuild failed with return code: {result}")
     logging.info("prefix_tree_rebuild invoked successfully.")
 
 
@@ -118,7 +102,7 @@ def get_db_connection() -> psycopg2.extensions.connection:
         psycopg2.extensions.connection: the database connection.
 
     Raises:
-        DatabaseConnectionError: if the connection fails.
+        KeyDeletionError: if the connection fails.
     """
     db_password = os.getenv("POSTGRESQL_DB_PASSWORD")
     db_name = os.getenv("POSTGRESQL_DB_NAME")
@@ -129,7 +113,7 @@ def get_db_connection() -> psycopg2.extensions.connection:
         conn = psycopg2.connect(dsn)
         return conn
     except psycopg2.OperationalError as e:
-        raise DatabaseConnectionError(f"Failed to connect to database: {e}") from e
+        raise KeyDeletionError(f"Failed to connect to database: {e}") from e
 
 
 def delete_fingerprints(
@@ -143,8 +127,11 @@ def delete_fingerprints(
         comment: the comment associated with the deletion.
 
     Raises:
-        DatabaseOperationError: if any SQL command fails.
+        KeyDeletionError: if any SQL command fails.
     """
+    is_leader = os.getenv("LEADER")
+    if is_leader == "false":
+        return
     logging.info("Deleting fingerprints: %s", ", ".join(fingerprints))
     try:
         cursor.execute("BEGIN;")
@@ -179,7 +166,7 @@ def delete_fingerprints(
 
         logging.info("Deletion process completed successfully.")
     except psycopg2.Error as e:
-        raise DatabaseOperationError(f"Error executing SQL commands: {e}") from e
+        raise KeyDeletionError(f"Error executing SQL commands: {e}") from e
 
 
 def main() -> None:
@@ -216,14 +203,9 @@ def main() -> None:
                 delete_fingerprints(cursor, fingerprints, comment)
                 remove_ptree_data()
                 invoke_rebuild_prefix_tree()
-    except (
-        DatabaseConnectionError,
-        DatabaseOperationError,
-        PtreeDataError,
-        PrefixTreeRebuildError,
-    ) as e:
+    except KeyDeletionError as e:
         logging.error("Unable to delete keys: %s", e)
-        raise KeyDeletionError from e
+        raise KeyDeletionError(f"Unable to delete keys: {e}") from e
 
 
 if __name__ == "__main__":  # pragma: no cover

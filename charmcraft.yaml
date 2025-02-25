@@ -55,7 +55,7 @@ actions:
     description: |
       The prefix tree is used to manage the reconciliation process and 
       must always be in sync with the database. If you suspect it is corrupted or out 
-      of sync, or if the prefix tree needs to be removed and rebuilt after pg-restore, 
+      of sync, or if the prefix tree needs to be removed and rebuilt after pg_restore, 
       it can be done with this action. 
 
 config:
