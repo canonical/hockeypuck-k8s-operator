@@ -30,12 +30,22 @@ PTREE_DATA_DIR = "/hockeypuck/data/ptree"
 class InvalidFingerprintError(Exception):
     """Exception raised for invalid fingerprint format."""
 
-    def __init__(self, fingerprints: List[str]):
+    def __init__(self, fingerprints: List[str]) -> None:
+        """Initialize the exception.
+
+        Args:
+            fingerprints: list of invalid fingerprints.
+        """
         self.fingerprints = fingerprints
         self.message = f"Invalid fingerprints: {', '.join(fingerprints)}"
         super().__init__(self.message)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return the exception message.
+
+        Returns:
+            str: the exception message.
+        """
         return (
             f"{self.message}. Fingerprints must be 40 or 64 characters long and "
             "consist of hexadecimal characters only."
@@ -176,10 +186,8 @@ def main() -> None:
     """Main entrypoint.
 
     Raises:
-        DatabaseConnectionError: if any database connection operation fails.
-        DatabaseOperationError: if any database operation fails.
-        PtreeDataError: if the ptree data directory does not exist or deletion fails.
-        PrefixTreeRebuildError: if the rebuild operation fails.
+        InvalidFingerprintError: if any of the fingerprints are invalid.
+        KeyDeletionError: if any of the operations fail.
     """
     parser = argparse.ArgumentParser(
         description="Delete keys from the Hockeypuck Postgres database by fingerprint."
