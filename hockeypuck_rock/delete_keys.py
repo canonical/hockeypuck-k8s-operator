@@ -17,7 +17,6 @@ import logging
 import os
 import re
 import shutil
-import sys
 from typing import List
 
 import psycopg2
@@ -28,15 +27,49 @@ logger = logging.getLogger(__name__)
 PTREE_DATA_DIR = "/hockeypuck/data/ptree"
 
 
+class InvalidFingerprintError(Exception):
+    """Exception raised for invalid fingerprint format."""
+
+    def __init__(self, fingerprints: List[str]):
+        self.fingerprints = fingerprints
+        self.message = f"Invalid fingerprints: {', '.join(fingerprints)}"
+        super().__init__(self.message)
+
+    def __str__(self):
+        return (
+            f"{self.message}. Fingerprints must be 40 or 64 characters long and "
+            "consist of hexadecimal characters only."
+        )
+
+
+class KeyDeletionError(Exception):
+    """Exception raised for errors in the key deletion operation."""
+
+
+class PtreeDataError(Exception):
+    """Exception raised for errors in the ptree data deletion operations."""
+
+
+class DatabaseConnectionError(Exception):
+    """Exception raised for errors in the database connection."""
+
+
+class DatabaseOperationError(Exception):
+    """Exception raised for errors in the database operations."""
+
+
+class PrefixTreeRebuildError(Exception):
+    """Exception raised for errors in the prefix tree rebuild operation."""
+
+
 def remove_ptree_data() -> None:
     """Remove all data from the ptree directory.
 
     Raises:
-        FileNotFoundError: if the ptree data directory does not exist.
-        OSError: if the deletion operation fails.
+        PtreeDataError: if the ptree data directory does not exist or deletion fails.
     """
     if not os.path.exists(PTREE_DATA_DIR):
-        raise FileNotFoundError(f"Ptree data directory does not exist: {PTREE_DATA_DIR}")
+        raise PtreeDataError(f"Ptree data directory does not exist: {PTREE_DATA_DIR}")
     for filename in os.listdir(PTREE_DATA_DIR):
         file_path = os.path.join(PTREE_DATA_DIR, filename)
         try:
@@ -45,14 +78,14 @@ def remove_ptree_data() -> None:
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
         except OSError as e:
-            raise OSError(f"Failed to delete {file_path}: {e}") from e
+            raise PtreeDataError(f"Failed to delete {file_path}: {e}") from e
 
 
 def invoke_rebuild_prefix_tree() -> None:
     """Invoke the prefix_tree_rebuild binary.
 
     Raises:
-        RuntimeError: if the rebuild operation fails.
+        PrefixTreeRebuildError: if the rebuild operation fails.
     """
     command = " ".join(
         [
@@ -64,7 +97,7 @@ def invoke_rebuild_prefix_tree() -> None:
     result = os.system(command)
     if result != 0:
         logging.error("Failed to invoke prefix_tree_rebuild, return code: %d", result)
-        raise RuntimeError(f"prefix_tree_rebuild failed with return code: {result}")
+        raise PrefixTreeRebuildError(f"prefix_tree_rebuild failed with return code: {result}")
     logging.info("prefix_tree_rebuild invoked successfully.")
 
 
@@ -75,7 +108,7 @@ def get_db_connection() -> psycopg2.extensions.connection:
         psycopg2.extensions.connection: the database connection.
 
     Raises:
-        OperationalError: if the connection fails.
+        DatabaseConnectionError: if the connection fails.
     """
     db_password = os.getenv("POSTGRESQL_DB_PASSWORD")
     db_name = os.getenv("POSTGRESQL_DB_NAME")
@@ -86,7 +119,7 @@ def get_db_connection() -> psycopg2.extensions.connection:
         conn = psycopg2.connect(dsn)
         return conn
     except psycopg2.OperationalError as e:
-        raise psycopg2.OperationalError(f"Failed to connect to database: {e}")
+        raise DatabaseConnectionError(f"Failed to connect to database: {e}") from e
 
 
 def delete_fingerprints(
@@ -100,7 +133,7 @@ def delete_fingerprints(
         comment: the comment associated with the deletion.
 
     Raises:
-        Error: if any SQL command fails.
+        DatabaseOperationError: if any SQL command fails.
     """
     logging.info("Deleting fingerprints: %s", ", ".join(fingerprints))
     try:
@@ -136,17 +169,17 @@ def delete_fingerprints(
 
         logging.info("Deletion process completed successfully.")
     except psycopg2.Error as e:
-        raise psycopg2.Error(f"Error executing SQL commands: {e}")
+        raise DatabaseOperationError(f"Error executing SQL commands: {e}") from e
 
 
 def main() -> None:
     """Main entrypoint.
 
     Raises:
-        psycopg2.Error: if any database operation fails.
-        FileNotFoundError: if the ptree data directory does not exist.
-        OSError
-        RuntimeError: if the rebuild operation fails.
+        DatabaseConnectionError: if any database connection operation fails.
+        DatabaseOperationError: if any database operation fails.
+        PtreeDataError: if the ptree data directory does not exist or deletion fails.
+        PrefixTreeRebuildError: if the rebuild operation fails.
     """
     parser = argparse.ArgumentParser(
         description="Delete keys from the Hockeypuck Postgres database by fingerprint."
@@ -157,37 +190,32 @@ def main() -> None:
     parser.add_argument("--comment", required=True, help="Comment associated with the deletion")
     args = parser.parse_args()
     fingerprints = args.fingerprints.split(",")
-    invalid = 0
+    invalid_fingerprints = []
     for fingerprint in fingerprints:
         # fingperints are usually of length 40 or 64 depending on the hash algorithm, and
         # consist of hexadecimal characters only.
         if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
             logging.error("Invalid fingerprint format: %s", fingerprint)
-            invalid = 1
-    if invalid:
-        sys.exit(1)
+            invalid_fingerprints.append(fingerprint)
+    if invalid_fingerprints:
+        raise InvalidFingerprintError(invalid_fingerprints)
 
     comment = args.comment
 
-    with get_db_connection() as conn:
-        if conn is None:
-            logging.error("Database connection failed. Exiting.")
-            sys.exit(1)
-        else:
+    try:
+        with get_db_connection() as conn:
             with conn.cursor() as cursor:
-                try:
-                    delete_fingerprints(cursor, fingerprints, comment)
-                    remove_ptree_data()
-                    invoke_rebuild_prefix_tree()
-                except psycopg2.Error as e:
-                    logging.error("Failed to delete fingerprints: %s", e)
-                    raise
-                except (OSError, FileNotFoundError) as e:
-                    logging.error("Failed to remove ptree data: %s", e)
-                    raise
-                except RuntimeError as e:
-                    logging.error("Failed to invoke rebuild prefix tree: %s", e)
-                    raise
+                delete_fingerprints(cursor, fingerprints, comment)
+                remove_ptree_data()
+                invoke_rebuild_prefix_tree()
+    except (
+        DatabaseConnectionError,
+        DatabaseOperationError,
+        PtreeDataError,
+        PrefixTreeRebuildError,
+    ) as e:
+        logging.error("Unable to delete keys: %s", e)
+        raise KeyDeletionError from e
 
 
 if __name__ == "__main__":  # pragma: no cover
