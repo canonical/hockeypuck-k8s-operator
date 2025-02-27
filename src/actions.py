@@ -73,7 +73,7 @@ class Observer(ops.Object):
             event.fail("Service not yet ready.")
         hockeypuck_container = self.charm.unit.get_container(HOCKEYPUCK_CONTAINER_NAME)
         service_name = next(iter(hockeypuck_container.get_services()))
-        env = {"LEADER": str(self.charm.unit.is_leader()).lower()}
+        env = {"DELETE_FROM_POSTGRES": str(self.charm.unit.is_leader()).lower()}
         try:
             hockeypuck_container.pebble.stop_services(services=[service_name])
             process = hockeypuck_container.exec(

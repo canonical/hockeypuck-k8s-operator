@@ -129,8 +129,8 @@ def delete_fingerprints(
     Raises:
         KeyDeletionError: if any SQL command fails.
     """
-    is_leader = os.getenv("LEADER")
-    if is_leader == "false":
+    delete_from_postgres = os.getenv("DELETE_FROM_POSTGRES")
+    if delete_from_postgres == "false":
         return
     logging.info("Deleting fingerprints: %s", ", ".join(fingerprints))
     try:
