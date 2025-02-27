@@ -8,11 +8,10 @@ from typing import List
 
 import ops
 import paas_app_charmer.go
+from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-HOCKEYPUCK_CONTAINER_NAME = "app"
 
 
 class Observer(ops.Object):
@@ -71,7 +70,7 @@ class Observer(ops.Object):
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        hockeypuck_container = self.charm.unit.get_container(HOCKEYPUCK_CONTAINER_NAME)
+        hockeypuck_container = self.charm.unit.get_container(WORKLOAD_CONTAINER_NAME)
         service_name = next(iter(hockeypuck_container.get_services()))
         env = {"DELETE_FROM_POSTGRES": str(self.charm.unit.is_leader()).lower()}
         try:
