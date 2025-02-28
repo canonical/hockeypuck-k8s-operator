@@ -92,7 +92,7 @@ async def test_reconciliation(
 async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key: Any) -> None:
     """
     arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
-    act: Execute the delete and blacklist action.
+    act: Execute the delete and blocklist action.
     assert: Lookup for the key returns 404.
     """
     fingerprint = gpg_key.fingerprint
@@ -127,7 +127,7 @@ async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> No
 async def test_traefik_integration(traefik_integration: Application) -> None:
     """
     arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
-    act: Test connectivity to the reconciliation port using netcat.
+    act: Test connectivity to the reconciliation port.
     assert: Connection request is successful.
     """
     action = await traefik_integration.units[0].run_action("show-proxied-endpoints")

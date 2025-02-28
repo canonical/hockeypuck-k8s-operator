@@ -54,7 +54,7 @@ def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.Monkey
     monkeypatch.setattr(socket, "getfqdn", lambda: "hockeypuck.local")
     monkeypatch.setattr(harness.charm.model, "get_relation", lambda _: requirer_mock)
 
-    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=W0212
+    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=protected-access
 
     requirer_mock.submit_to_traefik.assert_called_once_with(
         {
@@ -84,6 +84,6 @@ def test_on_traefik_route_relation_joined_when_not_leader(monkeypatch: pytest.Mo
     mock_obj = mock.Mock()
     monkeypatch.setattr(harness.charm.traefik_route.traefik_route, "submit_to_traefik", mock_obj)
 
-    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=W0212
+    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=protected-access
 
     mock_obj.assert_not_called()

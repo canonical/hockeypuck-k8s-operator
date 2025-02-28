@@ -4,7 +4,6 @@
 """Hockeypuck charm actions."""
 
 import logging
-from typing import List
 
 import ops
 import paas_app_charmer.go
@@ -32,7 +31,7 @@ class Observer(ops.Object):
         )
 
     def _block_keys_action(self, event: ops.ActionEvent) -> None:
-        """Blacklist and delete keys from the database.
+        """Blocklist and delete keys from the database.
 
         Args:
             event: the event triggering the original action.
@@ -60,7 +59,7 @@ class Observer(ops.Object):
         self._execute_action(event, command)
 
     def _execute_action(
-        self, event: ops.ActionEvent, command: List[str], leader_only: bool = False
+        self, event: ops.ActionEvent, command: list[str], leader_only: bool = False
     ) -> None:
         """Execute the action.
 
