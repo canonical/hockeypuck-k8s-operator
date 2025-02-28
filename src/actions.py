@@ -46,6 +46,8 @@ class Observer(ops.Object):
             "--comment",
             comment,
         ]
+        self._execute_action(event, command, leader_only=True)
+        command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
         self._execute_action(event, command)
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
@@ -54,31 +56,30 @@ class Observer(ops.Object):
         Args:
             event: the event triggering the original action.
         """
-        command = [
-            "/hockeypuck/bin/hockeypuck-pbuild",
-            "-config",
-            "/hockeypuck/etc/hockeypuck.conf",
-        ]
+        command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
         self._execute_action(event, command)
 
-    def _execute_action(self, event: ops.ActionEvent, command: List[str]) -> None:
+    def _execute_action(
+        self, event: ops.ActionEvent, command: List[str], leader_only=False
+    ) -> None:
         """Execute the action.
 
         Args:
             event: the event triggering the original action.
             command: the command to be executed inside the hockeypuck container.
+            leader_only: whether the action should be executed only by the leader unit.
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
+        if leader_only and not self.charm.unit.is_leader():
+            return
         hockeypuck_container = self.charm.unit.get_container(WORKLOAD_CONTAINER_NAME)
         service_name = next(iter(hockeypuck_container.get_services()))
-        env = {"DELETE_FROM_POSTGRES": str(self.charm.unit.is_leader()).lower()}
         try:
             hockeypuck_container.pebble.stop_services(services=[service_name])
             process = hockeypuck_container.exec(
                 command,
                 service_context=service_name,
-                environment=env,
             )
             process.wait_output()
         except ops.pebble.ExecError as ex:
