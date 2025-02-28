@@ -60,7 +60,7 @@ class Observer(ops.Object):
         self._execute_action(event, command)
 
     def _execute_action(
-        self, event: ops.ActionEvent, command: List[str], leader_only=False
+        self, event: ops.ActionEvent, command: List[str], leader_only: bool = False
     ) -> None:
         """Execute the action.
 

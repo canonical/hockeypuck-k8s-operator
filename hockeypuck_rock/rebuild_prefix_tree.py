@@ -3,9 +3,7 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""This script cleans up the ptree folder in the hockeypuck container 
-and rebuilds the prefix tree.
-"""
+"""This script cleans up the /data/ptree folder and rebuilds the prefix tree."""
 
 import logging
 import os
@@ -65,7 +63,7 @@ def main() -> None:
     """Main entrypoint.
 
     Raises:
-        KeyDeletionError: if the key deletion operation fails.
+        PrefixTreeRebuildError: if the key deletion operation fails.
     """
     try:
         remove_ptree_data()
