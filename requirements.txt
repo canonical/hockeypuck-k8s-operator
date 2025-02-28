@@ -1,2 +1,2 @@
-ops==2.18.1
-paas-charm==1.3.2
+ops==2.19.0
+paas-charm1.3.2
