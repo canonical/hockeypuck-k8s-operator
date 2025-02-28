@@ -3,28 +3,18 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""This script deletes keys from Hockeypuck by fingerprint.
-
-The script performs the following actions:
-
-1. Deleting the keys and subkeys corresponding to the fingerprint from the Postgres database.
-2. Delete all the files in /hockeypuck/data/ptree directory to remove the key from leveldb.
-3. Invoke the hockeypuck-pbuild binary to rebuild the prefix tree.
-"""
+"""This script deletes keys from Hockeypuck by fingerprint from the Postgres database."""
 
 import argparse
 import logging
 import os
 import re
-import shutil
 from typing import List
 
 import psycopg2
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-PTREE_DATA_DIR = "/hockeypuck/data/ptree"
 
 
 class InvalidFingerprintError(Exception):
@@ -54,45 +44,6 @@ class InvalidFingerprintError(Exception):
 
 class KeyDeletionError(Exception):
     """Exception raised for errors in the key deletion operation."""
-
-
-def remove_ptree_data() -> None:
-    """Remove all data from the ptree directory.
-
-    Raises:
-        KeyDeletionError: if the ptree data directory does not exist or deletion fails.
-    """
-    if not os.path.exists(PTREE_DATA_DIR):
-        raise KeyDeletionError(f"Ptree data directory does not exist: {PTREE_DATA_DIR}")
-    for filename in os.listdir(PTREE_DATA_DIR):
-        file_path = os.path.join(PTREE_DATA_DIR, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.remove(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except OSError as e:
-            raise KeyDeletionError(f"Failed to delete {file_path}: {e}") from e
-
-
-def invoke_rebuild_prefix_tree() -> None:
-    """Invoke the prefix_tree_rebuild binary.
-
-    Raises:
-        KeyDeletionError: if the rebuild operation fails.
-    """
-    command = " ".join(
-        [
-            "/hockeypuck/bin/hockeypuck-pbuild",
-            "-config",
-            "/hockeypuck/etc/hockeypuck.conf",
-        ]
-    )
-    result = os.system(command)
-    if result != 0:
-        logging.error("Failed to invoke prefix_tree_rebuild, return code: %d", result)
-        raise KeyDeletionError(f"prefix_tree_rebuild failed with return code: {result}")
-    logging.info("prefix_tree_rebuild invoked successfully.")
 
 
 def get_db_connection() -> psycopg2.extensions.connection:
@@ -129,9 +80,6 @@ def delete_fingerprints(
     Raises:
         KeyDeletionError: if any SQL command fails.
     """
-    delete_from_postgres = os.getenv("DELETE_FROM_POSTGRES")
-    if delete_from_postgres == "false":
-        return
     logging.info("Deleting fingerprints: %s", ", ".join(fingerprints))
     try:
         cursor.execute("BEGIN;")
@@ -174,7 +122,7 @@ def main() -> None:
 
     Raises:
         InvalidFingerprintError: if any of the fingerprints are invalid.
-        KeyDeletionError: if any of the operations fail.
+        KeyDeletionError: if the key deletion operation fails.
     """
     parser = argparse.ArgumentParser(
         description="Delete keys from the Hockeypuck Postgres database by fingerprint."
@@ -201,8 +149,6 @@ def main() -> None:
         with get_db_connection() as conn:
             with conn.cursor() as cursor:
                 delete_fingerprints(cursor, fingerprints, comment)
-                remove_ptree_data()
-                invoke_rebuild_prefix_tree()
     except KeyDeletionError as e:
         logging.error("Unable to delete keys: %s", e)
         raise KeyDeletionError(f"Unable to delete keys: {e}") from e
