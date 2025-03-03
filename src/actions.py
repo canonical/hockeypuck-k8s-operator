@@ -58,10 +58,26 @@ class Observer(ops.Object):
         command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
         self._execute_action(event, command)
 
+    def _lookup_key_action(self, event: ops.ActionEvent) -> None:
+        """Lookup a key in the hockeypuck database using email id or fingerprint or keyword.
+        Args:
+            event: the event triggering the original action.
+        """
+        keyword = event.params["keyword"]  # DO INPUT VALIDATION
+        command = [f"http://localhost:11371/pks/lookup?op=get&search={keyword}"]
+        hockeypuck_container = self.charm.unit.get_container(WORKLOAD_CONTAINER_NAME)
+        try:
+            process = hockeypuck_container.exec(command)
+            stdout, _ = process.wait_output()
+            event.set_results({"result": stdout})
+        except ops.pebble.ExecError as ex:
+            logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
+            event.fail(f"Failed: {ex.stderr!r}")
+
     def _execute_action(
         self, event: ops.ActionEvent, command: list[str], leader_only: bool = False
     ) -> None:
-        """Execute the action.
+        """Stop the hockeypuck service, execute the action and start the service.
 
         Args:
             event: the event triggering the original action.
