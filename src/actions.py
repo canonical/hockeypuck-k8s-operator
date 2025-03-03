@@ -29,6 +29,7 @@ class Observer(ops.Object):
         charm.framework.observe(
             charm.on.rebuild_prefix_tree_action, self._rebuild_prefix_tree_action
         )
+        charm.framework.observe(charm.on.lookup_key_action, self._lookup_key_action)
 
     def _block_keys_action(self, event: ops.ActionEvent) -> None:
         """Blocklist and delete keys from the database.
@@ -60,6 +61,7 @@ class Observer(ops.Object):
 
     def _lookup_key_action(self, event: ops.ActionEvent) -> None:
         """Lookup a key in the hockeypuck database using email id or fingerprint or keyword.
+
         Args:
             event: the event triggering the original action.
         """
