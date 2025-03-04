@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 HTTP_PORT: typing.Final[int] = 11371  # the port hockeypuck listens to for HTTP requests
 RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to for reconciliation
+METRICS_PORT: typing.Final[int] = 9626  # the metrics port
 
 
 class Observer(ops.Object):
@@ -70,14 +71,17 @@ class Observer(ops.Object):
         Args:
             event: the event triggering the original action.
         """
-        keyword = event.params["keyword"]  # DO INPUT VALIDATION
-        response = requests.get(
-            f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search={keyword}",
-            timeout=20,
-        )
-        if response.status_code != 200:
-            event.fail(f"Failed: {response.text}")
-        event.set_results({"result": response.text})
+        keyword = event.params["keyword"]
+        try:
+            response = requests.get(
+                f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search={keyword}",
+                timeout=20,
+            )
+            response.raise_for_status()
+            event.set_results({"result": response.text})
+        except requests.exceptions.HTTPError as e:
+            logger.exception("Action failed: %s", e)
+            event.fail(f"Failed: {str(e)}")
 
     def _execute_action(
         self, event: ops.ActionEvent, command: list[str], leader_only: bool = False
