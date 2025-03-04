@@ -67,14 +67,14 @@ async def test_adding_records(gpg_key: Any) -> None:
 
 
 @pytest.mark.dependency(depends=["test_adding_records"])
-async def test_lookup_key(hockeypuck_app: Application, gpg_key: Any) -> None:
+async def test_lookup_key(hockeypuck_k8s_app: Application, gpg_key: Any) -> None:
     """
     arrange: Deploy the Hockeypuck charm and create a GPG key.
     act: Execute the lookup-key action.
     assert: Action returns 0.
     """
     fingerprint = gpg_key.fingerprint
-    action = await hockeypuck_app.units[0].run_action(
+    action = await hockeypuck_k8s_app.units[0].run_action(
         "lookup-key", **{"keyword": f"0x{fingerprint}"}
     )
     await action.wait()

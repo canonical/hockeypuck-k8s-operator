@@ -95,7 +95,7 @@ async def hockeypuck_k8s_app_fixture(
         f"./{hockeypuck_charm}",
         resources=resources,
         config={
-            "app-port": {HTTP_PORT},
+            "app-port": HTTP_PORT,
             "metrics-port": 9626,
         },
     )
@@ -133,7 +133,7 @@ async def hockeypuck_secondary_app_fixture(
             f"./{hockeypuck_charm}",
             resources=resources,
             config={
-                "app-port": {HTTP_PORT},
+                "app-port": HTTP_PORT,
                 "metrics-port": 9626,
             },
         )

@@ -62,7 +62,9 @@ actions:
     properties:
       keyword:
         type: string
-        description: Keyword to search for in the keyserver database.
+        description: |
+        Keyword to search for in the keyserver database. Note that the entire fingerprint 
+        including the preceding '0x' is required for fingerprint search.
     required:
       - keyword
 
