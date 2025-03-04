@@ -4,13 +4,18 @@
 """Hockeypuck charm actions."""
 
 import logging
+import typing
 
 import ops
 import paas_app_charmer.go
+import requests
 from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+HTTP_PORT: typing.Final[int] = 11371  # the port hockeypuck listens to for HTTP requests
+RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to for reconciliation
 
 
 class Observer(ops.Object):
@@ -66,15 +71,13 @@ class Observer(ops.Object):
             event: the event triggering the original action.
         """
         keyword = event.params["keyword"]  # DO INPUT VALIDATION
-        command = [f"http://localhost:11371/pks/lookup?op=get&search={keyword}"]
-        hockeypuck_container = self.charm.unit.get_container(WORKLOAD_CONTAINER_NAME)
-        try:
-            process = hockeypuck_container.exec(command)
-            stdout, _ = process.wait_output()
-            event.set_results({"result": stdout})
-        except ops.pebble.ExecError as ex:
-            logger.exception("Action %s failed: %s %s", ex.command, ex.stdout, ex.stderr)
-            event.fail(f"Failed: {ex.stderr!r}")
+        response = requests.get(
+            f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search={keyword}",
+            timeout=20,
+        )
+        if response.status_code != 200:
+            event.fail(f"Failed: {response.text}")
+        event.set_results({"result": response.text})
 
     def _execute_action(
         self, event: ops.ActionEvent, command: list[str], leader_only: bool = False

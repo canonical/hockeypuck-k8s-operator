@@ -9,6 +9,8 @@ import typing
 import ops
 from charms.traefik_k8s.v0.traefik_route import TraefikRouteRequirer
 
+from actions import RECONCILIATION_PORT
+
 RELATION_NAME = "traefik-route"
 HOCKEYPUCK_TCP_ROUTER = {
     "hockeypuck-tcp-router": {
@@ -47,7 +49,7 @@ class TraefikRouteObserver(ops.Object):
         Returns:
             The static configuration for traefik.
         """
-        entry_points = {"reconciliation-port": {"address": ":11370"}}
+        entry_points = {"reconciliation-port": {"address": f":{RECONCILIATION_PORT}"}}
         return {
             "entryPoints": entry_points,
         }
@@ -56,7 +58,7 @@ class TraefikRouteObserver(ops.Object):
     def _route_config(self) -> dict[str, dict[str, object]]:
         """Return the Traefik route configuration for the Hockeypuck service."""
         address_list = []
-        address_list.append({"address": f"{socket.getfqdn()}:11370"})
+        address_list.append({"address": f"{socket.getfqdn()}:{RECONCILIATION_PORT}"})
         secret_storage_relation = typing.cast(
             ops.Relation, self.model.get_relation("secret-storage")
         )
@@ -69,7 +71,7 @@ class TraefikRouteObserver(ops.Object):
                 f"{self._charm.app.name}-endpoints."
                 f"{self._charm.model.name}.svc"
             )
-            address_list.append({"address": f"{unit_fqdn}:11370"})
+            address_list.append({"address": f"{unit_fqdn}:{RECONCILIATION_PORT}"})
         route_config = {
             "tcp": {
                 "routers": HOCKEYPUCK_TCP_ROUTER,

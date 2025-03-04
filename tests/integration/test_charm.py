@@ -15,6 +15,8 @@ import requests
 from gnupg import GPG
 from juju.application import Application
 
+from actions import HTTP_PORT, RECONCILIATION_PORT
+
 logger = logging.getLogger(__name__)
 
 
@@ -64,6 +66,23 @@ async def test_adding_records(gpg_key: Any) -> None:
     assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text
 
 
+@pytest.mark.dependency(depends=["test_adding_records"])
+async def test_lookup_key(hockeypuck_app: Application, gpg_key: Any) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm and create a GPG key.
+    act: Execute the lookup-key action.
+    assert: Action returns 0.
+    """
+    fingerprint = gpg_key.fingerprint
+    action = await hockeypuck_app.units[0].run_action(
+        "lookup-key", **{"keyword": f"0x{fingerprint}"}
+    )
+    await action.wait()
+    assert action.results["return-code"] == 0
+    assert "result" in action
+    assert "BEGIN PGP PUBLIC KEY BLOCK" in action["result"]
+
+
 @pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
 @pytest.mark.flaky(reruns=10, reruns_delay=10)
@@ -80,7 +99,7 @@ async def test_reconciliation(
     units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
     for unit in units.values():
         response = requests.get(
-            f"http://{unit.address}:11371/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
+            f"http://{unit.address}:{HTTP_PORT}/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
             timeout=20,
         )
 
@@ -106,7 +125,7 @@ async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key:
     units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
     for unit in units.values():
         response = requests.get(
-            f"http://{unit.address}:11371/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
+            f"http://{unit.address}:{HTTP_PORT}/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
             timeout=20,
         )
 
@@ -135,7 +154,7 @@ async def test_traefik_integration(traefik_integration: Application) -> None:
     assert action.results["return-code"] == 0
     result = json.loads(action.results["proxied-endpoints"])
     host = result["traefik-k8s"]["url"].removeprefix("http://")
-    port = 11370
+    port = RECONCILIATION_PORT
     try:
         with socket.create_connection((host, port), timeout=5):
             connected = True
