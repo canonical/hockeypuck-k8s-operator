@@ -20,9 +20,12 @@ logger = logging.getLogger(__name__)
 
 
 @pytest_asyncio.fixture(scope="module", name="model")
-async def model_fixture(ops_test: OpsTest) -> Model:
+async def model_fixture(ops_test: OpsTest, pytestconfig: Config) -> Model:
     """Return the current testing juju model."""
     assert ops_test.model
+    model_arch = pytestconfig.getoption("--model-arch")
+    if model_arch:
+        await ops_test.model.set_constraints({"arch": model_arch})
     return ops_test.model
 
 
@@ -53,7 +56,6 @@ async def nginx_app_fixture(
     app = await model.deploy(
         "nginx-ingress-integrator",
         channel="latest/edge",
-        revision=99,
         trust=True,
         config=config,
     )
