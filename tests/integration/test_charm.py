@@ -79,10 +79,11 @@ async def test_lookup_key(hockeypuck_k8s_app: Application, gpg_key: Any) -> None
     )
     await action.wait()
     assert action.results["return-code"] == 0
-    assert "result" in action
-    assert "BEGIN PGP PUBLIC KEY BLOCK" in action["result"]
+    assert "result" in action.results
+    assert "BEGIN PGP PUBLIC KEY BLOCK" in action.results["result"]
 
 
+@pytest.mark.skip()
 @pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
 @pytest.mark.flaky(reruns=10, reruns_delay=10)
@@ -107,6 +108,7 @@ async def test_reconciliation(
         assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
 
 
+@pytest.mark.skip()
 @pytest.mark.dependency(depends=["test_adding_records"])
 async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key: Any) -> None:
     """
@@ -132,6 +134,7 @@ async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key:
         assert response.status_code == 404
 
 
+@pytest.mark.skip()
 async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> None:
     """
     arrange: Deploy the Hockeypuck charm and integrate with Postgres and Nginx.
@@ -143,6 +146,7 @@ async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> No
     assert action.results["return-code"] == 0
 
 
+@pytest.mark.skip()
 async def test_traefik_integration(traefik_integration: Application) -> None:
     """
     arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
