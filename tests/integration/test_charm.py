@@ -143,6 +143,10 @@ async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> No
     assert action.results["return-code"] == 0
 
 
+@pytest.mark.skipif(
+    pytest.config.getoption("--model-arch") == "arm64",
+    reason="Test not supported on arm64 architecture",
+)
 async def test_traefik_integration(traefik_integration: Application) -> None:
     """
     arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
