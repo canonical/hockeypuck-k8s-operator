@@ -14,6 +14,8 @@ from juju.model import Model
 from pytest import Config
 from pytest_operator.plugin import OpsTest
 
+from actions import HTTP_PORT, METRICS_PORT, RECONCILIATION_PORT
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,7 +40,11 @@ async def postgresql_app_fixture(
     model: Model,
 ) -> Application:
     """Deploy postgresql-k8s charm."""
-    app = await model.deploy("postgresql-k8s", channel="14/stable", trust=True)
+    app = await model.deploy(
+        "postgresql-k8s",
+        channel="14/stable",
+        trust=True,
+    )
     return app
 
 
@@ -93,8 +99,8 @@ async def hockeypuck_k8s_app_fixture(
         f"./{hockeypuck_charm}",
         resources=resources,
         config={
-            "app-port": 11371,
-            "metrics-port": 9626,
+            "app-port": HTTP_PORT,
+            "metrics-port": METRICS_PORT,
         },
     )
     await model.add_relation(app.name, postgresql_app.name)
@@ -131,12 +137,14 @@ async def hockeypuck_secondary_app_fixture(
             f"./{hockeypuck_charm}",
             resources=resources,
             config={
-                "app-port": 11371,
-                "metrics-port": 9626,
+                "app-port": HTTP_PORT,
+                "metrics-port": METRICS_PORT,
             },
         )
         postgresql_app = await secondary_model.deploy(
-            "postgresql-k8s", channel="14/stable", trust=True
+            "postgresql-k8s",
+            channel="14/stable",
+            trust=True,
         )
         await secondary_model.add_relation(app.name, postgresql_app.name)
         await secondary_model.wait_for_idle(status="active")
@@ -156,7 +164,8 @@ async def external_peer_config_fixture(
         f"{hockeypuck_k8s_app.name}-endpoints."
         f"{hockeypuck_k8s_app.model.name}.svc.cluster.local"
     )
-    await hockeypuck_secondary_app.set_config({"external-peers": hockeypuck_primary_fqdn})
+    primary_config = f"{hockeypuck_primary_fqdn},{HTTP_PORT},{RECONCILIATION_PORT}"
+    await hockeypuck_secondary_app.set_config({"external-peers": primary_config})
 
     secondary_unit_name = (hockeypuck_secondary_app.units[0].name).replace("/", "-")
     hockeypuck_secondary_fqdn = (
@@ -164,7 +173,8 @@ async def external_peer_config_fixture(
         f"{hockeypuck_secondary_app.name}-endpoints."
         f"{hockeypuck_secondary_app.model.name}.svc.cluster.local"
     )
-    await hockeypuck_k8s_app.set_config({"external-peers": hockeypuck_secondary_fqdn})
+    secondary_config = f"{hockeypuck_secondary_fqdn},{HTTP_PORT},{RECONCILIATION_PORT}"
+    await hockeypuck_k8s_app.set_config({"external-peers": secondary_config})
 
     await hockeypuck_k8s_app.model.wait_for_idle(status="active")
     await hockeypuck_secondary_app.model.wait_for_idle(status="active")

@@ -4,13 +4,19 @@
 """Hockeypuck charm actions."""
 
 import logging
+import typing
 
 import ops
 import paas_app_charmer.go
+import requests
 from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+HTTP_PORT: typing.Final[int] = 11371  # the port hockeypuck listens to for HTTP requests
+RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to for reconciliation
+METRICS_PORT: typing.Final[int] = 9626  # the metrics port
 
 
 class Observer(ops.Object):
@@ -29,6 +35,7 @@ class Observer(ops.Object):
         charm.framework.observe(
             charm.on.rebuild_prefix_tree_action, self._rebuild_prefix_tree_action
         )
+        charm.framework.observe(charm.on.lookup_key_action, self._lookup_key_action)
 
     def _block_keys_action(self, event: ops.ActionEvent) -> None:
         """Blocklist and delete keys from the database.
@@ -58,10 +65,28 @@ class Observer(ops.Object):
         command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
         self._execute_action(event, command)
 
+    def _lookup_key_action(self, event: ops.ActionEvent) -> None:
+        """Lookup a key in the hockeypuck database using email id or fingerprint or keyword.
+
+        Args:
+            event: the event triggering the original action.
+        """
+        keyword = event.params["keyword"]
+        try:
+            response = requests.get(
+                f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search={keyword}",
+                timeout=20,
+            )
+            response.raise_for_status()
+            event.set_results({"result": response.text})
+        except requests.exceptions.RequestException as e:
+            logger.error("Action failed: %s", e)
+            event.fail(f"Failed: {str(e)}")
+
     def _execute_action(
         self, event: ops.ActionEvent, command: list[str], leader_only: bool = False
     ) -> None:
-        """Execute the action.
+        """Stop the hockeypuck service, execute the action and start the service.
 
         Args:
             event: the event triggering the original action.

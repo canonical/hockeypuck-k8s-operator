@@ -5,9 +5,6 @@
 # <kbd>module</kbd> `charm.py`
 Go Charm entrypoint. 
 
-**Global Variables**
----------------
-- **RECONCILIATION_PORT**
 
 
 ---
@@ -15,7 +12,7 @@ Go Charm entrypoint.
 ## <kbd>class</kbd> `HockeypuckK8SCharm`
 Go Charm service. 
 
-<a href="../src/charm.py#L24"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/charm.py#L22"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `__init__`
 
@@ -72,7 +69,7 @@ Unit that this execution is responsible for.
 
 ---
 
-<a href="../src/charm.py#L34"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/charm.py#L32"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `restart`
 

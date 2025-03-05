@@ -13,6 +13,7 @@ import pytest
 from ops.testing import Harness
 
 import traefik_route_observer
+from actions import RECONCILIATION_PORT
 
 REQUIRER_METADATA = """
 name: observer-charm
@@ -62,12 +63,14 @@ def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.Monkey
                 "routers": traefik_route_observer.HOCKEYPUCK_TCP_ROUTER,
                 "services": {
                     "hockeypuck-tcp-service": {
-                        "loadBalancer": {"servers": [{"address": "hockeypuck.local:11370"}]},
+                        "loadBalancer": {
+                            "servers": [{"address": f"hockeypuck.local:{RECONCILIATION_PORT}"}]
+                        },
                     }
                 },
             }
         },
-        static={"entryPoints": {"reconciliation-port": {"address": ":11370"}}},
+        static={"entryPoints": {"reconciliation-port": {"address": f":{RECONCILIATION_PORT}"}}},
     )
 
 
