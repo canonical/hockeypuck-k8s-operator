@@ -20,12 +20,9 @@ logger = logging.getLogger(__name__)
 
 
 @pytest_asyncio.fixture(scope="module", name="model")
-async def model_fixture(ops_test: OpsTest, pytestconfig: Config) -> Model:
+async def model_fixture(ops_test: OpsTest) -> Model:
     """Return the current testing juju model."""
     assert ops_test.model
-    model_arch = pytestconfig.getoption("--model-arch")
-    if model_arch:
-        await ops_test.model.set_constraints({"arch": model_arch})
     return ops_test.model
 
 
@@ -41,19 +38,12 @@ async def secondary_model_fixture(ops_test: OpsTest) -> str:
 @pytest_asyncio.fixture(scope="module", name="postgresql_app")
 async def postgresql_app_fixture(
     model: Model,
-    pytestconfig: Config,
 ) -> Application:
     """Deploy postgresql-k8s charm."""
-    model_arch = pytestconfig.getoption("--model-arch")
-    if model_arch == "amd64":
-        revision = 495
-    else:
-        revision = 494
     app = await model.deploy(
         "postgresql-k8s",
         channel="14/stable",
         trust=True,
-        revision=revision,
     )
     return app
 
@@ -61,21 +51,14 @@ async def postgresql_app_fixture(
 @pytest_asyncio.fixture(scope="module", name="nginx_app")
 async def nginx_app_fixture(
     model: Model,
-    pytestconfig: Config,
 ) -> Application:
     """Deploy nginx charm."""
     config = {"service-hostname": "hockeypuck.local", "path-routes": "/"}
-    model_arch = pytestconfig.getoption("--model-arch")
-    if model_arch == "amd64":
-        revision = 99
-    else:
-        revision = 141
     app = await model.deploy(
         "nginx-ingress-integrator",
         channel="latest/edge",
         trust=True,
         config=config,
-        revision=revision,
     )
     return app
 
@@ -142,17 +125,11 @@ async def hockeypuck_secondary_app_fixture(
     hockeypuck_charm: str | Path,
     hockeypuck_app_image: str,
     ops_test: OpsTest,
-    pytestconfig: Config,
 ) -> Application:
     """Deploy the hockeypuck-k8s application in the secondary model and relate with Postgresql"""
     resources = {
         "app-image": hockeypuck_app_image,
     }
-    model_arch = pytestconfig.getoption("--model-arch")
-    if model_arch == "amd64":
-        revision = 495
-    else:
-        revision = 494
     # Switch context to the new model
     with ops_test.model_context(secondary_model_alias) as secondary_model:
         app = await secondary_model.deploy(
@@ -167,7 +144,6 @@ async def hockeypuck_secondary_app_fixture(
             "postgresql-k8s",
             channel="14/stable",
             trust=True,
-            revision=revision,
         )
         await secondary_model.add_relation(app.name, postgresql_app.name)
         await secondary_model.wait_for_idle(status="active")

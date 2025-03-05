@@ -16,4 +16,3 @@ def pytest_addoption(parser: Parser) -> None:
         "--hockeypuck-image", action="store", help="Hockeypuck app image to be deployed"
     )
     parser.addoption("--charm-file", action="store", help="Charm file to be deployed")
-    parser.addoption("--model-arch", action="store", help="Model architecture. Eg: amd64/arm64")
