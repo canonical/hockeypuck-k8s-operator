@@ -79,7 +79,7 @@ class Observer(ops.Object):
             )
             response.raise_for_status()
             event.set_results({"result": response.text})
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.RequestException as e:
             logger.exception("Action failed: %s", e)
             event.fail(f"Failed: {str(e)}")
 
