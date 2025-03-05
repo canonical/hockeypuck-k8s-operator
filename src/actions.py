@@ -79,6 +79,9 @@ class Observer(ops.Object):
             )
             response.raise_for_status()
             event.set_results({"result": response.text})
+        except requests.exceptions.HTTPError as e:
+            logger.error("Record not found: %s", e)
+            event.fail(f"Record not found: {str(e)}")
         except requests.exceptions.RequestException as e:
             logger.exception("Action failed: %s", e)
             event.fail(f"Failed: {str(e)}")

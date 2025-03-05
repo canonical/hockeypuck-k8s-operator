@@ -57,6 +57,7 @@ async def nginx_app_fixture(
     app = await model.deploy(
         "nginx-ingress-integrator",
         channel="latest/edge",
+        revision=99,
         trust=True,
         config=config,
     )

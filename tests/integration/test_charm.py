@@ -83,6 +83,21 @@ async def test_lookup_key(hockeypuck_k8s_app: Application, gpg_key: Any) -> None
     assert "BEGIN PGP PUBLIC KEY BLOCK" in action.results["result"]
 
 
+@pytest.mark.dependency(depends=["test_adding_records"])
+async def test_lookup_key_not_found(hockeypuck_k8s_app: Application) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm.
+    act: Execute the lookup-key action with an invalid key.
+    assert: Action raises a 404 error
+    """
+    fingerprint = "RANDOMKEY"
+    action = await hockeypuck_k8s_app.units[0].run_action(
+        "lookup-key", **{"keyword": f"0x{fingerprint}"}
+    )
+    await action.wait()
+    assert "Record not found" in action.results["stderr"]
+
+
 @pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
 @pytest.mark.flaky(reruns=10, reruns_delay=10)
