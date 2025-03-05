@@ -95,7 +95,7 @@ async def test_lookup_key_not_found(hockeypuck_k8s_app: Application) -> None:
         "lookup-key", **{"keyword": f"0x{fingerprint}"}
     )
     await action.wait()
-    assert "Record not found" in action.results["stderr"]
+    assert "Not Found" in action.results["stderr"]
 
 
 @pytest.mark.usefixtures("external_peer_config")
