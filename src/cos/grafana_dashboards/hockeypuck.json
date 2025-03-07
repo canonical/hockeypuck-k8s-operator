@@ -1,15 +1,4 @@
 {
-    "__inputs": [
-      {
-        "name": "DS_PROMETHEUS",
-        "label": "Prometheus",
-        "description": "Prometheus Data Source",
-        "type": "datasource",
-        "pluginId": "prometheus",
-        "pluginName": "Prometheus"
-      }
-    ],
-    "__elements": {},
     "__requires": [
       {
         "type": "panel",
@@ -53,19 +42,13 @@
         {
           "builtIn": 1,
           "datasource": {
-            "type": "datasource",
-            "uid": "grafana"
+            "type": "grafana",
+            "uid": "-- Grafana --"
           },
           "enable": true,
           "hide": true,
           "iconColor": "rgba(0, 211, 255, 1)",
           "name": "Annotations & Alerts",
-          "target": {
-            "limit": 100,
-            "matchAny": false,
-            "tags": [],
-            "type": "dashboard"
-          },
           "type": "dashboard"
         }
       ]
@@ -92,7 +75,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -175,7 +158,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "mem_available_percent{juju_model='$juju_model', service=~'$application', juju_unit=~'$juju_unit'}",
             "refId": "A"
@@ -187,7 +170,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "description": "",
         "fieldConfig": {
@@ -272,7 +255,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -288,7 +271,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -304,7 +287,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -335,7 +318,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -385,7 +368,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "process_start_time_seconds{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"} * 1000\n",
@@ -401,7 +384,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -488,7 +471,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -505,7 +488,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -587,7 +570,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "sum(rate(hockeypuck_http_request_duration_seconds_bucket{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', method=\"POST\"}[2m])) by (le)",
@@ -600,7 +583,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "sum(increase(hockeypuck_http_request_duration_seconds_bucket{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}[5m])) by (method)",
@@ -613,7 +596,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "sum(increase(hockeypuck_http_request_duration_seconds_count{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\" }[5m])) by (method, status_code)\n",
@@ -630,7 +613,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -713,7 +696,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "sum(rate(hockeypuck_http_request_duration_seconds_bucket{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', method=\"POST\"}[2m])) by (le)",
@@ -726,7 +709,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -746,7 +729,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "description": "Since last restart",
         "fieldConfig": {
@@ -809,7 +792,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "hockeypuck_keys_added{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
@@ -820,7 +803,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "hockeypuck_keys_updated{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
@@ -832,7 +815,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "hockeypuck_keys_ignored{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
@@ -848,7 +831,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "description": "",
         "fieldConfig": {
@@ -927,7 +910,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "hockeypuck_keys_added{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
@@ -938,7 +921,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "hockeypuck_keys_updated{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
@@ -950,7 +933,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "hockeypuck_keys_ignored{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
@@ -979,7 +962,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -1063,7 +1046,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_mspan_inuse_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
             "format": "time_series",
@@ -1073,7 +1056,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_mspan_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
             "format": "time_series",
@@ -1083,7 +1066,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_mcache_inuse_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
             "format": "time_series",
@@ -1093,7 +1076,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_mcache_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
             "format": "time_series",
@@ -1103,7 +1086,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_buck_hash_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
             "format": "time_series",
@@ -1113,7 +1096,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_gc_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
             "format": "time_series",
@@ -1123,7 +1106,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_other_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'} - go_memstats_other_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -1134,7 +1117,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_next_gc_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -1148,7 +1131,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -1232,7 +1215,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1248,7 +1231,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_memstats_heap_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -1262,7 +1245,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_memstats_heap_idle_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -1276,7 +1259,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_memstats_heap_inuse_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -1290,7 +1273,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_memstats_heap_released_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -1308,7 +1291,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -1393,7 +1376,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_stack_inuse_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -1403,7 +1386,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_stack_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -1417,7 +1400,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -1501,7 +1484,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_memstats_sys_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -1518,7 +1501,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -1603,7 +1586,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_memstats_mallocs_total{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"} - go_memstats_frees_total{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -1620,7 +1603,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "description": "shows how many heap objects are allocated. This is a counter value so you can use rate() to objects allocated/s.",
         "fieldConfig": {
@@ -1706,7 +1689,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "rate(go_memstats_mallocs_total{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}[5m])",
@@ -1723,7 +1706,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "description": "go_memstats_lookups_total: counts how many pointer dereferences happened. This is a counter value so you can use rate() to lookups/s.",
         "fieldConfig": {
@@ -1809,7 +1792,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "rate(go_memstats_lookups_total{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}[5m])",
@@ -1826,7 +1809,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -1911,7 +1894,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "rate(go_memstats_alloc_bytes_total{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}[5m])",
@@ -1928,7 +1911,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -2013,7 +1996,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_goroutines{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -2030,7 +2013,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -2115,7 +2098,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "code",
             "expr": "go_gc_duration_seconds{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit', instance=~\".*:9626\"}",
@@ -2146,7 +2129,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -2230,7 +2213,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_goroutines{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -2246,7 +2229,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -2316,7 +2299,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "sum(increase(hockeypuck_http_request_duration_seconds_bucket{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}[$__interval])) by (le) ",
             "format": "heatmap",
@@ -2332,7 +2315,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -2416,7 +2399,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_gc_duration_seconds{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -2432,7 +2415,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -2502,7 +2485,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "editorMode": "builder",
             "expr": "sum(increase(conflux_reconciliation_duration_seconds_bucket{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}[$__interval])) by (le)",
@@ -2520,7 +2503,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "fieldConfig": {
           "defaults": {
@@ -2604,7 +2587,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_alloc_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -2616,7 +2599,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "rate(go_memstats_alloc_bytes_total{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}[2m])",
             "format": "time_series",
@@ -2629,7 +2612,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_stack_inuse_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -2642,7 +2625,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "go_memstats_heap_inuse_bytes{juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "format": "time_series",
@@ -2659,7 +2642,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${prometheusds}"
         },
         "description": "cRT#124887 cRT#127175",
         "fieldConfig": {
@@ -2744,7 +2727,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+              "uid": "${prometheusds}"
             },
             "expr": "procstat_lookup_pid_count{exe=\"dirmngr\", juju_model='$juju_model', service=~'$application',  juju_unit=~'$juju_unit'}",
             "interval": "",
