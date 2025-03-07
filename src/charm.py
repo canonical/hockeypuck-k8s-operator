@@ -5,6 +5,7 @@
 """Go Charm entrypoint."""
 
 import logging
+import pathlib
 import typing
 
 import ops
@@ -37,6 +38,14 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         """
         self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
         super().restart(rerun_migrations)
+
+    def get_cos_dir(self) -> str:
+        """Return the directory with COS related files.
+
+        Returns:
+            Return the directory with COS related files.
+        """
+        return str((pathlib.Path(__file__).parent / "cos").absolute())
 
 
 if __name__ == "__main__":
