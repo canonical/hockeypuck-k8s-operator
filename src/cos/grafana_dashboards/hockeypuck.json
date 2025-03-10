@@ -547,7 +547,7 @@
         "type": "prometheus",
         "uid": "${prometheusds}"
       },
-      "description": "",
+      "description": "Since last restart",
       "fieldConfig": {
         "defaults": {
           "color": {
