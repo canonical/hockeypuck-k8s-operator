@@ -12,7 +12,7 @@ Go Charm entrypoint.
 ## <kbd>class</kbd> `HockeypuckK8SCharm`
 Go Charm service. 
 
-<a href="../src/charm.py#L22"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/charm.py#L23"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `__init__`
 
@@ -69,7 +69,24 @@ Unit that this execution is responsible for.
 
 ---
 
-<a href="../src/charm.py#L32"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/charm.py#L42"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+
+### <kbd>function</kbd> `get_cos_dir`
+
+```python
+get_cos_dir() → str
+```
+
+Return the directory with COS related files. 
+
+
+
+**Returns:**
+  Return the directory with COS related files. 
+
+---
+
+<a href="../src/charm.py#L33"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `restart`
 
