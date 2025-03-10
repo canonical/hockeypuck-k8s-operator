@@ -57,14 +57,27 @@ actions:
       must always be in sync with the database. If you suspect it is corrupted or out 
       of sync, or if the prefix tree needs to be removed and rebuilt after pg_restore, 
       it can be done with this action. 
+  lookup-key:
+    description: Look up a key by fingerprint / email-id / keyword.
+    properties:
+      keyword:
+        type: string
+        description: |
+          Keyword to search for in the keyserver database. Note that the entire fingerprint 
+          including the preceding '0x' is required for fingerprint search.
+    required:
+      - keyword
+
 
 config:
   options:
     external-peers:
       type: string
       description: |
-        Comma-seperated list of external peer IPs or FQDNs without the ports.
-        Note that the HTTP and reconcilliation ports are fixed and cannot be edited.
+        New line separated list of external peer IPs or FQDNs that are provided in the 
+        following format:
+        peer_fqdn1,http_port1,reconciliation_port1
+        peer_fqdn2,http_port2,reconciliation_port2
     contact-fingerprint:
       type: string
       description: |

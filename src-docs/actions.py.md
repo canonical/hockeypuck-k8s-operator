@@ -7,7 +7,10 @@ Hockeypuck charm actions.
 
 **Global Variables**
 ---------------
-- **HOCKEYPUCK_CONTAINER_NAME**
+- **WORKLOAD_CONTAINER_NAME**
+- **HTTP_PORT**
+- **RECONCILIATION_PORT**
+- **METRICS_PORT**
 
 
 ---
@@ -15,7 +18,7 @@ Hockeypuck charm actions.
 ## <kbd>class</kbd> `Observer`
 Charm actions observer. 
 
-<a href="../src/actions.py#L21"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
+<a href="../src/actions.py#L25"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
 ### <kbd>function</kbd> `__init__`
 
