@@ -1,9 +1,9 @@
 alert: HighErrorRate
 expr: |
-    sum by(juju_charm) (increase(hockeypuck_http_request_duration_seconds_count{juju_charm="hockeypuck", status_code!="200"}[5m])) > 30
+    sum by(juju_charm) (increase(hockeypuck_http_request_duration_seconds_count{juju_charm="hockeypuck", status_code>="400"}[5m])) > 30
 for: 2m
 labels:
     severity: critical
 annotations:
-    summary: "High non-200 response codes"
+    summary: "High number of response codes >= 400"
     description: "The increase in non successful requests over a period of 5 minutes is above 30 for the last 2 minutes."
