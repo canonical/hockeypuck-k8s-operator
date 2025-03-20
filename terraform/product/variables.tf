@@ -33,22 +33,10 @@ variable "hockeypuck" {
   })
 }
 
-variable "postgresql_k8s" {
+variable "postgresql" {
   type = object({
-    app_name    = optional(string, "postgresql-k8s")
+    app_name    = optional(string, "postgresql")
     channel     = optional(string, "14/stable")
-    config      = optional(map(string), {})
-    constraints = optional(string, "arch=amd64")
-    revision    = optional(number)
-    base        = optional(string, "ubuntu@24.04")
-    units       = optional(number, 1)
-  })
-}
-
-variable "nginx_ingress" {
-  type = object({
-    app_name    = optional(string, "nginx-ingress-integrator")
-    channel     = optional(string, "latest/stable")
     config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")
     revision    = optional(number)
@@ -57,11 +45,23 @@ variable "nginx_ingress" {
   })
 }
 
+variable "nginx_ingress" {
+  type = object({
+    app_name    = optional(string, "nginx-ingress-integrator")
+    channel     = optional(string, "latest/stable")
+    config      = optional(map(string), {"juju-external-hostname": "hockeypuck.local"})
+    constraints = optional(string, "arch=amd64")
+    revision    = optional(number)
+    base        = optional(string, "ubuntu@20.04")
+    units       = optional(number, 1)
+  })
+}
+
 variable "traefik_k8s" {
   type = object({
     app_name    = optional(string, "traefik-k8s")
     channel     = optional(string, "latest/stable")
-    config      = optional(map(string), {})
+    config      = optional(map(string), {"juju-external-hostname" : "hockeypuck.local"})
     constraints = optional(string, "arch=amd64")
     revision    = optional(number)
     base        = optional(string, "ubuntu@20.04")

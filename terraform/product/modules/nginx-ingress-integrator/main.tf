@@ -15,6 +15,5 @@ resource "juju_application" "nginx_ingress_integrator" {
   config      = var.config
   constraints = var.constraints
   units       = var.units
-
-  expose {}
+  trust       = true
 }
