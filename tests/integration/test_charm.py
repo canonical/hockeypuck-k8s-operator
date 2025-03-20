@@ -8,12 +8,14 @@
 import json
 import logging
 import socket
+import typing
 from typing import Any
 
 import pytest
 import requests
 from gnupg import GPG
 from juju.application import Application
+from juju.client._definitions import UnitStatus
 
 from actions import HTTP_PORT, RECONCILIATION_PORT
 
@@ -111,14 +113,24 @@ async def test_reconciliation(
     assert: Key is present in the secondary model hockeypuck server.
     """
     status = await hockeypuck_secondary_app.model.get_status()
-    units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
+    hockeypuck_secondary_application = typing.cast(
+        Application, status.applications[hockeypuck_secondary_app.name]
+    )
+    units = hockeypuck_secondary_application.units
     for unit in units.values():
+        unit_status: UnitStatus = unit
+        unit_address: str = (
+            unit_status.address.decode()
+            if isinstance(unit_status.address, bytes)
+            else typing.cast(str, unit_status.address)
+        )
         response = requests.get(
-            f"http://{unit.address}:{HTTP_PORT}/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
+            f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
+            f"?op=get&search=0x{gpg_key.fingerprint}",
             timeout=20,
         )
 
-        assert response.status_code == 200, f"Key not found in {unit.address}"
+        assert response.status_code == 200, f"Key not found in {unit_address}"
         assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
 
 
@@ -137,10 +149,19 @@ async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key:
     assert action.results["return-code"] == 0
 
     status = await hockeypuck_secondary_app.model.get_status()
-    units = status.applications[hockeypuck_secondary_app.name].units  # type: ignore[union-attr]
-    for unit in units.values():
+    hockeypuck_secondary_application = typing.cast(
+        Application, status.applications[hockeypuck_secondary_app.name]
+    )
+    for unit in hockeypuck_secondary_application.units.values():
+        unit_status: UnitStatus = unit
+        unit_address: str = (
+            unit_status.address.decode()
+            if isinstance(unit_status.address, bytes)
+            else typing.cast(str, unit_status.address)
+        )
         response = requests.get(
-            f"http://{unit.address}:{HTTP_PORT}/pks/lookup?op=get&search=0x{gpg_key.fingerprint}",
+            f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
+            f"?op=get&search=0x{gpg_key.fingerprint}",
             timeout=20,
         )
 
