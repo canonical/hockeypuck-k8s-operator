@@ -2,7 +2,7 @@
 # See LICENSE file for licensing details.
 
 type: charm
-name: hockeypuck
+name: hockeypuck-k8s
 title: Hockeypuck K8S Charm
 summary: Hockeypuck OpenPGP public keyserver
 links:
