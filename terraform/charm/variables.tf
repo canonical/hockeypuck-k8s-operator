@@ -4,7 +4,7 @@
 variable "app_name" {
   description = "Name of the application in the Juju model."
   type        = string
-  default     = "hockeypuck"
+  default     = "hockeypuck-k8s"
 }
 
 variable "channel" {
@@ -14,7 +14,7 @@ variable "channel" {
 }
 
 variable "config" {
-  description = "Application config. Details about available options can be found at https://charmhub.io/hockeypuck/configurations."
+  description = "Application config. Details about available options can be found at https://charmhub.io/hockeypuck-k8s/configurations."
   type        = map(string)
   default     = {}
 }

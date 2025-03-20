@@ -23,7 +23,7 @@ variable "db_model_user" {
 
 variable "hockeypuck" {
   type = object({
-    app_name    = optional(string, "hockeypuck")
+    app_name    = optional(string, "hockeypuck-k8s")
     channel     = optional(string, "latest/edge")
     config      = optional(map(string), {})
     constraints = optional(string, "arch=amd64")

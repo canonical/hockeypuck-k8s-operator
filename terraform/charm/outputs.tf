@@ -3,7 +3,7 @@
 
 output "app_name" {
   description = "Name of the deployed application."
-  value       = juju_application.hockeypuck.name
+  value       = juju_application.hockeypuck_k8s.name
 }
 
 output "requires" {

@@ -3,7 +3,7 @@
 
 output "app_name" {
   description = "Name of the deployed application."
-  value       = module.hockeypuck.name
+  value       = module.hockeypuck_k8s.name
 }
 
 output "requires" {

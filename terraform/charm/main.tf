@@ -1,12 +1,12 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-resource "juju_application" "hockeypuck" {
+resource "juju_application" "hockeypuck_k8s" {
   name  = var.app_name
   model = var.model
 
   charm {
-    name     = "hockeypuck"
+    name     = "hockeypuck-k8s"
     channel  = var.channel
     revision = var.revision
     base     = var.base

@@ -11,7 +11,7 @@ data "juju_model" "hockeypuck_db" {
   provider = juju.hockeypuck_db
 }
 
-module "hockeypuck" {
+module "hockeypuck_k8s" {
   source      = "../charm"
   app_name    = var.hockeypuck.app_name
   channel     = var.hockeypuck.channel
@@ -82,8 +82,8 @@ resource "juju_integration" "hockeypuck_postgres" {
   model = data.juju_model.hockeypuck.name
 
   application {
-    name     = module.hockeypuck.app_name
-    endpoint = module.hockeypuck.requires.postgresql
+    name     = module.hockeypuck_k8s.app_name
+    endpoint = module.hockeypuck_k8s.requires.postgresql
   }
 
   application {
@@ -95,8 +95,8 @@ resource "juju_integration" "hockeypuck_nginx" {
   model = data.juju_model.hockeypuck.name
 
   application {
-    name     = module.hockeypuck.app_name
-    endpoint = module.hockeypuck.requires.ingress
+    name     = module.hockeypuck_k8s.app_name
+    endpoint = module.hockeypuck_k8s.requires.ingress
   }
 
   application {
@@ -109,8 +109,8 @@ resource "juju_integration" "hockeypuck_traefik" {
   model = data.juju_model.hockeypuck.name
 
   application {
-    name     = module.hockeypuck.app_name
-    endpoint = module.hockeypuck.requires.traefik_route
+    name     = module.hockeypuck_k8s.app_name
+    endpoint = module.hockeypuck_k8s.requires.traefik_route
   }
 
   application {
