@@ -183,4 +183,3 @@ resource "juju_integration" "hockeypuck_traefik" {
     endpoint = module.traefik_k8s.provides.traefik_route
   }
 }
-
