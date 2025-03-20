@@ -117,8 +117,8 @@ async def test_reconciliation(
         Application, status.applications[hockeypuck_secondary_app.name]
     )
     units = hockeypuck_secondary_application.units
-    for unit in units:
-        unit_status: UnitStatus = unit.values()
+    for unit in units.values():
+        unit_status: UnitStatus = unit
         unit_address: str = (
             unit_status.address.decode()
             if isinstance(unit_status.address, bytes)
@@ -152,8 +152,8 @@ async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key:
     hockeypuck_secondary_application = typing.cast(
         Application, status.applications[hockeypuck_secondary_app.name]
     )
-    for unit in hockeypuck_secondary_application.units:
-        unit_status: UnitStatus = unit.values()
+    for unit in hockeypuck_secondary_application.units.values():
+        unit_status: UnitStatus = unit
         unit_address: str = (
             unit_status.address.decode()
             if isinstance(unit_status.address, bytes)
