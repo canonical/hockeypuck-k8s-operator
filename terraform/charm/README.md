@@ -14,6 +14,7 @@ deployment onto any Kubernetes environment managed by [Juju][Juju].
   by defining potential integration endpoints (charm integrations), but also by exposing
   the Juju application name.
 - **versions.tf** - Defines the Terraform provider version.
+
 ## Using hockeypuck-k8s base module in higher level modules
 
 If you want to use `hockeypuck-k8s` base module as part of your Terraform module, import it
