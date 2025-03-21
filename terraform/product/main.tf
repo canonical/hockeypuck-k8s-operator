@@ -39,18 +39,6 @@ module "postgresql" {
   }
 }
 
-module "nginx_ingress" {
-  source      = "./modules/nginx-ingress-integrator"
-  app_name    = var.nginx_ingress.app_name
-  channel     = var.nginx_ingress.channel
-  config      = var.nginx_ingress.config
-  constraints = var.nginx_ingress.constraints
-  model       = data.juju_model.hockeypuck.name
-  revision    = var.nginx_ingress.revision
-  base        = var.nginx_ingress.base
-  units       = var.nginx_ingress.units
-}
-
 module "traefik_k8s" {
   source      = "./modules/traefik-k8s"
   app_name    = var.traefik_k8s.app_name
@@ -79,7 +67,7 @@ resource "juju_access_offer" "postgresql" {
   provider = juju.hockeypuck_db
 }
 
-resource "juju_integration" "hockeypuck_postgresql" {
+resource "juju_integration" "hockeypuck_postgresql_database" {
   model = data.juju_model.hockeypuck.name
 
   application {
@@ -92,7 +80,7 @@ resource "juju_integration" "hockeypuck_postgresql" {
   }
 }
 
-resource "juju_integration" "hockeypuck_nginx" {
+resource "juju_integration" "hockeypuck_traefik_nginx" {
   model = data.juju_model.hockeypuck.name
 
   application {
@@ -101,12 +89,12 @@ resource "juju_integration" "hockeypuck_nginx" {
   }
 
   application {
-    name     = module.nginx_ingress.app_name
-    endpoint = module.nginx_ingress.provides.ingress
+    name     = module.traefik_k8s.app_name
+    endpoint = module.traefik_k8s.provides.ingress
   }
 }
 
-resource "juju_integration" "hockeypuck_traefik" {
+resource "juju_integration" "hockeypuck_traefik_traefik_route" {
   model = data.juju_model.hockeypuck.name
 
   application {

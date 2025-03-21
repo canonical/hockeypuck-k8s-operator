@@ -50,18 +50,6 @@ variable "postgresql" {
   })
 }
 
-variable "nginx_ingress" {
-  type = object({
-    app_name    = optional(string, "nginx-ingress-integrator")
-    channel     = optional(string, "latest/stable")
-    config      = optional(map(string), { "service-hostname" : "hockeypuck.local" })
-    constraints = optional(string, "arch=amd64")
-    revision    = optional(number)
-    base        = optional(string, "ubuntu@20.04")
-    units       = optional(number, 1)
-  })
-}
-
 variable "traefik_k8s" {
   type = object({
     app_name    = optional(string, "traefik-k8s")
