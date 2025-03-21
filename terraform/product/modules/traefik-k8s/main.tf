@@ -15,6 +15,5 @@ resource "juju_application" "traefik_k8s" {
   config      = var.config
   constraints = var.constraints
   units       = var.units
-
-  expose {}
+  trust       = true
 }

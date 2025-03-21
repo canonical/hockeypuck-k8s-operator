@@ -10,19 +10,19 @@ variable "app_name" {
 variable "channel" {
   description = "The channel to use when deploying a charm."
   type        = string
-  default     = ""
+  default     = "2.2/edge"
 }
 
 variable "config" {
   description = "Application config. Details about available options can be found at https://charmhub.io/hockeypuck-k8s/configurations."
   type        = map(string)
-  default     = {}
+  default     = { "metrics-port" : 9626, "app-port" : 11371 }
 }
 
 variable "constraints" {
   description = "Juju constraints to apply for this application."
   type        = string
-  default     = "arch=amd64"
+  default     = ""
 }
 
 variable "model" {

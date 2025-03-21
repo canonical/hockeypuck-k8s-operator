@@ -8,10 +8,10 @@ output "app_name" {
 
 output "requires" {
   value = {
-    ingress           = "ingress"
-    logging           = "logging"
-    postgresql        = "postgresql"
-    traefik_route     = "traefik-route"
+    ingress       = "ingress"
+    logging       = "logging"
+    postgresql    = "postgresql"
+    traefik_route = "traefik-route"
   }
 }
 

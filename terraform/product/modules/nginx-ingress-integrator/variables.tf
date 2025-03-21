@@ -16,7 +16,7 @@ variable "channel" {
 variable "config" {
   description = "Application config. Details about available options can be found at https://charmhub.io/nginx-ingress-integrator/configurations."
   type        = map(string)
-  default     = {"juju-external-hostname": "hockeypuck.local"}
+  default     = { "service-hostname" : "hockeypuck.local" }
 }
 
 variable "constraints" {

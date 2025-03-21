@@ -16,7 +16,7 @@ variable "channel" {
 variable "config" {
   description = "Application config. Details about available options can be found at https://charmhub.io/traefik-k8s/configurations."
   type        = map(string)
-  default     = {"juju-external-hostname" : "hockeypuck.local"}
+  default     = {}
 }
 
 variable "constraints" {

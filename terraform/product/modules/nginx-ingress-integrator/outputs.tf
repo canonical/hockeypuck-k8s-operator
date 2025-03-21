@@ -14,7 +14,7 @@ output "requires" {
 
 output "provides" {
   value = {
-    ingress = "ingress"
+    ingress     = "ingress"
     nginx_route = "nginx-route"
   }
 }
