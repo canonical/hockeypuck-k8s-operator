@@ -14,3 +14,4 @@ __pycache__/
 **/.terraform.lock.hcl
 **/*.tfstate*
 **/*.tfvars
+**/smtp_integrator/v0/smtp.py

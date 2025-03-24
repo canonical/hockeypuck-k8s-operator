@@ -30,6 +30,14 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         self.actions_observer = actions.Observer(self)
         self._traefik_route = traefik_route_observer.TraefikRouteObserver(self)
 
+    def is_ready(self) -> bool:
+        if len(self.model.get_relation("secret-storage").units) > 0:
+            self.update_app_and_unit_status(
+                ops.BlockedStatus("Hockeypuck does not support multi-unit deployments")
+            )
+            return False
+        return super().is_ready()
+
     def restart(self, rerun_migrations: bool = False) -> None:
         """Open reconciliation port and call the parent restart method.
 
