@@ -112,6 +112,8 @@ async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
     assert (
         hockeypuck_k8s_app.status_message == "Hockeypuck does not support multi-unit deployments"
     )
+    await hockeypuck_k8s_app.remove_unit()
+    assert hockeypuck_k8s_app.status == "active"
 
 
 @pytest.mark.usefixtures("external_peer_config")
