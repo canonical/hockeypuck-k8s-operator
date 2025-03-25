@@ -112,7 +112,8 @@ async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
     assert (
         hockeypuck_k8s_app.status_message == "Hockeypuck does not support multi-unit deployments"
     )
-    await hockeypuck_k8s_app.remove_unit(status="active", apps=[hockeypuck_k8s_app.name])
+    await hockeypuck_k8s_app.destroy_unit(f"{hockeypuck_k8s_app.name}/1")
+    await hockeypuck_k8s_app.wait_for_idle(status="active", apps=[hockeypuck_k8s_app.name])
     assert hockeypuck_k8s_app.status == "active"
 
 
