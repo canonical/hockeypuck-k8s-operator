@@ -107,12 +107,12 @@ async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
     assert: The application is blocked.
     """
     await hockeypuck_k8s_app.add_unit()
-    await hockeypuck_k8s_app.model.wait_for_idle(status="blocked")
+    await hockeypuck_k8s_app.model.wait_for_idle(status="blocked", apps=[hockeypuck_k8s_app.name])
     assert hockeypuck_k8s_app.status == "blocked"
     assert (
         hockeypuck_k8s_app.status_message == "Hockeypuck does not support multi-unit deployments"
     )
-    await hockeypuck_k8s_app.remove_unit(status="active")
+    await hockeypuck_k8s_app.remove_unit(status="active", apps=[hockeypuck_k8s_app.name])
     assert hockeypuck_k8s_app.status == "active"
 
 
