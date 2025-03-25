@@ -31,7 +31,12 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         self._traefik_route = traefik_route_observer.TraefikRouteObserver(self)
 
     def is_ready(self) -> bool:
-        if len(self.model.get_relation("secret-storage").units) > 0:
+        """Check if the charm is ready to start the workload application.
+
+        Returns:
+            True if the charm is ready to start the workload application.
+        """
+        if self.model.app.planned_units() > 1:
             self.update_app_and_unit_status(
                 ops.BlockedStatus("Hockeypuck does not support multi-unit deployments")
             )
