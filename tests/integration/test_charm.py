@@ -16,6 +16,7 @@ import requests
 from gnupg import GPG
 from juju.application import Application
 from juju.client._definitions import UnitStatus
+from juju.unit import Unit
 
 from actions import HTTP_PORT, RECONCILIATION_PORT
 
@@ -112,7 +113,7 @@ async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
     assert (
         hockeypuck_k8s_app.status_message == "Hockeypuck does not support multi-unit deployments"
     )
-    await hockeypuck_k8s_app.destroy_unit(f"{hockeypuck_k8s_app.name}/1")
+    hockeypuck_k8s_app.scale(1)
     await hockeypuck_k8s_app.wait_for_idle(status="active", apps=[hockeypuck_k8s_app.name])
     assert hockeypuck_k8s_app.status == "active"
 
