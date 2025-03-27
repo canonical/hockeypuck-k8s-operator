@@ -16,7 +16,6 @@ import requests
 from gnupg import GPG
 from juju.application import Application
 from juju.client._definitions import UnitStatus
-from juju.unit import Unit
 
 from actions import HTTP_PORT, RECONCILIATION_PORT
 
