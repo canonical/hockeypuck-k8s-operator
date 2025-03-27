@@ -100,6 +100,23 @@ async def test_lookup_key_not_found(hockeypuck_k8s_app: Application) -> None:
     assert "Not Found" in action.results["stderr"]
 
 
+async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm.
+    act: Add a unit to the application.
+    assert: The application is blocked.
+    """
+    await hockeypuck_k8s_app.add_unit()
+    await hockeypuck_k8s_app.model.wait_for_idle(status="blocked", apps=[hockeypuck_k8s_app.name])
+    assert hockeypuck_k8s_app.status == "blocked"
+    assert (
+        hockeypuck_k8s_app.status_message == "Hockeypuck does not support multi-unit deployments"
+    )
+    await hockeypuck_k8s_app.scale(scale=1)
+    await hockeypuck_k8s_app.model.wait_for_idle(status="active", apps=[hockeypuck_k8s_app.name])
+    assert hockeypuck_k8s_app.status == "active"
+
+
 @pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
 @pytest.mark.flaky(reruns=10, reruns_delay=10)

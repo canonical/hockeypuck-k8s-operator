@@ -45,6 +45,7 @@ async def postgresql_app_fixture(
         channel="14/stable",
         trust=True,
     )
+    await model.wait_for_idle(status="active", apps=[app.name])
     return app
 
 
