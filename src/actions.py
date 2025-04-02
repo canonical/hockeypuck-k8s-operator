@@ -11,6 +11,9 @@ import paas_app_charmer.go
 import requests
 from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
 
+from admin_gpg import AdminGPG
+from block_keys import InvalidFingerprintError, KeyBlockError, block_keys, check_valid_fingerprints
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -43,18 +46,64 @@ class Observer(ops.Object):
         Args:
             event: the event triggering the original action.
         """
-        fingerprints = event.params["fingerprints"]
-        comment = event.params["comment"]
-        command = [
-            "/hockeypuck/bin/delete_keys.py",
-            "--fingerprints",
-            fingerprints,
-            "--comment",
-            comment,
-        ]
-        self._execute_action(event, command, leader_only=True)
-        command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
-        self._execute_action(event, command)
+        try:
+            input_fingerprints: str = event.params["fingerprints"]
+            comment: str = event.params["comment"]
+            fingerprints = input_fingerprints.split(",")
+            check_valid_fingerprints(fingerprints=fingerprints)
+            if not self.charm.is_ready():
+                raise RuntimeError("Service not yet ready.")
+            for fingerprint in fingerprints:
+                response = requests.get(
+                    f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search=0x{fingerprint}",
+                    timeout=20,
+                )
+                response.raise_for_status()
+                if "-----BEGIN PGP PUBLIC KEY BLOCK-----" in response.text:
+                    public_key = response.text
+                    request = "/pks/delete\n" + public_key
+                    admin_gpg = AdminGPG(self.model)
+                    signature = admin_gpg.generate_signature(request=request)
+                    response = requests.delete(
+                        f"http://127.0.0.1:{HTTP_PORT}/pks/delete",
+                        timeout=20,
+                        data={"keytext": request, "keysig": signature},
+                    )
+                    response.raise_for_status()
+                else:
+                    raise RuntimeError("Public key not found in response")
+            db_credentials = self._retrieve_postgresql_credentials()
+            block_keys(fingerprints=fingerprints, comment=comment, db_credentials=db_credentials)
+        except (
+            InvalidFingerprintError,
+            RuntimeError,
+            KeyBlockError,
+            requests.exceptions.RequestException,
+        ) as e:
+            logger.exception("Action failed: %s", e)
+            event.fail(f"Failed: {e}")
+
+    def _retrieve_postgresql_credentials(self) -> None | dict[str, str]:
+        """Retrieve PostgreSQL connection details from the relation."""
+        relation = self.model.get_relation("database")
+        if not relation:
+            return None
+        postgresql_app = relation.app
+        if not postgresql_app:
+            return None
+        relation_data = relation.data[postgresql_app]
+        db_name = relation_data.get("POSTGRESQL_DB_NAME")
+        db_hostname = relation_data.get("POSTGRESQL_DB_HOSTNAME")
+        db_username = relation_data.get("POSTGRESQL_DB_USERNAME")
+        db_password = relation_data.get("POSTGRESQL_DB_PASSWORD")
+        if None in (db_name, db_hostname, db_username, db_password):
+            return None
+        return {
+            "db-name": str(db_name),
+            "db-hostname": str(db_hostname),
+            "db-username": str(db_username),
+            "db-password": str(db_password),
+        }
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
         """Rebuild the prefix tree using the hockeypuck-pbuild binary.
@@ -62,7 +111,11 @@ class Observer(ops.Object):
         Args:
             event: the event triggering the original action.
         """
-        command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
+        command = [
+            "/hockeypuck/bin/hockeypuck-pbuild",
+            "-config",
+            "/hockeypuck/etc/hockeypuck.conf",
+        ]
         self._execute_action(event, command)
 
     def _lookup_key_action(self, event: ops.ActionEvent) -> None:
@@ -72,6 +125,8 @@ class Observer(ops.Object):
             event: the event triggering the original action.
         """
         keyword = event.params["keyword"]
+        if not self.charm.is_ready():
+            event.fail("Service not yet ready.")
         try:
             response = requests.get(
                 f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search={keyword}",
@@ -83,20 +138,15 @@ class Observer(ops.Object):
             logger.error("Action failed: %s", e)
             event.fail(f"Failed: {str(e)}")
 
-    def _execute_action(
-        self, event: ops.ActionEvent, command: list[str], leader_only: bool = False
-    ) -> None:
+    def _execute_action(self, event: ops.ActionEvent, command: list[str]) -> None:
         """Stop the hockeypuck service, execute the action and start the service.
 
         Args:
             event: the event triggering the original action.
             command: the command to be executed inside the hockeypuck container.
-            leader_only: whether the action should be executed only by the leader unit.
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        if leader_only and not self.charm.unit.is_leader():
-            return
         hockeypuck_container = self.charm.unit.get_container(WORKLOAD_CONTAINER_NAME)
         service_name = next(iter(hockeypuck_container.get_services()))
         try:
