@@ -10,35 +10,16 @@ import logging
 import re
 from typing import List
 
-import psycopg2
+import charms.operator_libs_linux.v0.apt as apt  # pylint: disable=consider-using-from-import
+
+# psycopg2 requires libpq5 package to be installed before getting imported.
+# Charmcraft currently does not support staging packages.
+# See https://github.com/canonical/charmcraft/issues/1990
+apt.update()
+apt.add_package(["libpq5"])
+import psycopg2  # noqa: E402 # pylint: disable=wrong-import-position
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.ERROR)
-
-
-class InvalidFingerprintError(Exception):
-    """Exception raised for invalid fingerprint format."""
-
-    def __init__(self, fingerprints: List[str]) -> None:
-        """Initialize the exception.
-
-        Args:
-            fingerprints: list of invalid fingerprints.
-        """
-        self.fingerprints = fingerprints
-        self.message = f"Invalid fingerprints: {', '.join(fingerprints)}"
-        super().__init__(self.message)
-
-    def __str__(self) -> str:
-        """Return the exception message.
-
-        Returns:
-            str: the exception message.
-        """
-        return (
-            f"{self.message}. Fingerprints must be 40 or 64 characters long and "
-            "consist of hexadecimal characters only."
-        )
 
 
 class KeyBlockError(Exception):
@@ -98,24 +79,21 @@ def _insert_fingerprints_to_table(
         raise KeyBlockError(f"Error executing SQL commands: {e}") from e
 
 
-def check_valid_fingerprints(fingerprints: list) -> None:
-    """Check if fingerprints are valid.
+def check_valid_fingerprint(fingerprint: str) -> bool:
+    """Check if a fingerprint is valid.
 
     Args:
-        fingerprints: List of fingerprints to validate
+        fingerprint: Fingerprint to validate.
 
-    Raises:
-        InvalidFingerprintError: if any of the fingerprints are invalid.
+    Returns:
+        True if the fingerprint conforms to the expected format.
     """
-    invalid_fingerprints = []
-    for fingerprint in fingerprints:
-        # fingerprints are usually of length 40 or 64 depending on the hash algorithm, and
-        # consist of hexadecimal characters only.
-        if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
-            logging.error("Invalid fingerprint format: %s", fingerprint)
-            invalid_fingerprints.append(fingerprint)
-    if invalid_fingerprints:
-        raise InvalidFingerprintError(invalid_fingerprints)
+    # fingerprints are usually of length 40 or 64 depending on the hash algorithm, and
+    # consist of hexadecimal characters only.
+    if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
+        logging.error("Invalid fingerprint format: %s", fingerprint)
+        return False
+    return True
 
 
 def block_keys(fingerprints: list, comment: str, db_credentials: dict[str, str] | None) -> None:

@@ -15,9 +15,6 @@ import requests
 from passlib.pwd import genword
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.ERROR)
-logging.getLogger("gnupg").setLevel(logging.WARNING)
-logging.getLogger("gnupg").propagate = False
 
 ADMIN_LABEL = "admin-gpg-key"
 
@@ -51,12 +48,10 @@ class AdminGPG:
             admin_secret = None
         try:
             if admin_secret is None:
-                logging.info("Creating new GPG keys for admin.")
                 admin_credentials = self._create_admin_gpg_key()
                 self._add_admin_to_juju_secret(admin_credentials)
                 return admin_credentials["admin-key"].fingerprint
 
-            logging.info("Using existing GPG keys for admin.")
             admin_credentials = admin_secret.get_content()
             self.gpg.import_keys(admin_credentials["adminpublickey"])
             self.gpg.import_keys(admin_credentials["adminprivatekey"])
@@ -67,7 +62,6 @@ class AdminGPG:
 
     def _create_admin_gpg_key(self) -> dict[str, typing.Any]:
         """Generate a new GPG key for admin and return the admin credentials."""
-        logger.info("Generating new GPG key for admin.")
         password = genword(length=10)
         input_data = self.gpg.gen_key_input(
             name_real="Admin User", name_email="admin@user.com", passphrase=password

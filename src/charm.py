@@ -10,16 +10,18 @@ import logging
 import pathlib
 import typing
 
-import charms.operator_libs_linux.v0.apt as apt
 import ops
 import paas_charm.go
+from charms.operator_libs_linux.v0 import apt
 from paas_charm.charm_state import CharmState
 
 import traefik_route_observer
 from admin_gpg import AdminGPG
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.ERROR)
+
+for logger_name in getattr(logging.root.manager, "loggerDict", {}):
+    logging.getLogger(logger_name).setLevel(logging.INFO)
 
 
 class HockeypuckK8SCharm(paas_charm.go.Charm):
@@ -34,8 +36,10 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         super().__init__(*args)
         apt.update()
         apt.add_package(["gnupg"])
-        apt.add_package(["libpq5"])
-        import actions
+        # The actions module cannot be imported at the toplevel since psycopg2 requires libpq5
+        # package to be installed before getting imported. Charmcraft currently does not support
+        # staging packages (https://github.com/canonical/charmcraft/issues/1990)
+        import actions  # pylint: disable=import-outside-toplevel
 
         self.actions_observer = actions.Observer(self)
         self.reconciliation_port = actions.RECONCILIATION_PORT
