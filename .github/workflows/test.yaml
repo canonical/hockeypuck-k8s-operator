@@ -10,3 +10,5 @@ jobs:
     with:
       self-hosted-runner: true
       self-hosted-runner-label: "edge"
+      pre-run-script: |
+        -c "apt update && apt install psycopg2-binary"
