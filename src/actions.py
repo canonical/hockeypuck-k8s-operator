@@ -14,8 +14,8 @@ from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
 from admin_gpg import AdminGPG
 from block_keys import InvalidFingerprintError, KeyBlockError, block_keys, check_valid_fingerprints
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR)
 
 HTTP_PORT: typing.Final[int] = 11371  # the port hockeypuck listens to for HTTP requests
 RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to for reconciliation
@@ -64,7 +64,7 @@ class Observer(ops.Object):
                     request = "/pks/delete\n" + public_key
                     admin_gpg = AdminGPG(self.model)
                     signature = admin_gpg.generate_signature(request=request)
-                    response = requests.delete(
+                    response = requests.post(
                         f"http://127.0.0.1:{HTTP_PORT}/pks/delete",
                         timeout=20,
                         data={"keytext": request, "keysig": signature},
@@ -85,17 +85,20 @@ class Observer(ops.Object):
 
     def _retrieve_postgresql_credentials(self) -> None | dict[str, str]:
         """Retrieve PostgreSQL connection details from the relation."""
-        relation = self.model.get_relation("database")
+        relation = self.model.get_relation("postgresql")
         if not relation:
             return None
         postgresql_app = relation.app
         if not postgresql_app:
             return None
         relation_data = relation.data[postgresql_app]
-        db_name = relation_data.get("POSTGRESQL_DB_NAME")
-        db_hostname = relation_data.get("POSTGRESQL_DB_HOSTNAME")
-        db_username = relation_data.get("POSTGRESQL_DB_USERNAME")
-        db_password = relation_data.get("POSTGRESQL_DB_PASSWORD")
+        db_name = relation_data.get("database")
+        db_hostname = relation_data.get("endpoints").split(":")[0]
+        secret_user_ref = relation_data.get("secret-user")
+        secret = self.model.get_secret(id=secret_user_ref)
+        secret_content = secret.get_content()
+        db_username = secret_content.get("username")
+        db_password = secret_content.get("password")
         if None in (db_name, db_hostname, db_username, db_password):
             return None
         return {

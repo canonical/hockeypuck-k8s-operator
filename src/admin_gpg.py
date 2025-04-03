@@ -15,6 +15,9 @@ import requests
 from passlib.pwd import genword
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR)
+logging.getLogger("gnupg").setLevel(logging.WARNING)
+logging.getLogger("gnupg").propagate = False
 
 ADMIN_LABEL = "admin-gpg-key"
 
@@ -157,5 +160,6 @@ class AdminGPG:
             request,
             keyid=self.admin_fingerprint,
             passphrase=password,
+            detach=True,
         )
         return str(signature)

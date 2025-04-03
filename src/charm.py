@@ -8,18 +8,18 @@
 
 import logging
 import pathlib
-import subprocess
 import typing
 
+import charms.operator_libs_linux.v0.apt as apt
 import ops
 import paas_charm.go
 from paas_charm.charm_state import CharmState
 
-import actions
 import traefik_route_observer
 from admin_gpg import AdminGPG
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.ERROR)
 
 
 class HockeypuckK8SCharm(paas_charm.go.Charm):
@@ -32,9 +32,13 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             args: passthrough to CharmBase.
         """
         super().__init__(*args)
-        subprocess.run(["sudo", "apt", "update"], check=True)
-        subprocess.run(["sudo", "apt", "install", "gnupg", "-y"], check=True)
+        apt.update()
+        apt.add_package(["gnupg"])
+        apt.add_package(["libpq5"])
+        import actions
+
         self.actions_observer = actions.Observer(self)
+        self.reconciliation_port = actions.RECONCILIATION_PORT
         self._traefik_route = traefik_route_observer.TraefikRouteObserver(self)
         self.admin_gpg = AdminGPG(self.model)
 
@@ -57,7 +61,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         Args:
             rerun_migrations: Whether to rerun migrations.
         """
-        self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
+        self.unit.open_port("tcp", self.reconciliation_port)
         super().restart(rerun_migrations)
         if self.is_ready():
             response_code = self.admin_gpg.push_admin_key()
