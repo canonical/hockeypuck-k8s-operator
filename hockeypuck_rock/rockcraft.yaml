@@ -39,7 +39,15 @@ parts:
     organize:
       hockeypuck.conf: hockeypuck/etc/hockeypuck.conf
       hockeypuck_wrapper.sh: hockeypuck/bin/hockeypuck_wrapper.sh
+      block_keys.py: hockeypuck/bin/block_keys.py
       migrate.sh: app/migrate.sh
+  python:
+    plugin: python
+    source: .
+    stage-packages: 
+      - python3-venv
+    python-packages: 
+      - psycopg2-binary
 services:
   go:
     override: replace

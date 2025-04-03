@@ -6,6 +6,5 @@
 # Pre-run script for integration test operator-workflows action.
 # https://github.com/canonical/operator-workflows/blob/main/.github/workflows/integration_test.yaml
 
-sudo apt update && sudo apt install psycopg2-binary
 IPADDR=$(ip -4 -j route get 2.2.2.2 | jq -r '.[] | .prefsrc')
 sudo microk8s enable "metallb:$IPADDR-$IPADDR"

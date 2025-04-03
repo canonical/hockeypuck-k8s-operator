@@ -4,6 +4,7 @@
 """Hockeypuck charm actions."""
 
 import logging
+import re
 import typing
 
 import ops
@@ -12,7 +13,6 @@ import requests
 from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
 
 from admin_gpg import AdminGPG
-from block_keys import KeyBlockError, block_keys, check_valid_fingerprint
 
 logger = logging.getLogger(__name__)
 
@@ -56,8 +56,7 @@ class Observer(ops.Object):
             result = {}
             fingerprints = [fingerprint.lower() for fingerprint in fingerprints]
             for fingerprint in fingerprints:
-                status = check_valid_fingerprint(fingerprint)
-                if status == False:
+                if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
                     result[fingerprint] = (
                         "Invalid fingerprint format. "
                         "Fingerprints must be 40 or 64 characters long and "
@@ -89,50 +88,25 @@ class Observer(ops.Object):
                     raise RuntimeError(
                         f"Public key not found in response for fingerprint: {fingerprint}"
                     )
-            db_credentials = self._retrieve_postgresql_credentials()
             fingerprints_to_block = list(set(fingerprints) - set(result))
-            block_keys(
-                fingerprints=fingerprints_to_block, comment=comment, db_credentials=db_credentials
-            )
+
+            command = [
+                "/hockeypuck/bin/block_keys.py",
+                "--fingerprints",
+                ",".join(fingerprints_to_block),
+                "--comment",
+                comment,
+            ]
+            self._execute_action(event, command)
             for fingerprint in fingerprints_to_block:
                 result[fingerprint] = "Deleted and blocked successfully."
             event.set_results(result)
         except (
             RuntimeError,
-            KeyBlockError,
             requests.exceptions.RequestException,
         ) as e:
             logger.exception("Action failed: %s", e)
             event.fail(f"Failed: {e}")
-
-    def _retrieve_postgresql_credentials(self) -> None | dict[str, str]:
-        """Retrieve PostgreSQL connection details from the relation."""
-        relation = self.model.get_relation("postgresql")
-        if not relation:
-            return None
-        postgresql_app = relation.app
-        if not postgresql_app:
-            return None
-        relation_data = relation.data[postgresql_app]
-        db_name = relation_data.get("database")
-        db_hostname = (
-            str(relation_data.get("endpoints")).split(":", maxsplit=1)[0]
-            if relation_data.get("endpoints") is not None
-            else None
-        )
-        secret_user_ref = relation_data.get("secret-user")
-        secret = self.model.get_secret(id=secret_user_ref)
-        secret_content = secret.get_content()
-        db_username = secret_content.get("username")
-        db_password = secret_content.get("password")
-        if None in (db_name, db_hostname, db_username, db_password):
-            return None
-        return {
-            "db-name": str(db_name),
-            "db-hostname": str(db_hostname),
-            "db-username": str(db_username),
-            "db-password": str(db_password),
-        }
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
         """Rebuild the prefix tree using the hockeypuck-pbuild binary.

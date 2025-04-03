@@ -29,13 +29,6 @@ description: |
 extensions:
   - go-framework
 
-parts:
-  postgres-packages:
-    plugin: nil
-    build-packages:
-      - libpq-dev
-      - python3-dev
-
 
 requires:
   postgresql:

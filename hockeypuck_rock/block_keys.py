@@ -6,18 +6,12 @@
 """This script adds fingerprints to the deleted_keys table in the Hockeypuck's database."""
 
 
+import argparse
 import logging
-import re
+import os
 from typing import List
 
-import charms.operator_libs_linux.v0.apt as apt  # pylint: disable=consider-using-from-import
-
-# psycopg2 requires libpq5 package to be installed before getting imported.
-# Charmcraft currently does not support staging packages.
-# See https://github.com/canonical/charmcraft/issues/1990
-apt.update()
-apt.add_package(["libpq5"])
-import psycopg2  # noqa: E402 # pylint: disable=wrong-import-position
+import psycopg2
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +20,7 @@ class KeyBlockError(Exception):
     """Exception raised for errors in the key blocking operation."""
 
 
-def _get_db_connection(db_credentials: dict[str, str] | None) -> psycopg2.extensions.connection:
+def _get_db_connection() -> psycopg2.extensions.connection:
     """Connect to the Postgres database.
 
     Returns:
@@ -35,12 +29,10 @@ def _get_db_connection(db_credentials: dict[str, str] | None) -> psycopg2.extens
     Raises:
         KeyBlockError: if the connection fails.
     """
-    if db_credentials is None:
-        raise KeyBlockError("Database credentials unavailable.")
-    db_password = db_credentials["db-password"]
-    db_name = db_credentials["db-name"]
-    db_host = db_credentials["db-hostname"]
-    db_user = db_credentials["db-username"]
+    db_password = os.getenv("POSTGRESQL_DB_PASSWORD")
+    db_name = os.getenv("POSTGRESQL_DB_NAME")
+    db_host = os.getenv("POSTGRESQL_DB_HOSTNAME")
+    db_user = os.getenv("POSTGRESQL_DB_USERNAME")
     dsn = f"dbname={db_name} user={db_user} password={db_password} host={db_host}"
     try:
         conn = psycopg2.connect(dsn)
@@ -79,38 +71,28 @@ def _insert_fingerprints_to_table(
         raise KeyBlockError(f"Error executing SQL commands: {e}") from e
 
 
-def check_valid_fingerprint(fingerprint: str) -> bool:
-    """Check if a fingerprint is valid.
-
-    Args:
-        fingerprint: Fingerprint to validate.
-
-    Returns:
-        True if the fingerprint conforms to the expected format.
-    """
-    # fingerprints are usually of length 40 or 64 depending on the hash algorithm, and
-    # consist of hexadecimal characters only.
-    if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
-        logging.error("Invalid fingerprint format: %s", fingerprint)
-        return False
-    return True
-
-
-def block_keys(fingerprints: list, comment: str, db_credentials: dict[str, str] | None) -> None:
+def main() -> None:
     """Block list of fingerprints.
-
-    Args:
-        fingerprints: List of fingerprints to block.
-        comment: the comment associated with blocking.
-        db_credentials: Hockeypuck database credentials.
 
     Raises:
         KeyBlockError: if the key blocking operation fails.
     """
+    parser = argparse.ArgumentParser(description="Block keys in the Hockeypuck Postgres database.")
+    parser.add_argument(
+        "--fingerprints", required=True, help="Comma-separated list of fingerprints to block"
+    )
+    parser.add_argument("--comment", required=True, help="Comment associated with the blocking")
+    args = parser.parse_args()
+    fingerprints = args.fingerprints.split(",")
+    comment = args.comment
     try:
-        with _get_db_connection(db_credentials) as conn:
+        with _get_db_connection() as conn:
             with conn.cursor() as cursor:
                 _insert_fingerprints_to_table(cursor, fingerprints, comment)
     except KeyBlockError as e:
         logging.error("Unable to block keys: %s", e)
         raise KeyBlockError(f"Unable to block keys: {e}") from e
+
+
+if __name__ == "__main__":  # pragma: no cover
+    main()
