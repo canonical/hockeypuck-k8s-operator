@@ -84,6 +84,7 @@ class Observer(ops.Object):
                         data={"keytext": request, "keysig": signature},
                     )
                     response.raise_for_status()
+                    logging.info(f"Deleted {fingerprint} from the database.")
                     event.log(f"Deleted {fingerprint} from the database.")
                 else:
                     raise RuntimeError(

@@ -208,7 +208,6 @@ async def test_block_keys_action_multiple(hockeypuck_k8s_app: Application, gpg_k
         "Fingerprints must be 40 or 64 characters long and "
         "consist of hexadecimal characters only."
     )
-    breakpoint()
     assert action.results[fingerprint1] == expected_result[fingerprint1]
     assert action.results[fingerprint2] == expected_result[fingerprint2]
     assert action.results[fingerprint3] == expected_result[fingerprint3]
