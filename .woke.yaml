@@ -1,7 +1,10 @@
 rules:
 # Ignore "blacklist" - since the hockeypuck binaries look for this configuation option
+# Ignore "man-in-the-middle" - since it is used by the apt library
   - name: blacklist
+  - name: man-in-the-middle
 ignore_files:
   # Ignore redis charm library as it uses non compliant terminology:
   # master.
   - lib/charms/redis_k8s/v0/redis.py
+  - lib/charms/operator_libs_linux/v0/apt.py

@@ -38,9 +38,8 @@ parts:
     source: .
     organize:
       hockeypuck.conf: hockeypuck/etc/hockeypuck.conf
-      delete_keys.py: hockeypuck/bin/delete_keys.py
-      rebuild_prefix_tree.py: hockeypuck/bin/rebuild_prefix_tree.py
       hockeypuck_wrapper.sh: hockeypuck/bin/hockeypuck_wrapper.sh
+      block_keys.py: hockeypuck/bin/block_keys.py
       migrate.sh: app/migrate.sh
   python:
     plugin: python

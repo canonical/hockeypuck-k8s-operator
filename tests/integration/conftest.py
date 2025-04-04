@@ -3,6 +3,7 @@
 
 """Fixtures for hockeypuck-k8s tests."""
 
+import json
 import logging
 from pathlib import Path
 from typing import Any
@@ -11,6 +12,7 @@ import gnupg
 import pytest_asyncio
 from juju.application import Application
 from juju.model import Model
+from passlib.pwd import genword
 from pytest import Config
 from pytest_operator.plugin import OpsTest
 
@@ -49,20 +51,30 @@ async def postgresql_app_fixture(
     return app
 
 
-@pytest_asyncio.fixture(scope="module", name="nginx_app")
-async def nginx_app_fixture(
+@pytest_asyncio.fixture(scope="module", name="traefik_app")
+async def traefik_app_fixture(
     model: Model,
 ) -> Application:
-    """Deploy nginx charm."""
-    config = {"service-hostname": "hockeypuck.local", "path-routes": "/"}
-    app = await model.deploy(
-        "nginx-ingress-integrator",
-        channel="latest/edge",
-        revision=99,
+    """Deploy traefik-k8s charm."""
+    traefik_app = await model.deploy(
+        "traefik-k8s",
+        channel="latest/stable",
         trust=True,
-        config=config,
     )
-    return app
+    await model.wait_for_idle(status="active", apps=[traefik_app.name])
+    return traefik_app
+
+
+@pytest_asyncio.fixture(scope="module", name="hockeypuck_url")
+async def hockeypuck_url_fixture(
+    traefik_app: Application,
+) -> str:
+    """Get the endpoint proxied by Traefik."""
+    action = await traefik_app.units[0].run_action("show-proxied-endpoints")
+    await action.wait()
+    proxied_endpoints = json.loads(action.results.get("proxied-endpoints"))
+    hockeypuck_url = proxied_endpoints["hockeypuck-k8s"]["url"]
+    return hockeypuck_url
 
 
 @pytest_asyncio.fixture(scope="module", name="hockeypuck_charm")
@@ -89,10 +101,10 @@ async def hockeypuck_k8s_app_fixture(
     model: Model,
     hockeypuck_charm: str | Path,
     hockeypuck_app_image: str,
-    nginx_app: Application,
+    traefik_app: Application,
     postgresql_app: Application,
 ) -> Application:
-    """Deploy the hockeypuck-k8s application, relates with Postgresql and Nginx."""
+    """Deploy the hockeypuck-k8s application, relates with Postgresql and Traefik."""
     resources = {
         "app-image": hockeypuck_app_image,
     }
@@ -105,7 +117,8 @@ async def hockeypuck_k8s_app_fixture(
         },
     )
     await model.add_relation(app.name, postgresql_app.name)
-    await model.add_relation(app.name, nginx_app.name)
+    await model.add_relation(app.name, f"{traefik_app.name}:ingress")
+    await model.add_relation(app.name, f"{traefik_app.name}:traefik-route")
     await model.wait_for_idle(status="active")
     return app
 
@@ -114,8 +127,9 @@ async def hockeypuck_k8s_app_fixture(
 def gpg_key_fixture() -> Any:
     """Return a GPG key."""
     gpg = gnupg.GPG()
+    password = genword(length=10)
     input_data = gpg.gen_key_input(
-        name_real="Test User", name_email="test@gmail.com", passphrase="foo"  # nosec
+        name_real="Test User", name_email="test@gmail.com", passphrase=password
     )
     key = gpg.gen_key(input_data)
     return key
@@ -179,15 +193,3 @@ async def external_peer_config_fixture(
 
     await hockeypuck_k8s_app.model.wait_for_idle(status="active")
     await hockeypuck_secondary_app.model.wait_for_idle(status="active")
-
-
-@pytest_asyncio.fixture(scope="module", name="traefik_integration")
-async def traefik_integration_fixture(
-    model: Model,
-    hockeypuck_k8s_app: Application,
-) -> Application:
-    """Deploy traefik-k8s charm and integrate with hockeypuck-k8s"""
-    traefik_app = await model.deploy("traefik-k8s", channel="latest/edge", trust=True)
-    await model.add_relation(hockeypuck_k8s_app.name, f"{traefik_app.name}:traefik-route")
-    await model.wait_for_idle(status="active")
-    return traefik_app
