@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 HTTP_PORT: typing.Final[int] = 11371  # the port hockeypuck listens to for HTTP requests
 RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to for reconciliation
 METRICS_PORT: typing.Final[int] = 9626  # the metrics port
+FINGERPRINT_REGEX = re.compile(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}")
 
 
 class Observer(ops.Object):
@@ -57,7 +58,7 @@ class Observer(ops.Object):
             result = {}
             fingerprints = [fingerprint.lower() for fingerprint in fingerprints]
             for fingerprint in fingerprints:
-                if not re.fullmatch(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}", fingerprint):
+                if not FINGERPRINT_REGEX.fullmatch(fingerprint):
                     result[fingerprint] = (
                         "Invalid fingerprint format. "
                         "Fingerprints must be 40 or 64 characters long and "
@@ -68,11 +69,11 @@ class Observer(ops.Object):
                     f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search=0x{fingerprint}",
                     timeout=20,
                 )
-                if response.status_code not in (200, 404):
-                    response.raise_for_status()
                 if response.status_code == 404:
                     result[fingerprint] = "Fingerprint unavailable in the database."
                     continue
+                if not response.ok:
+                    response.raise_for_status()
                 if "-----BEGIN PGP PUBLIC KEY BLOCK-----" in response.text:
                     public_key = response.text
                     request = "/pks/delete\n" + public_key
