@@ -71,7 +71,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         try:
             if self.is_ready():
                 self.admin_gpg.push_admin_key()
-        except RequestException as e:
+        except RequestException:
             ops.ErrorStatus("Unable to push admin key to Hockeypuck")
 
     def get_cos_dir(self) -> str:

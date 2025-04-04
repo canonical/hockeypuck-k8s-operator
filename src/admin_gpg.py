@@ -112,6 +112,7 @@ class AdminGPG:
             num_tries: Number of times to retry pushing the admin key to Hockeypuck.
 
         Raises:
+            RequestException: If there is an error pushing the admin key to Hockeypuck.
             RuntimeError: If the admin GPG key is not found in Juju secret store.
         """
         try:
