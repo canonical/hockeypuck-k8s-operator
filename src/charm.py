@@ -14,6 +14,7 @@ import ops
 import paas_charm.go
 from charms.operator_libs_linux.v0 import apt
 from paas_charm.charm_state import CharmState
+from requests.exceptions import RequestException
 
 import traefik_route_observer
 from admin_gpg import AdminGPG
@@ -67,10 +68,11 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         """
         self.unit.open_port("tcp", self.reconciliation_port)
         super().restart(rerun_migrations)
-        if self.is_ready():
-            response_code = self.admin_gpg.push_admin_key()
-            if response_code != 200:
-                ops.ErrorStatus("Unable to push admin key to Hockeypuck")
+        try:
+            if self.is_ready():
+                self.admin_gpg.push_admin_key()
+        except RequestException as e:
+            ops.ErrorStatus("Unable to push admin key to Hockeypuck")
 
     def get_cos_dir(self) -> str:
         """Return the directory with COS related files.

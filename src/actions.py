@@ -11,6 +11,7 @@ import ops
 import paas_app_charmer.go
 import requests
 from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
+from requests.exceptions import RequestException
 
 from admin_gpg import AdminGPG
 
@@ -103,7 +104,7 @@ class Observer(ops.Object):
             event.set_results(result)
         except (
             RuntimeError,
-            requests.exceptions.RequestException,
+            RequestException,
         ) as e:
             logger.exception("Action failed: %s", e)
             event.fail(f"Failed: {e}")
@@ -137,7 +138,7 @@ class Observer(ops.Object):
             )
             response.raise_for_status()
             event.set_results({"result": response.text})
-        except requests.exceptions.RequestException as e:
+        except RequestException as e:
             logger.error("Action failed: %s", e)
             event.fail(f"Failed: {str(e)}")
 

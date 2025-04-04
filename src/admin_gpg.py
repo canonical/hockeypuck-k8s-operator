@@ -13,6 +13,7 @@ import gnupg
 import ops
 import requests
 from passlib.pwd import genword
+from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +62,11 @@ class AdminGPG:
             raise e
 
     def _create_admin_gpg_key(self) -> dict[str, typing.Any]:
-        """Generate a new GPG key for admin and return the admin credentials."""
+        """Generate a new GPG key for admin and return the admin credentials.
+
+        Returns:
+            The admin credentials.
+        """
         password = genword(length=10)
         input_data = self.gpg.gen_key_input(
             name_real="Admin User", name_email="admin@user.com", passphrase=password
@@ -100,14 +105,11 @@ class AdminGPG:
             logging.error("Error adding GPG key to secret: %s", e)
             raise e
 
-    def push_admin_key(self, num_tries: int = 5) -> int:
+    def push_admin_key(self, num_tries: int = 5) -> None:
         """Push the admin public key to the keyserver.
 
         Args:
             num_tries: Number of times to retry pushing the admin key to Hockeypuck.
-
-        Returns:
-            The response code of the post request.
 
         Raises:
             RuntimeError: If the admin GPG key is not found in Juju secret store.
@@ -128,14 +130,15 @@ class AdminGPG:
                     response.status_code,
                 )
                 if response.status_code == 200:
-                    return response.status_code
-
+                    return
                 trial += 1
                 logging.info("Waiting for Hockeypuck to be reachable")
                 time.sleep(5)
             if trial == num_tries:
-                logging.error("Hockeypuck is not reachable")
-            return response.status_code
+                response.raise_for_status()
+        except RequestException as e:
+            logging.error("Error pushing admin key to Hockeypuck: %s", e)
+            raise RequestException(f"Failed to push admin key to Hockeypuck: {e}") from e
         except ops.SecretNotFoundError as e:
             raise RuntimeError(f"Admin GPG key not found in Juju secret store. {e}") from e
 

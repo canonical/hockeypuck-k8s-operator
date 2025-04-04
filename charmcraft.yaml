@@ -29,7 +29,6 @@ description: |
 extensions:
   - go-framework
 
-
 requires:
   postgresql:
     interface: postgresql_client
