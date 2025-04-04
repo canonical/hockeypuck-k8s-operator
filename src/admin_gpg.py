@@ -91,7 +91,7 @@ class AdminGPG:
                 passphrase=admin_password,
             )
 
-            # juju secrets dont allow underscores or hyphens in the key name
+            # juju secrets don't allow underscores or hyphens in the key name
             self.model.app.add_secret(
                 {
                     "adminpublickey": admin_public_key,
@@ -149,7 +149,7 @@ class AdminGPG:
             request: The request to sign.
 
         Returns:
-            The signature for the given fingerprint.
+            The signature for the given request.
         """
         admin_secret = self.model.get_secret(label=ADMIN_LABEL).get_content()
         password = admin_secret["adminpassword"]

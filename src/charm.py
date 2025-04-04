@@ -16,6 +16,7 @@ from charms.operator_libs_linux.v0 import apt
 from paas_charm.charm_state import CharmState
 from requests.exceptions import RequestException
 
+import actions
 import traefik_route_observer
 from admin_gpg import AdminGPG
 
@@ -35,12 +36,11 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             args: passthrough to CharmBase.
         """
         super().__init__(*args)
+        # The python-gnupg package requires gnupg package to be installed.
+        # Charmcraft currently does not support staging packages in charmcraft.yaml.
+        # See https://github.com/canonical/charmcraft/issues/1990
         apt.update()
         apt.add_package(["gnupg"])
-        # The actions module cannot be imported at the toplevel since psycopg2 requires libpq5
-        # package to be installed before getting imported. Charmcraft currently does not support
-        # staging packages (https://github.com/canonical/charmcraft/issues/1990)
-        import actions  # pylint: disable=import-outside-toplevel
 
         self.actions_observer = actions.Observer(self)
         self.reconciliation_port = actions.RECONCILIATION_PORT
@@ -66,7 +66,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         Args:
             rerun_migrations: Whether to rerun migrations.
         """
-        self.unit.open_port("tcp", self.reconciliation_port)
+        self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
         super().restart(rerun_migrations)
         try:
             if self.is_ready():
