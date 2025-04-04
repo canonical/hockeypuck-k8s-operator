@@ -52,7 +52,7 @@ async def postgresql_app_fixture(
 
 
 @pytest_asyncio.fixture(scope="module", name="traefik_app")
-async def traefik_integration_fixture(
+async def traefik_app_fixture(
     model: Model,
 ) -> Application:
     """Deploy traefik-k8s charm."""
