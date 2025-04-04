@@ -42,9 +42,6 @@ async def postgresql_app_fixture(
     model: Model,
 ) -> Application:
     """Deploy postgresql-k8s charm."""
-    if "postgresql-k8s" in model.applications:
-        app = model.applications["postgresql-k8s"]
-        return app
     app = await model.deploy(
         "postgresql-k8s",
         channel="14/stable",
@@ -59,10 +56,6 @@ async def traefik_integration_fixture(
     model: Model,
 ) -> Application:
     """Deploy traefik-k8s charm."""
-    if "traefik-k8s" in model.applications:
-        traefik_app = model.applications["traefik-k8s"]
-        return traefik_app
-
     traefik_app = await model.deploy(
         "traefik-k8s",
         channel="latest/stable",
@@ -115,9 +108,6 @@ async def hockeypuck_k8s_app_fixture(
     resources = {
         "app-image": hockeypuck_app_image,
     }
-    if "hockeypuck-k8s" in model.applications:
-        app = model.applications["hockeypuck-k8s"]
-        return app
     app = await model.deploy(
         f"./{hockeypuck_charm}",
         resources=resources,
