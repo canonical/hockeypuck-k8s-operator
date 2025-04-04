@@ -22,6 +22,10 @@ from admin_gpg import AdminGPG
 
 logger = logging.getLogger(__name__)
 
+# By default, the logging level is set to DEBUG for all loggers in the
+# logging.root.manager.loggerDict dictionary. This is too verbose for
+# production workloads.
+# (https://github.com/canonical/operator/blob/main/ops/log.py#L42).
 for logger_name in getattr(logging.root.manager, "loggerDict", {}):
     logging.getLogger(logger_name).setLevel(logging.INFO)
 
