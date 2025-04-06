@@ -53,6 +53,8 @@ class Observer(ops.Object):
 
             input_fingerprints: str = event.params["fingerprints"]
             comment: str = event.params["comment"]
+            if comment == "":
+                raise RuntimeError("Comment cannot be empty.")
             fingerprints = input_fingerprints.split(",")
 
             result = {}
