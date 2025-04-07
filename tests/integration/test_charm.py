@@ -24,16 +24,15 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.abort_on_fail
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
-async def test_hockeypuck_health() -> None:
+async def test_hockeypuck_health(hockeypuck_url: str) -> None:
     """
     arrange: Build and deploy the Hockeypuck charm.
     act: Send a request to the main page.
     assert: Returns 200 and the page contains the title.
     """
     response = requests.get(
-        "http://127.0.0.1/",
+        f"{hockeypuck_url}/",
         timeout=5,
-        headers={"Host": "hockeypuck.local"},
     )
     assert response.status_code == 200
     assert "<title>OpenPGP Keyserver</title>" in response.text
@@ -41,7 +40,7 @@ async def test_hockeypuck_health() -> None:
 
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
 @pytest.mark.dependency(name="test_adding_records")
-async def test_adding_records(gpg_key: Any) -> None:
+async def test_adding_records(gpg_key: Any, hockeypuck_url: str) -> None:
     """
     arrange: Create a GPG Key
     act: Send a request to add a PGP key and lookup the key using the API
@@ -51,15 +50,14 @@ async def test_adding_records(gpg_key: Any) -> None:
     fingerprint = gpg_key.fingerprint
     public_key = gpg.export_keys(fingerprint)
     response = requests.post(
-        "http://127.0.0.1/pks/add",
+        f"{hockeypuck_url}/pks/add",
         timeout=20,
-        headers={"Host": "hockeypuck.local"},
         data={"keytext": public_key},
     )
     assert response.status_code == 200
 
     response = requests.get(
-        f"http://127.0.0.1/pks/lookup?op=get&search=0x{fingerprint}",
+        f"{hockeypuck_url}/pks/lookup?op=get&search=0x{fingerprint}",
         timeout=20,
         headers={"Host": "hockeypuck.local"},
     )
@@ -85,7 +83,6 @@ async def test_lookup_key(hockeypuck_k8s_app: Application, gpg_key: Any) -> None
     assert "BEGIN PGP PUBLIC KEY BLOCK" in action.results["result"]
 
 
-@pytest.mark.dependency(depends=["test_adding_records"])
 async def test_lookup_key_not_found(hockeypuck_k8s_app: Application) -> None:
     """
     arrange: Deploy the Hockeypuck charm.
@@ -97,7 +94,7 @@ async def test_lookup_key_not_found(hockeypuck_k8s_app: Application) -> None:
         "lookup-key", **{"keyword": f"0x{fingerprint}"}
     )
     await action.wait()
-    assert "Not Found" in action.results["stderr"]
+    assert "Not Found" in action.data["message"]
 
 
 async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
@@ -185,9 +182,38 @@ async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key:
         assert response.status_code == 404
 
 
+@pytest.mark.dependency(depends=["test_adding_records"])
+async def test_block_keys_action_multiple(hockeypuck_k8s_app: Application, gpg_key: Any) -> None:
+    """
+    arrange: Deploy the Hockeypuck charm.
+    act: Execute the delete and blocklist action with multiple keys (one valid and present,
+    one invalid, one valid but not present).
+    assert: Action returns 0 and event result contains the status of each key.
+    """
+    fingerprint1 = str(gpg_key.fingerprint).lower()  # valid key that is present in the database
+    fingerprint2 = "eaf2dd785260ec0cd047f463e449a664b36b34b1"  # valid key that is not present
+    fingerprint3 = "shbfsdiuf98hu"  # invalid key
+    action = await hockeypuck_k8s_app.units[0].run_action(
+        "block-keys",
+        **{"fingerprints": f"{fingerprint1},{fingerprint2},{fingerprint3}", "comment": "R1234"},
+    )
+    await action.wait()
+    expected_result = {}
+    expected_result[fingerprint1] = "Deleted and blocked successfully."
+    expected_result[fingerprint2] = "Fingerprint unavailable in the database."
+    expected_result[fingerprint3] = (
+        "Invalid fingerprint format. "
+        "Fingerprints must be 40 or 64 characters long and "
+        "consist of hexadecimal characters only."
+    )
+    assert action.results[fingerprint1] == expected_result[fingerprint1]
+    assert action.results[fingerprint2] == expected_result[fingerprint2]
+    assert action.results[fingerprint3] == expected_result[fingerprint3]
+
+
 async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> None:
     """
-    arrange: Deploy the Hockeypuck charm and integrate with Postgres and Nginx.
+    arrange: Deploy the Hockeypuck charm and integrate with Postgres and Traefik.
     act: Execute the rebuild prefix tree action.
     assert: Action returns 0.
     """
@@ -196,13 +222,13 @@ async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> No
     assert action.results["return-code"] == 0
 
 
-async def test_traefik_integration(traefik_integration: Application) -> None:
+async def test_traefik_route_integration(traefik_app: Application) -> None:
     """
     arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
     act: Test connectivity to the reconciliation port.
     assert: Connection request is successful.
     """
-    action = await traefik_integration.units[0].run_action("show-proxied-endpoints")
+    action = await traefik_app.units[0].run_action("show-proxied-endpoints")
     await action.wait()
     assert action.results["return-code"] == 0
     result = json.loads(action.results["proxied-endpoints"])

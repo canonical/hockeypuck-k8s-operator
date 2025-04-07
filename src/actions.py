@@ -4,19 +4,23 @@
 """Hockeypuck charm actions."""
 
 import logging
+import re
 import typing
 
 import ops
 import paas_app_charmer.go
 import requests
 from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
+from requests.exceptions import RequestException
 
-logging.basicConfig(level=logging.INFO)
+from admin_gpg import AdminGPG
+
 logger = logging.getLogger(__name__)
 
 HTTP_PORT: typing.Final[int] = 11371  # the port hockeypuck listens to for HTTP requests
 RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to for reconciliation
 METRICS_PORT: typing.Final[int] = 9626  # the metrics port
+FINGERPRINT_REGEX = re.compile(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}")
 
 
 class Observer(ops.Object):
@@ -43,18 +47,69 @@ class Observer(ops.Object):
         Args:
             event: the event triggering the original action.
         """
-        fingerprints = event.params["fingerprints"]
-        comment = event.params["comment"]
-        command = [
-            "/hockeypuck/bin/delete_keys.py",
-            "--fingerprints",
-            fingerprints,
-            "--comment",
-            comment,
-        ]
-        self._execute_action(event, command, leader_only=True)
-        command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
-        self._execute_action(event, command)
+        try:
+            if not self.charm.is_ready():
+                raise RuntimeError("Service not yet ready.")
+
+            input_fingerprints: str = event.params["fingerprints"]
+            comment: str = event.params["comment"]
+            fingerprints = input_fingerprints.split(",")
+
+            result = {}
+            fingerprints = [fingerprint.lower() for fingerprint in fingerprints]
+            for fingerprint in fingerprints:
+                if not FINGERPRINT_REGEX.fullmatch(fingerprint):
+                    result[fingerprint] = (
+                        "Invalid fingerprint format. "
+                        "Fingerprints must be 40 or 64 characters long and "
+                        "consist of hexadecimal characters only."
+                    )
+                    continue
+                response = requests.get(
+                    f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search=0x{fingerprint}",
+                    timeout=20,
+                )
+                if response.status_code == 404:
+                    result[fingerprint] = "Fingerprint unavailable in the database."
+                    continue
+                if not response.ok:
+                    response.raise_for_status()
+                if "-----BEGIN PGP PUBLIC KEY BLOCK-----" in response.text:
+                    public_key = response.text
+                    request = "/pks/delete\n" + public_key
+                    admin_gpg = AdminGPG(self.model)
+                    signature = admin_gpg.generate_signature(request=request)
+                    response = requests.post(
+                        f"http://127.0.0.1:{HTTP_PORT}/pks/delete",
+                        timeout=20,
+                        data={"keytext": request, "keysig": signature},
+                    )
+                    response.raise_for_status()
+                    logging.info("Deleted %s from the database.", fingerprint)
+                    event.log(f"Deleted {fingerprint} from the database.")
+                else:
+                    raise RuntimeError(
+                        f"Public key not found in response for fingerprint: {fingerprint}"
+                    )
+            fingerprints_to_block = list(set(fingerprints) - set(result))
+
+            command = [
+                "/hockeypuck/bin/block_keys.py",
+                "--fingerprints",
+                ",".join(fingerprints_to_block),
+                "--comment",
+                comment,
+            ]
+            self._execute_action(event, command)
+            for fingerprint in fingerprints_to_block:
+                result[fingerprint] = "Deleted and blocked successfully."
+            event.set_results(result)
+        except (
+            RuntimeError,
+            RequestException,
+        ) as e:
+            logger.exception("Action failed: %s", e)
+            event.fail(f"Failed: {e}")
 
     def _rebuild_prefix_tree_action(self, event: ops.ActionEvent) -> None:
         """Rebuild the prefix tree using the hockeypuck-pbuild binary.
@@ -62,7 +117,11 @@ class Observer(ops.Object):
         Args:
             event: the event triggering the original action.
         """
-        command = ["/hockeypuck/bin/rebuild_prefix_tree.py"]
+        command = [
+            "/hockeypuck/bin/hockeypuck-pbuild",
+            "-config",
+            "/hockeypuck/etc/hockeypuck.conf",
+        ]
         self._execute_action(event, command)
 
     def _lookup_key_action(self, event: ops.ActionEvent) -> None:
@@ -72,6 +131,8 @@ class Observer(ops.Object):
             event: the event triggering the original action.
         """
         keyword = event.params["keyword"]
+        if not self.charm.is_ready():
+            event.fail("Service not yet ready.")
         try:
             response = requests.get(
                 f"http://127.0.0.1:{HTTP_PORT}/pks/lookup?op=get&search={keyword}",
@@ -79,24 +140,19 @@ class Observer(ops.Object):
             )
             response.raise_for_status()
             event.set_results({"result": response.text})
-        except requests.exceptions.RequestException as e:
+        except RequestException as e:
             logger.error("Action failed: %s", e)
             event.fail(f"Failed: {str(e)}")
 
-    def _execute_action(
-        self, event: ops.ActionEvent, command: list[str], leader_only: bool = False
-    ) -> None:
+    def _execute_action(self, event: ops.ActionEvent, command: list[str]) -> None:
         """Stop the hockeypuck service, execute the action and start the service.
 
         Args:
             event: the event triggering the original action.
             command: the command to be executed inside the hockeypuck container.
-            leader_only: whether the action should be executed only by the leader unit.
         """
         if not self.charm.is_ready():
             event.fail("Service not yet ready.")
-        if leader_only and not self.charm.unit.is_leader():
-            return
         hockeypuck_container = self.charm.unit.get_container(WORKLOAD_CONTAINER_NAME)
         service_name = next(iter(hockeypuck_container.get_services()))
         try:
