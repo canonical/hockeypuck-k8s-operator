@@ -1,5 +1,5 @@
 ops==2.20.0
-paas-charm==1.4.1
+paas-charm==1.4.2
 passlib==1.7.4
 python-gnupg==0.5.4
 requests==2.32.3
