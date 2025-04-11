@@ -1,22 +1,10 @@
-# <charm-name> Operator
+# Hockeypuck K8s Operator
 
-<!-- A single sentence that says what the product is, succinctly and memorably. Add a 1-2 sentence description of what the charm software does. -->
+A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an OpenPGP public keyserver tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
 
-A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators) deploying and managing <Charm software> on 
-Kubernetes. 
+The server provides interfaces to add, look up, replace and delete public keys from the keyserver. Hockeypuck can synchronize public key material with SKS (Synchronizing Key Server) and other Hockeypuck servers. It implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
 
-<!-- A paragraph of 2-5 short sentences, that describes what the product does and what need the product meets. -->
-
-Like any Juju charm, this charm supports one-line deployment, configuration, integration, scaling, and more. 
-For <charm-name>, this includes:
-* list or summary of app-specific features
-
-The <charm-name> charm allows for deployment on many different Kubernetes platforms, from [MicroK8s](https://microk8s.io/) to 
-[Charmed Kubernetes](https://ubuntu.com/kubernetes) to public cloud Kubernetes offerings.
-
-<!-- Finally, a paragraph that describes whom the product is useful for. -->
-
-This charm will make operating <charm-software> simple and straightforward for DevOps or SRE teams through Juju's clean interface. 
+For DevOps and SRE teams, this charm will make operating Hockeypuck simple and straightforward through Juju's clean interface.
 
 ## In this documentation
 
