@@ -1,17 +1,15 @@
-<!-- Remember to update this file for your charm -- replace <charm-name> with the appropriate name. -->
-
 # Contributing
 
 ## Overview
 
-This document explains the processes and practices recommended for contributing enhancements to the <charm-name> charm.
+This document explains the processes and practices recommended for contributing enhancements to the hockeypuck-k8s charm.
 
 - Generally, before developing enhancements to this charm, you should consider [opening an issue
   ](link to issues page) explaining your use case.
 - If you would like to chat with us about your use-cases or proposed implementation, you can reach
   us at [Canonical Matrix public channel](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
   or [Discourse](https://discourse.charmhub.io/).
-- Familiarising yourself with the [Charmed Operator Framework](https://juju.is/docs/sdk) library
+- Familiarising yourself with the [Charmed Operator Framework](https://documentation.ubuntu.com/juju/latest/howto/manage-charms/index.html#build-a-charm) library
   will help you a lot when working on new features or bug fixes.
 - All enhancements require review before being merged. Code review typically examines
   - code quality
@@ -19,16 +17,15 @@ This document explains the processes and practices recommended for contributing 
   - user experience for Juju operators of this charm.
 - Please help us out in ensuring easy to review branches by rebasing your pull request branch onto the `main` branch. This 
   also avoids merge commits and creates a linear Git commit history.
-- Please generate src documentation for every commit. See the section below for more details.
 
 ## Developing
 
-To make contributions to this charm, you'll need a working [development setup](https://juju.is/docs/sdk/dev-setup).
+To make contributions to this charm, you'll need a working [development setup](https://documentation.ubuntu.com/juju/3.6/tutorial/#set-up-an-isolated-test-environment).
 
 The code for this charm can be downloaded as follows:
 
 ```
-git clone https://github.com/canonical/<charm-name>
+git clone https://github.com/canonical/hockeypuck-k8s-operator.git
 ```
 
 You can use the environments created by `tox` for development:
@@ -67,21 +64,19 @@ Build the charm in this git repository using:
 charmcraft pack
 ```
 
-<!-- TODO: Determine if there is a generic way to write these instructions
-For the integration tests (and also to deploy the charm locally), the indico
-and indico-nginx images are required in the microk8s registry. To enable it:
+For the integration tests (and also to deploy the charm locally), the hockeypuck
+image is required in the microk8s registry. To enable it, run:
 
-    microk8s enable registry
+```shell
+microk8s enable registry
+```
 
-The following commands import the images in the Docker daemon and push them into the registry:
+The following commands push the image into the registry:
 
-    cd [project_dir]/indico_rock && rockcraft pack rockcraft.yaml
-    skopeo --insecure-policy copy oci-archive:indico_1.0_amd64.rock docker-daemon:localhost:32000/indico:latest
-    docker push localhost:32000/indico:latest
-    cd [project_dir]/nginx_rock && rockcraft pack rockcraft.yaml
-    skopeo --insecure-policy copy oci-archive:indico_nginx_1.0_amd64.rock docker-daemon:localhost:32000/indico-nginx:latest
-    docker push localhost:32000/indico-nginx:latest
--->
+```shell
+cd [project_dir]/hockeypuck_rock && rockcraft pack
+rockcraft.skopeo --insecure-policy copy --dest-tls-verify=false oci-archive:hockeypuck_0.2_amd64.rock docker://localhost:32000/hockeypuck:0.2
+```
 
 ### Deploying
 
@@ -89,13 +84,13 @@ The following commands import the images in the Docker daemon and push them into
 
 ```bash
 # Create a model
-juju add-model charm-dev
+juju add-model hockeypuck-test
 # Enable DEBUG logging
 juju model-config logging-config="<root>=INFO;unit=DEBUG"
 # Deploy the charm (assuming you're on amd64)
-juju deploy ./<charm-name>.charm 
+juju deploy ./hockeypuck-k8s_amd64.charm --resource app-image=localhost:32000/hockeypuck:0.2 --config metrics-port=9626 --config app-port=11371
 ```
 
 ## Canonical Contributor Agreement
 
-Canonical welcomes contributions to the <charm-name> charm. Please check out our [contributor agreement](https://ubuntu.com/legal/contributors) if you're interested in contributing to the solution.
+Canonical welcomes contributions to the hockeypuck-k8s charm. Please check out our [contributor agreement](https://ubuntu.com/legal/contributors) if you're interested in contributing to the solution.
