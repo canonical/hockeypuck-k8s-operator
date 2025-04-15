@@ -9,7 +9,7 @@ juju deploy cos-lite --trust
 ```
 
 ## Expose the application relation endpoints
-Once all the COS Lite applications are deployed and settled down (you can monitor this by using juju status --watch 2s), expose the relation points for prometheus, loki and grafana:
+Once all the COS Lite applications are deployed and settled down (you can monitor this by using `juju status --watch 2s`), expose the relation points for prometheus, loki and grafana:
 
 ```bash
 juju offer prometheus:metrics-endpoint

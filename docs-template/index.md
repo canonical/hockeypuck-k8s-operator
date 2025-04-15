@@ -10,8 +10,8 @@ For DevOps and SRE teams, this charm will make operating Hockeypuck simple and s
 
 | | |
 |--|--|
-|  [Tutorials](link to tutorial)</br>  Get started - a hands-on introduction to using the charm for new users </br> |  [How-to guides](link to how-to guide) </br> Step-by-step guides covering key operations and common tasks |
-| [Reference](link to reference) </br> Technical information - specifications, APIs, architecture | [Explanation](link to explanation) </br> Concepts - discussion and clarification of key topics  |
+|  [Tutorials](https://charmhub.io/jenkins-k8s/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the charm for new users </br> |  [How-to guides](https://charmhub.io/hockeypuck-k8s/docs/how-to-contribute) </br> Step-by-step guides covering key operations and common tasks |
+| [Reference](https://charmhub.io/hockeypuck-k8s/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/hockeypuck-k8s/docs/explanation-architecture) </br> Concepts - discussion and clarification of key topics  |
 
 ## Contributing to this documentation
 
@@ -23,24 +23,17 @@ either directly change something you see that's wrong, ask a question or make a 
 the comments section.
 
 If there's a particular area of documentation that you'd like to see that's missing, please 
-[file a bug](link to issues page).
+[file a bug](https://github.com/canonical/hockeypuck-k8s-operator/issues).
 
 ## Project and community
 
-The <charm-name> Operator is a member of the Ubuntu family. It's an open-source project that warmly welcomes community 
+The Hockeypuck K8s Operator is a member of the Ubuntu family. It's an open-source project that warmly welcomes community 
 projects, contributions, suggestions, fixes, and constructive feedback.
 
 - [Code of conduct](https://ubuntu.com/community/code-of-conduct)
 - [Get support](https://discourse.charmhub.io/)
 - [Join our online chat](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
-- [Contribute](link to Contribute page)
+- [Contribute](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md)
 
-Thinking about using the <charm-name> Operator for your next project? 
+Thinking about using the Hockeypuck K8s Operator for your next project? 
 [Get in touch](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)!
-
-# Contents
-
-1. [Tutorial](link to tutorial)
-1. [How-to](link to how-to)
-1. [Reference](link to reference)
-1. [Explanation](link to explanation)

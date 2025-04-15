@@ -8,7 +8,7 @@ A backup is a snapshot of the Hockeypuck data (public keys, subkeys, blocked key
 
 ## Create a backup
 
-1. Remove the relation between the hockeypuck charm and the postgresql charm:
+1. Remove the relation between the Hockeypuck charm and the PostgreSQL charm:
 ```bash
 juju remove-relation postgresql-k8s:database hockeypuck-k8s:postgresql
 ```
@@ -23,9 +23,9 @@ If you are trying to restore a backup that was made from a different cluster, ch
 [/note]
 
 
-1. Restore the backup on the postgresql-k8s charm unit by following the instructions in the PostgreSQL charm [restoration documentation](https://charmhub.io/postgresql-k8s/docs/h-restore-backup).
+1. Restore the backup on the PostgreSQL charm unit by following the instructions in the PostgreSQL charm [restoration documentation](https://charmhub.io/postgresql-k8s/docs/h-restore-backup).
 
-2. Integrate the hockeypuck-k8s charm with the postgresql-k8s charm:
+2. Integrate the hockeypuck-k8s charm with the PostgreSQL charm:
 ```shell
 juju integrate hockeypuck-k8s postgresql-k8s
 ```
