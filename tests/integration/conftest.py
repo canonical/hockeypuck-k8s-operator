@@ -161,6 +161,7 @@ async def hockeypuck_secondary_app_fixture(
             channel="14/stable",
             trust=True,
         )
+        await secondary_model.wait_for_idle(status="active", apps=[postgresql_app.name])
         await secondary_model.add_relation(app.name, postgresql_app.name)
         await secondary_model.wait_for_idle(status="active")
         return app
