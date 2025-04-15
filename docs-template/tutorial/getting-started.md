@@ -22,7 +22,7 @@ For more information about how to install Juju, see [Get started with Juju](http
 To easily clean up the resources and to separate your workload from the contents of this tutorial,
 set up a new Juju model in the `microk8s` controller with the following command.
 
-```
+```bash
 juju switch microk8s
 juju add-model hockeypuck-tutorial
 ```
@@ -32,14 +32,14 @@ juju add-model hockeypuck-tutorial
 Start off by deploying the hockeypuck-k8s charm, postgresql-k8s charm and integrating the two 
 applications.
 
-```
+```bash
 juju deploy hockeypuck-k8s --channel=2.2/edge --config metrics-port=9626 app-port=11371
 juju deploy postgresql-k8s --channel 14/stable --trust
 juju integrate hockeypuck-k8s postgresql-k8s
 ```
 
 Wait for the charm to be active:
-```
+```bash
 juju wait-for application hockeypuck-k8s
 ```
 
@@ -50,7 +50,7 @@ parameter will cause the application to be blocked.
 ### Expose hockeypuck-k8s through ingress
 
 Deploy traefik-k8s charm and integrate it with the hockeypuck-k8s charm:
-```
+```bash
 juju deploy traefik-k8s --channel=latest/edge --trust
 juju integrate hockeypuck-k8s:ingress traefik-k8s
 ```
@@ -58,7 +58,7 @@ juju integrate hockeypuck-k8s:ingress traefik-k8s
 > Note: traefik-k8s must be deployed on the same k8s cluster as hockeypuck-k8s charm.
 
 You can check the status with:
-```
+```bash
 juju status --relations
 ```
 
@@ -66,12 +66,12 @@ After a few minutes, the deployment will be finished and all the units should be
 the active status.
 
 Run the following command to get the URL to view hockeypuck UI:
-```
+```bash
 juju run traefik-k8s/0 show-proxied-endpoints --format=yaml
 ```
 
 The output will be something similar to:
-```
+```bash
 Running operation 1 with 1 task
   - task 2 on unit-traefik-k8s-0
 
@@ -99,6 +99,6 @@ Congratulations! You have successfully finished the hockeypuck-k8s tutorial. You
 model environment that you’ve created using the following commands.
 
 
-```
+```bash
 juju destroy-model hockeypuck-tutorial --destroy-storage
 ```

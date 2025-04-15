@@ -76,8 +76,8 @@ config:
       description: |
         New line separated list of external peer IPs or FQDNs that are provided in the 
         following format:
-        peer_fqdn1,http_port1,reconciliation_port1
-        peer_fqdn2,http_port2,reconciliation_port2
+        peer_address,http_port1,reconciliation_port1
+        peer_address,http_port2,reconciliation_port2
     contact-fingerprint:
       type: string
       description: |
