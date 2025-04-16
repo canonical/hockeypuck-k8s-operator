@@ -100,25 +100,25 @@ For this charm, the following Juju events are observed:
 
 6. `update_status <https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#update-status>`_: fired at regular intervals. **Action**: validate the configuration, run pending migrations and restart the workload.
 
-7. `secret_changed <https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-changed>`_: fired when the secret owner publishes a new secret revision. **Action**: validate the configuration, run pending migrations and restart the workload.
+7. [secret_changed](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#secret-changed): fired when the secret owner publishes a new secret revision. **Action**: validate the configuration, run pending migrations and restart the workload.
 
-8. `database_created <https://github.com/canonical/data-platform-libs>`_: fired when a new database is created. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+8. [database_created](https://github.com/canonical/data-platform-libs): fired when a new database is created. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
-9. `endpoints_changed <https://github.com/canonical/data-platform-libs>`_: fired when the database endpoints change. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+9. [endpoints_changed](https://github.com/canonical/data-platform-libs): fired when the database endpoints change. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
-10. `database_relation_broken <https://github.com/canonical/data-platform-libs>`_: fired when a unit participating in a non-peer relation is removed. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+10. [database_relation_broken](https://github.com/canonical/data-platform-libs): fired when a unit participating in a non-peer relation is removed. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
-11. `ingress_ready <https://github.com/canonical/traefik-k8s-operator>`_: fired when the ingress for the app is ready. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+11. [ingress_ready](https://github.com/canonical/traefik-k8s-operator): fired when the ingress for the app is ready. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
-12. `ingress_revoked <https://github.com/canonical/traefik-k8s-operator>`_: fired when the ingress for the web app is not ready anymore. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+12. [ingress_revoked](https://github.com/canonical/traefik-k8s-operator): fired when the ingress for the web app is not ready anymore. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
-13. `rotate_secret_key <https://documentation.ubuntu.com/juju/latest/user/reference/action/>`_: fired when secret-rotate is executed.  **Action**: generate a new secret token for the application.
+13. [rotate_secret_key](https://documentation.ubuntu.com/juju/latest/user/reference/action/): fired when secret-rotate is executed.  **Action**: generate a new secret token for the application.
 
-14. `block_keys_action <https://documentation.ubuntu.com/juju/latest/reference/action/>`_: fired when the block_keys action is run. **Action**: deletes the required keys from the database and adds them to the blocklisted keys list.
+14. [block_keys_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the block_keys action is run. **Action**: deletes the required keys from the database and adds them to the blocklisted keys list.
 
-15. `rebuild_prefix_tree_action <https://documentation.ubuntu.com/juju/latest/reference/action/>`_: fired when the rebuild_prefix_tree action is run. **Action**: Rebuilds the ptree used by hockeypuck service.
+15. [rebuild_prefix_tree_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the rebuild_prefix_tree action is run. **Action**: Rebuilds the ptree used by hockeypuck service.
 
-16. `lookup_key_action <https://documentation.ubuntu.com/juju/latest/reference/action/>`_: fired when the lookup_key action is run. **Action**: Searches for the required key in the database.
+16. [lookup_key_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the lookup_key action is run. **Action**: Searches for the required key in the database.
 
 
 > See more in the Juju docs: [Event](https://documentation.ubuntu.com/juju/latest/reference/hook/)
