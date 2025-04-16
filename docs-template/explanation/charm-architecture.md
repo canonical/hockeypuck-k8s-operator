@@ -77,7 +77,7 @@ The following metrics are provided by the workload container at the `/metrics` e
 
 * **conflux_reconciliation_items_recovered**: Count of items recovered since startup
 * **conflux_reconciliation_busy_peer**: Count of reconciliations attempted against busy peers since startup
-* **conflux_reconciliation_duration_seconds**: Time spent performing a reconciliation
+* **conflux_reconciliation_duration_seconds**: Time spent performing a reconciliation, in seconds
 * **conflux_reconciliation_event_time_seconds**: When the given event last occurred, in seconds since the epoch
 * **conflux_reconciliation_failure**: Count of failed reconciliations since startup
 * **conflux_reconciliation_success**: Count of successful reconciliations since startup
