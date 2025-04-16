@@ -65,7 +65,7 @@ charmcraft pack
 ```
 
 For the integration tests (and also to deploy the charm locally), the hockeypuck
-image is required in the microk8s registry. To enable it, run:
+image is required in the MicroK8s registry. To enable it, run:
 
 ```shell
 microk8s enable registry
