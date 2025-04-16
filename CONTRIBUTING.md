@@ -64,7 +64,7 @@ Build the charm in this git repository using:
 charmcraft pack
 ```
 
-For the integration tests (and also to deploy the charm locally), the hockeypuck
+For the integration tests (and also to deploy the charm locally), the Hockeypuck
 image is required in the MicroK8s registry. To enable it, run:
 
 ```shell
