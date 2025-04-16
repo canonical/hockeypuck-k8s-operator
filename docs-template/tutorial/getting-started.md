@@ -88,7 +88,7 @@ traefik-k8s/0:
   unit: traefik-k8s/0
 ```
 
-In this case, the URL to use in your browser will be `http://10.12.97.102/hockeypuck-tutorial-hockeypuck-k8s`. 
+In this example, the URL to use in your browser will be `http://10.12.97.102/hockeypuck-tutorial-hockeypuck-k8s`. 
 The exact IP address may differ depending on your environment. You can now access your hockeypuck server UI at this URL.
 
 ### Cleaning up the environment
