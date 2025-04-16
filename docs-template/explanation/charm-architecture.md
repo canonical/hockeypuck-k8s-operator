@@ -71,7 +71,7 @@ The following metrics are provided by the workload container at the `/metrics` e
 * **hockeypuck_keys_removed**: Number of keys removed since startup.
 * **hockeypuck_keys_removed_jitter**: Number of stale PTree entries cleaned up.
 * **hockeypuck_keys_updated**: Number of keys that have been updated.
-* **hockeypuck_http_request_duration_seconds**: Time spent generating HTTP responses
+* **hockeypuck_http_request_duration_seconds**: Time spent generating HTTP responses.
 
 ### Reconciliation metrics
 
