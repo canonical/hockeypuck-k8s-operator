@@ -2,7 +2,7 @@
 
 At its core, [Hockeypuck](https://hockeypuck.io/) is a [Go](https://go.dev/) application that integrates with [PostgreSQL](https://www.postgresql.org/) and [Traefik](https://traefik.io/traefik/). The [Hockeypuck charm](https://github.com/canonical/hockeypuck-k8s-operator) was developed using the [12-factor Go framework](https://canonical-charmcraft.readthedocs-hosted.com/en/stable/reference/extensions/go-framework-extension/). This framework allows us to easily deploy and operate Hockeypuck with associated infrastructure, such as databases and ingress.
 
-> See more: [PaaS Charm](https://github.com/canonical/paas-charm)
+> See more: [Web app support in Charmcraft and Rockcraft](https://canonical-12-factor-app-support.readthedocs-hosted.com/en/latest/)
 
 ## Charm architecture diagram
 
