@@ -47,7 +47,7 @@ flag will cause the application to be blocked.
 
 ### Expose Hockeypuck webserver through ingress
 
-Deploy the traefik-k8s charm and integrate it with the Hockeypuck:
+Deploy the traefik-k8s charm and integrate it with the Hockeypuck charm:
 ```bash
 juju deploy traefik-k8s --channel=latest/edge --trust
 juju integrate hockeypuck-k8s:ingress traefik-k8s
