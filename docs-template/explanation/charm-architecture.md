@@ -45,7 +45,7 @@ hockeypuck-k8s-0                         2/2     Running   0         6h4m
 
 This shows there are 2 containers - the one named above, as well as a container for the charm code itself.
 
-And if you run `kubectl describe pod hockeypuck-k8s-0`, all the containers will have a command ```/charm/bin/pebble```. That's because Pebble is responsible for the processes startup as explained above. 
+And if you run `kubectl describe pod hockeypuck-k8s-0`, all the containers will have a command ```/charm/bin/pebble```. That's because Pebble is responsible for the processes' startup as explained above. 
 
 ## OCI images
 
