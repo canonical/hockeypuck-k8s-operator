@@ -45,7 +45,7 @@ juju wait-for application hockeypuck-k8s
 > **Note**: The hockeypuck application only supports a single unit. Adding more units through `--num-units`
 flag will cause the application to be blocked.
 
-### Expose hockeypuck webserver through ingress
+### Expose Hockeypuck webserver through ingress
 
 Deploy the traefik-k8s charm and integrate it with the Hockeypuck:
 ```bash
