@@ -49,7 +49,7 @@ And if you run `kubectl describe pod hockeypuck-k8s-0`, all the containers will 
 
 ## OCI images
 
-We use [Rockcraft](https://canonical-rockcraft.readthedocs-hosted.com/en/latest/) to build the OCI image for hockeypuck-k8s. 
+We use [Rockcraft](https://canonical-rockcraft.readthedocs-hosted.com/en/latest/) to build the OCI image for the hockeypuck-k8s charm. 
 The image is defined in [hockeypuck-k8s rock](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/hockeypuck_rock/rockcraft.yaml).
 They are published to [Charmhub](https://charmhub.io/), the official repository of charms.
 
