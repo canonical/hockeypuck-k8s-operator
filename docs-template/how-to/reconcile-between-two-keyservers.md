@@ -1,23 +1,29 @@
 # Reconcile between two keyservers
 
-1. Create a file `peers.txt` and add the external peers to be configured in the following format:
+Hockeypuck supports peering with other SKS-compatible keyservers to synchronize public key data through **reconciliation**.
+
+## Steps to configure reconciliation
+
+1. Create a file `peers.txt` and add the external peers you want to reconcile with. Each line must be in the following format:
 ```
-peer_address,http_port1,reconciliation_port1
-peer_address,http_port2,reconciliation_port2
+<peer_address>,<http_port>,<reconciliation_port>
 ```
-The peer address can be either the peer's IP or FQDN.
-For example:
+* **peer_address**: The IP or fully qualified domain name (FQDN) of the peer
+* **http_port**: The port where the peer exposes its SKS HTTP API (usually 11371)
+* **reconciliation_port**: The port used for reconciliation (usually 11370)
+
+Example `peers.txt`:
 ```
 10.1.39.11,11371,11370
 10.1.39.13,11371,11370
 ```
 
-2. Set the `external-peers` config option:
+2. Configure the `hockeypuck-k8s` charm to use the file through the `external-peers` config option:
 ```bash
 juju config hockeypuck-k8s external-peers=@peers.txt
 ```
 
-3. Verify if reconciliation is happening successfully by checking the logs:
+3. Check the Hockeypuck logs to confirm that reconciliation with external peers is taking place:
 ```bash
-kubectl logs hockeypuck-k8s-0 -c app -n JUJU_MODEL_NAME
+kubectl logs hockeypuck-k8s-0 -c app -n $JUJU_MODEL_NAME
 ```

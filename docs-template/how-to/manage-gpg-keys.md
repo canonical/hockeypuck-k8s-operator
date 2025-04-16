@@ -1,8 +1,11 @@
 # Manage GPG keys with Hockeypuck
 
-Hockeypuck charm provides 2 main actions for database management: `block-keys` and `lookup-key`.
+The `hockeypuck-k8s` charm provides both Juju actions and HTTP APIs for managing OpenPGP keys stored on the keyserver.
 
-The `block-keys` action allows you to delete a list of fingerprints from the keyserver:
+## Juju actions
+The charm provides 2 main actions for database management: `block-keys` and `lookup-key`.
+
+The `block-keys` action allows you to remove public keys from the keyserver and prevent them from being re-imported via reconciliation. This is useful for managing compromised or spam-related keys.
 ```bash
 juju run hockeypuck-k8s/0 block-keys fingerprints=2CF6A6A3B93C138FD51037564415DC328A6C8E00,7EG5A6A3B93C138FD51037568415DC326A6C8F01 comment=R123
 ```
@@ -15,16 +18,17 @@ juju run hockeypuck-k8s/0 lookup-key keyword=0x2CF6A6A3B93C138FD51037564415DC328
 
 [note]
 **Note**: 
-The prefix `0x` must be prepended to the fingerprint when running the `lookup-key` action but must not be added while running the `block-keys` action.
+* Use `0x` prefix only for `lookup-key`.
+* Do not use `0x` prefix when specifying fingerprints in `block-keys`.
 [/note]
 
 ## Hockeypuck APIs
 
-Apart from the above-mentioned actions, Hockeypuck application also provides APIs to interact with the keyserver database. The following endpoints are available:
+The Hockeypuck server also provides a set of SKS-compatible endpoints for interacting with the keyserver over HTTP.
 
 ### 1. /pks/lookup
 **Purpose:**
-Retrieve information about keys stored on the keyserver.
+Retrieve key information by fingerprint, name, or email.
 
 **Query Parameters:**
 - op: The operation type, e.g., get, vindex, or index.
