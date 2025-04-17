@@ -1,4 +1,4 @@
-# Integrate Hockeypuck with COS
+# Integrate with COS
 
 ## Deploy COS Lite
 Create a Juju model and deploy the Canonical Observability Stack bundle [cos-lite](https://charmhub.io/topics/canonical-observability-stack) to this model:
@@ -9,7 +9,7 @@ juju deploy cos-lite --trust
 ```
 
 ## Expose the application relation endpoints
-Once all the COS Lite applications are deployed and settled down (you can monitor this by using `juju status --watch 2s`), expose the relation points for prometheus, loki and grafana:
+Once all the COS Lite applications are deployed and settled down (you can monitor this by using `juju status --watch 2s`), expose the relation points for Prometheus, Loki and Grafana:
 
 ```bash
 juju offer prometheus:metrics-endpoint

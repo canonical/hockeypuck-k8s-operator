@@ -1,4 +1,4 @@
-# Deploy the hockeypuck-k8s charm for the first time
+# Deploy the Hockeypuck charm for the first time
 
 ## What you'll do
 
@@ -7,13 +7,15 @@
 
 By the end, you’ll have a working Hockeypuck server running on a Kubernetes cluster managed by Juju.
 
-### Requirements
+### What you'll need
 
 - A machine with amd64 architecture.
 - Juju 3.x installed.
-- Juju MicroK8s controller created and active named `microk8s`, with the [MetalLB addon](https://microk8s.io/docs/addon-metallb) enabled (required for Traefik ingress to work)
+- Juju MicroK8s controller created and active named `microk8s`, with the [MetalLB addon](https://microk8s.io/docs/addon-metallb) enabled (required for Traefik ingress to work).
 
-> All the requirements can be met using the [Multipass charm-dev blueprint](https://juju.is/docs/juju/set-up--tear-down-your-test-environment#heading--set-up---tear-down-automatically). Use the Multipass VM shell to run all commands in this tutorial.
+[note]
+All the requirements can be met using the [Multipass charm-dev blueprint](https://juju.is/docs/juju/set-up--tear-down-your-test-environment#heading--set-up---tear-down-automatically). Use the Multipass VM shell to run all commands in this tutorial.
+[/note]
 
 For more information about how to install Juju, see [Get started with Juju](https://juju.is/docs/olm/get-started-with-juju).
 
@@ -42,8 +44,10 @@ Wait for the charm to be active:
 juju wait-for application hockeypuck-k8s
 ```
 
-> **Note**: The hockeypuck application only supports a single unit. Adding more units through `--num-units`
+[note]
+The hockeypuck application only supports a single unit. Adding more units through `--num-units`
 flag will cause the application to be blocked.
+[/note]
 
 ### Expose Hockeypuck webserver through ingress
 
@@ -53,7 +57,9 @@ juju deploy traefik-k8s --channel=latest/edge --trust
 juju integrate hockeypuck-k8s:ingress traefik-k8s
 ```
 
-> **Note**: traefik-k8s must be deployed on the same k8s cluster as hockeypuck-k8s charm.
+[note]
+traefik-k8s must be deployed on the same k8s cluster as hockeypuck-k8s charm.
+[/note]
 
 You can check the status with:
 ```bash

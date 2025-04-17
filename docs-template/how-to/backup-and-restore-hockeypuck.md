@@ -18,14 +18,13 @@ juju remove-relation postgresql-k8s:database hockeypuck-k8s:postgresql
 ## Restore the backup on a new charm instance
 
 [note]
-**Note**: 
-If you are trying to restore a backup that was made from a different cluster, checkout the [PostgreSQL Charmhub documentation](https://charmhub.io/postgresql-k8s/docs/h-migrate-cluster).
+If you are trying to restore a backup that was made from a different cluster, check out the [PostgreSQL Charmhub documentation](https://charmhub.io/postgresql-k8s/docs/h-migrate-cluster).
 [/note]
 
 
 1. Restore the backup on the PostgreSQL charm unit by following the instructions in the PostgreSQL charm [restoration documentation](https://charmhub.io/postgresql-k8s/docs/h-restore-backup).
 
-2. Integrate the hockeypuck-k8s charm with the PostgreSQL charm:
+2. Integrate the Hockeypuck charm with the PostgreSQL charm:
 ```shell
 juju integrate hockeypuck-k8s postgresql-k8s
 ```

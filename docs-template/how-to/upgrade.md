@@ -1,4 +1,4 @@
-# Upgrade Hockeypuck
+# Upgrade
 
 Before updating the charm you need to back up the database using the PostgreSQL charm’s create-backup action.
 

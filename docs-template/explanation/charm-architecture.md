@@ -1,12 +1,12 @@
 # Charm architecture
 
-At its core, [Hockeypuck](https://hockeypuck.io/) is a [Go](https://go.dev/) application that integrates with [PostgreSQL](https://www.postgresql.org/) and [Traefik](https://traefik.io/traefik/). The [Hockeypuck charm](https://github.com/canonical/hockeypuck-k8s-operator) was developed using the [12-factor Go framework](https://canonical-charmcraft.readthedocs-hosted.com/en/stable/reference/extensions/go-framework-extension/). This framework allows us to easily deploy and operate Hockeypuck with associated infrastructure, such as databases and ingress.
+At its core, [Hockeypuck](https://hockeypuck.io/) is a [Go](https://go.dev/) application that integrates with [PostgreSQL](https://www.postgresql.org/) and [Traefik](https://traefik.io/traefik/). The [Hockeypuck charm](https://github.com/canonical/hockeypuck-k8s-operator) was developed using the [12-factor Go framework](https://canonical-charmcraft.readthedocs-hosted.com/en/stable/reference/extensions/go-framework-extension/). This framework allows us to easily deploy and operate Hockeypuck and its associated infrastructure, such as databases and ingress.
 
 > See more: [Web app support in Charmcraft and Rockcraft](https://canonical-12-factor-app-support.readthedocs-hosted.com/en/latest/)
 
 ## Charm architecture diagram
 
-Below is a diagram of the application architecture of the hockeypuck-k8s charm.
+Below is a diagram of the application architecture of the Hockeypuck charm.
 
 ```mermaid
 C4Container
@@ -51,7 +51,7 @@ And if you run `kubectl describe pod hockeypuck-k8s-0`, all the containers will 
 
 We use [Rockcraft](https://canonical-rockcraft.readthedocs-hosted.com/en/latest/) to build the OCI image for the hockeypuck-k8s charm. 
 The image is defined in [hockeypuck-k8s rock](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/hockeypuck_rock/rockcraft.yaml).
-They are published to [Charmhub](https://charmhub.io/), the official repository of charms.
+The rock and the charm are published to [Charmhub](https://charmhub.io/), the official repository of charms.
 
 > See more: [How to publish your charm on Charmhub](https://canonical-charmcraft.readthedocs-hosted.com/en/stable/howto/manage-charms/#publish-a-charm-on-charmhub)
 
@@ -61,28 +61,8 @@ The workload that this container is running is defined in the [hockeypuck-k8s ro
 
 ## Metrics
 
-The following metrics are provided by the workload container at the `/metrics` endpoint at port 9626:
-
-### Server metrics
-
-* **hockeypuck_keys_added**: Number of new keys added since startup.
-* **hockeypuck_keys_added_jitter**: Number of lost PTree (Probabilistic Tree) entries recreated.
-* **hockeypuck_keys_ignored**: Number of keys with no-op (unchanged) updates.
-* **hockeypuck_keys_removed**: Number of keys removed since startup.
-* **hockeypuck_keys_removed_jitter**: Number of stale PTree entries cleaned up.
-* **hockeypuck_keys_updated**: Number of keys that have been updated.
-* **hockeypuck_http_request_duration_seconds**: Time spent generating HTTP responses.
-
-### Reconciliation metrics
-
-* **conflux_reconciliation_items_recovered**: Count of items recovered since startup
-* **conflux_reconciliation_busy_peer**: Count of reconciliations attempted against busy peers since startup
-* **conflux_reconciliation_duration_seconds**: Time spent performing a reconciliation, in seconds
-* **conflux_reconciliation_event_time_seconds**: When the given event last occurred, in seconds since the epoch
-* **conflux_reconciliation_failure**: Count of failed reconciliations since startup
-* **conflux_reconciliation_success**: Count of successful reconciliations since startup
-
-Apart from these, there are [Go runtime metrics](https://pkg.go.dev/runtime/metrics) and process-level metrics also available.
+Metrics are provided by the workload container at the `/metrics` endpoint at port 9626. 
+See [Metrics](../reference/metrics.md) for a full list.
  
 ## Juju events
 
@@ -135,7 +115,7 @@ Take, for example, when a configuration is changed by using the CLI.
 
 1. User runs the configuration command:
 ```bash
-juju config hockeypuck-k8s app-port=8000
+juju config hockeypuck-k8s app-port=11371
 ```
 2. A `config-changed` event is emitted.
 3. In the `__init__` method is defined how to handle this event like this:
