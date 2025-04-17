@@ -163,7 +163,7 @@ class AdminGPG:
         password = admin_secret["adminpassword"]
         signature = self.gpg.sign(
             request,
-            keyid=self.admin_fingerprint,
+            keyid=self.admin_fingerprint(),
             passphrase=password,
             detach=True,
         )
