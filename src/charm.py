@@ -102,7 +102,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             New CharmState
         """
         charm_state = super()._create_charm_state()
-        admin_fingerprint = AdminGPG(self.model).admin_fingerprint
+        admin_fingerprint = AdminGPG(self.model).admin_fingerprint()
         if "admin_keys" not in charm_state._user_defined_config:
             charm_state._user_defined_config["admin_keys"] = admin_fingerprint
         else:
