@@ -31,7 +31,15 @@ class AdminGPG:
         """
         self.model = model
         self.gpg = gnupg.GPG()
-        self.admin_fingerprint = self._ensure_admin_key_in_keyring()
+
+    def admin_fingerprint(self) -> str:
+        """Get the admin GPG key fingerprint.
+
+        Returns:
+            The fingerprint of the admin GPG key.
+        """
+        self._admin_fingerprint = self._ensure_admin_key_in_keyring()
+        return self._admin_fingerprint
 
     def _ensure_admin_key_in_keyring(self) -> str:
         """Ensure the admin GPG key is present in the GPG keyring.
