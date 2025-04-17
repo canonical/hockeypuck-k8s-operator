@@ -40,16 +40,20 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             args: passthrough to CharmBase.
         """
         super().__init__(*args)
+
+        self.actions_observer = actions.Observer(self)
+        self.reconciliation_port = actions.RECONCILIATION_PORT
+        self._traefik_route = traefik_route_observer.TraefikRouteObserver(self)
+        self.framework.observe(self.on.install, self.install_gnupg)
+        self.framework.observe(self.on.upgrade_charm, self.install_gnupg)
+
+    def install_gnupg(self, _: ops.ActionEvent) -> None:
+        """Install gnupg package."""
         # The python-gnupg package requires gnupg package to be installed.
         # Charmcraft currently does not support staging packages in charmcraft.yaml.
         # See https://github.com/canonical/charmcraft/issues/1990
         apt.update()
         apt.add_package(["gnupg"])
-
-        self.actions_observer = actions.Observer(self)
-        self.reconciliation_port = actions.RECONCILIATION_PORT
-        self._traefik_route = traefik_route_observer.TraefikRouteObserver(self)
-        self.admin_gpg = AdminGPG(self.model)
 
     def is_ready(self) -> bool:
         """Check if the charm is ready to start the workload application.
@@ -74,7 +78,8 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         super().restart(rerun_migrations)
         try:
             if self.is_ready():
-                self.admin_gpg.push_admin_key()
+                admin_gpg = AdminGPG(self.model)
+                admin_gpg.push_admin_key()
         except RequestException:
             ops.ErrorStatus("Unable to push admin key to Hockeypuck")
 
@@ -97,12 +102,13 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             New CharmState
         """
         charm_state = super()._create_charm_state()
+        admin_fingerprint = AdminGPG(self.model).admin_fingerprint()
         if "admin_keys" not in charm_state._user_defined_config:
-            charm_state._user_defined_config["admin_keys"] = self.admin_gpg.admin_fingerprint
+            charm_state._user_defined_config["admin_keys"] = admin_fingerprint
         else:
             charm_state._user_defined_config["admin_keys"] = (
                 charm_state._user_defined_config["admin_keys"].rstrip(chars=",")
-                + f",{self.admin_gpg.admin_fingerprint}"
+                + f",{admin_fingerprint}"
             )
 
         return charm_state
