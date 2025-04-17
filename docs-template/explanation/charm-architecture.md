@@ -88,7 +88,7 @@ Apart from these, there are [Go runtime metrics](https://pkg.go.dev/runtime/metr
 
 For this charm, the following Juju events are observed:
 
-1. `app_pebble_ready <https://documentation.ubuntu.com/juju/3.6/reference/hook/index.html#container-pebble-ready>`_: fired on Kubernetes charms when the requested container is ready. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+1. [app_pebble_ready](https://documentation.ubuntu.com/juju/3.6/reference/hook/index.html#container-pebble-ready): fired on Kubernetes charms when the requested container is ready. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
 2. `config_changed <https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed>`_: usually fired in response to a configuration change using the CLI. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
