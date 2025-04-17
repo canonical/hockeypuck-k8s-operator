@@ -96,7 +96,7 @@ For this charm, the following Juju events are observed:
 
 4. [secret_storage_relation_changed](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-changed): fired when a new unit joins in an existing relation and whenever the related unit changes its settings. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
-5. `secret_storage_relation_departed <https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-departed>`_: fired when a unit departs from an existing relation. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+5. [secret_storage_relation_departed](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-departed): fired when a unit departs from an existing relation. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
 6. `update_status <https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#update-status>`_: fired at regular intervals. **Action**: validate the configuration, run pending migrations and restart the workload.
 
