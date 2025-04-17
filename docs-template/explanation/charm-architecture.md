@@ -121,7 +121,7 @@ For this charm, the following Juju events are observed:
 16. [lookup_key_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the lookup_key action is run. **Action**: Searches for the required key in the database.
 
 
-> See more in the Juju docs: [Event](https://documentation.ubuntu.com/juju/latest/reference/hook/)
+> See more in the Juju docs: [Hook](https://documentation.ubuntu.com/juju/latest/reference/hook/)
 
 ## Charm code overview
 
