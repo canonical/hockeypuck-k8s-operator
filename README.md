@@ -1,53 +1,42 @@
-<!--
-Avoid using this README file for information that is maintained or published elsewhere, e.g.:
+# hockeypuck-k8s-operator
 
-* metadata.yaml > published on Charmhub
-* documentation > published on (or linked to from) Charmhub
-* detailed contribution guide > documentation or CONTRIBUTING.md
+[![CharmHub Badge](https://charmhub.io/hockeypuck-k8s/badge.svg)](https://charmhub.io/hockeypuck-k8s)
+[![Publish to edge](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/publish_charm.yaml/badge.svg)](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/publish_charm.yaml)
+[![Promote charm](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/promote_charm.yaml/badge.svg)](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/promote_charm.yaml)
+[![Discourse Status](https://img.shields.io/discourse/status?server=https%3A%2F%2Fdiscourse.charmhub.io&style=flat&label=CharmHub%20Discourse)](https://discourse.charmhub.io)
 
-Use links instead.
--->
+A [Juju](https://juju.is/) [12-factor](https://documentation.ubuntu.com/juju/3.6/reference/charm/#factor-app-charm) [charm](https://juju.is/docs/olm/charmed-operators) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an [OpenPGP](https://www.openpgp.org/) public keyserver tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
 
-# is-charms-template
-<!-- Use this space for badges -->
+The server provides interfaces to add, look up, replace and delete public keys from the keyserver. Hockeypuck can synchronize public key material with SKS (Synchronizing Key Server) and other Hockeypuck servers. It implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
 
-Describe your charm in 1-2 sentences. Include the software that the charm deploys (if applicable), and the substrate (VM/K8s).
+For DevOps and SRE teams, this charm will make operating Hockeypuck simple and straightforward through Juju's clean interface.
 
-Like any Juju charm, this charm supports one-line deployment, configuration, integration, scaling, and more. For Charmed {Name}, this includes:
-* list or summary of app-specific features
-
-For information about how to deploy, integrate, and manage this charm, see the Official [is-charms-template Documentation](external link).
+For information about how to deploy, integrate, and manage this charm, see the official [hockeypuck-k8s charm documentation](https://charmhub.io/hockeypuck-k8s).
 
 ## Get started
-<!--Briefly summarize what the user will achieve in this guide.-->
 
-<!--Indicate software and hardware prerequisites-->
-
-### (Optional) Set up
-<!--Steps for setting up the environment (e.g. via Multipass).-->
-
-### (Optional) Deploy
-<!--Steps for deploying the charm.-->
+To begin, refer to the [tutorial](https://charmhub.io/hockeypuck-k8s/docs/tutorial-getting-started) for step-by-step instructions.
 
 ### Basic operations
-<!--Brief walkthrough of performing standard configurations or operations-->
 
-<!--(Optional) Link to the `charmcraft.yaml` file-->
+The following actions are available for this charm:
 
-## (Optional) Integrations
-<!-- Information about particularly relevant interfaces, endpoints or libraries related to the charm. For example, peer relation endpoints required by other charms for integration.--> 
+* **block-keys**: Blocklist and delete keys from the keyserver database.
+* **rebuild-prefix-tree**: Rebuild the prefix tree used by Hockeypuck.
+* **lookup-key**: Look up a key by fingerprint / email-id / keyword.
+
+You can obtain more information on the actions [here](https://charmhub.io/hockeypuck-k8s/actions).
 
 ## Learn more
-* [Read more]() <!--Link to the charm's official documentation-->
-* [Developer documentation]() <!--Link to any developer documentation-->
-* [Official webpage]() <!--(Optional) Link to official webpage/blog/marketing content--> 
-* [Troubleshooting]() <!--(Optional) Link to a page or section about troubleshooting/FAQ-->
+
+- [Read more](https://charmhub.io/hockeypuck-k8s/docs)
+- [Official Webpage](https://hockeypuck.io/)
+- [Troubleshooting](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
 
 ## Project and community
-* [Issues]() <!--Link to GitHub issues (if applicable)-->
-* [Contributing]() <!--Link to any contribution guides--> 
-* [Matrix]() <!--Link to contact info (if applicable), e.g. Matrix channel-->
-* [Launchpad]() <!--Link to Launchpad (if applicable)-->
 
-## (Optional) Licensing and trademark
+The hockeypuck-k8s-operator is a member of the Ubuntu family. It's an open source project that warmly welcomes community projects, contributions, suggestions, fixes and constructive feedback.
 
+* [Issues](https://github.com/canonical/hockeypuck-k8s-operator/issues)
+* [Contributing](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md)
+* [Matrix](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
