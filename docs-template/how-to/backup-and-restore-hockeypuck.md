@@ -12,7 +12,7 @@ A backup is a snapshot of the Hockeypuck data (public keys, subkeys, blocked key
 ```bash
 juju remove-relation postgresql-k8s:database hockeypuck-k8s:postgresql
 ```
-2. Since the hockeypuck data is stored in the PostgreSQL database, the PostgreSQL data needs to be backed up. Instructions to back up the PostgreSQL data can be found in the PostgreSQL charm [backup documentation](https://charmhub.io/postgresql-k8s/docs/h-configure-s3-aws).
+2. Since the Hockeypuck data is stored in the PostgreSQL database, the PostgreSQL data needs to be backed up. Instructions to back up the PostgreSQL data can be found in the PostgreSQL charm [backup documentation](https://charmhub.io/postgresql-k8s/docs/h-configure-s3-aws).
 
 
 ## Restore the backup on a new charm instance
