@@ -45,8 +45,9 @@ juju wait-for application hockeypuck-k8s
 ```
 
 [note]
-The hockeypuck application only supports a single unit. Adding more units through `--num-units`
-flag will cause the application to be blocked.
+The hockeypuck application supports only a single unit. Adding more units through `--num-units`
+flag will result in the application entering a blocked state. To achieve redundancy, 
+deploy multiple independent instances of Hockeypuck and [configure peering](https://charmhub.io/hockeypuck-k8s/docs/how-to-reconcile-between-two-keyservers) between them.
 [/note]
 
 ### Expose Hockeypuck webserver through ingress
