@@ -90,7 +90,7 @@ For this charm, the following Juju events are observed:
 
 1. [app_pebble_ready](https://documentation.ubuntu.com/juju/3.6/reference/hook/index.html#container-pebble-ready): fired on Kubernetes charms when the requested container is ready. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
-2. `config_changed <https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed>`_: usually fired in response to a configuration change using the CLI. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+2. [config_changed](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed): usually fired in response to a configuration change using the CLI. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
 3. `secret_storage_relation_created <https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#endpoint-relation-created>`_: fired when the relation is first created. **Action**: generate a new secret and store it in the relation data.
 
