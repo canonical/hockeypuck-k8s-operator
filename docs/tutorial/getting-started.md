@@ -2,7 +2,7 @@
 
 ## What you'll do
 
-- Deploy the [hockeypuck-k8s charm](https://charmhub.io/hockeypuck-k8s)
+- Deploy the [Hockeypuck charm](https://charmhub.io/hockeypuck-k8s)
 - Access the Hockeypuck web UI
 
 By the end of this tutorial, you’ll have a working Hockeypuck server running on a Kubernetes cluster managed by Juju.

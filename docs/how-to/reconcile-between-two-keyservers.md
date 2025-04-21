@@ -16,7 +16,7 @@ Example `peers.txt`:
 10.1.39.13,11371,11370
 ```
 
-2. Configure the `hockeypuck-k8s` charm to use the file through the `external-peers` config option:
+2. Configure the Hockeypuck charm to use the file through the `external-peers` config option:
 ```bash
 juju config hockeypuck-k8s external-peers=@peers.txt
 ```

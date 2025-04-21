@@ -24,12 +24,12 @@ _Supported charms_: [grafana-k8s](https://charmhub.io/grafana-k8s)
 Grafana-dashboard is a part of the COS relation to enhance observability.
 The relation enables quick dashboard access already tailored to fit the needs of
 operators to monitor the charm. The template for the Grafana dashboard for the
-`hockeypuck-k8s` charm can be found at `/src/cos/grafana_dashboards/hockeypuck.json`.
+Hockeypuck charm can be found at `/src/cos/grafana_dashboards/hockeypuck.json`.
 In the Grafana UI, it can be found as “Hockeypuck metrics” under the General section of the 
 dashboard browser (`/dashboards`). Modifications to the dashboard can be made but will not be 
 persisted upon restart or redeployment of the charm.
 
-The `hockeypuck-k8s` charm satisfies the `grafana_dashboard` interface by providing the 
+The Hockeypuck charm satisfies the `grafana_dashboard` interface by providing the 
 pre-made dashboard template to the Grafana relation data bag under the "dashboards" key. 
 Requires Prometheus datasource to be already integrated with Grafana.
 
@@ -64,7 +64,7 @@ _Supported charms_: [loki-k8s](https://charmhub.io/loki-k8s)
 
 The logging relation is a part of the COS relation to enhance logging observability.
 Logging relation through the `loki_push_api` interface installs and runs promtail which ships the
-contents of hockeypuck kubernetes pod logs to Loki.
+contents of the Hockeypuck kubernetes pod logs to Loki.
 This can then be queried through the Loki API or easily visualized through Grafana. Learn more about COS
 [here](https://charmhub.io/topics/canonical-observability-stack).
 

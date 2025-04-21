@@ -49,15 +49,11 @@ And if you run `kubectl describe pod hockeypuck-k8s-0`, all the containers will 
 
 ## OCI images
 
-We use [Rockcraft](https://canonical-rockcraft.readthedocs-hosted.com/en/latest/) to build the OCI image for the hockeypuck-k8s charm. 
-The image is defined in [hockeypuck-k8s rock](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/hockeypuck_rock/rockcraft.yaml).
+We use [Rockcraft](https://canonical-rockcraft.readthedocs-hosted.com/en/latest/) to build the OCI image for the Hockeypuck charm. 
+The image is defined in [hockeypuck-k8s rock](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/_rock/rockcraft.yaml).
 The rock and the charm are published to [Charmhub](https://charmhub.io/), the official repository of charms.
 
 > See more: [How to publish your charm on Charmhub](https://canonical-charmcraft.readthedocs-hosted.com/en/stable/howto/manage-charms/#publish-a-charm-on-charmhub)
-
-## Containers
-
-The workload that this container is running is defined in the [hockeypuck-k8s rock](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/hockeypuck_rock/rockcraft.yaml). Hockeypuck reads the [hockeypuck.conf](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/hockeypuck_rock/hockeypuck.conf) configuration file during startup.
 
 ## Metrics
 
@@ -96,7 +92,7 @@ For this charm, the following Juju events are observed:
 
 14. [block_keys_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the block_keys action is run. **Action**: deletes the required keys from the database and adds them to the blocklisted keys list.
 
-15. [rebuild_prefix_tree_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the rebuild_prefix_tree action is run. **Action**: Rebuilds the ptree used by hockeypuck service.
+15. [rebuild_prefix_tree_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the rebuild_prefix_tree action is run. **Action**: Rebuilds the ptree used by Hockeypuck.
 
 16. [lookup_key_action](https://documentation.ubuntu.com/juju/latest/reference/action/): fired when the lookup_key action is run. **Action**: Searches for the required key in the database.
 

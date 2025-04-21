@@ -20,4 +20,4 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" --data-urlenco
 
 ## Use custom admin key for manual actions
 
-The `block-keys` action provided by the hockeypuck-k8s charm always uses the default admin key created at startup to perform administrative tasks. If you wish to perform manual administration using your custom admin key, you must follow the [Hockeypuck server administration guide](https://hockeypuck.io/admin.html).
+The `block-keys` action provided by the Hockeypuck charm always uses the default admin key created at startup to perform administrative tasks. If you wish to perform manual administration using your custom admin key, you must follow the [Hockeypuck server administration guide](https://hockeypuck.io/admin.html).
