@@ -31,7 +31,14 @@ class AdminGPG:
         """
         self.model = model
         self.gpg = gnupg.GPG()
-        self.admin_fingerprint = self._ensure_admin_key_in_keyring()
+
+    def admin_fingerprint(self) -> str:
+        """Get the admin GPG key fingerprint.
+
+        Returns:
+            The fingerprint of the admin GPG key.
+        """
+        return self._ensure_admin_key_in_keyring()
 
     def _ensure_admin_key_in_keyring(self) -> str:
         """Ensure the admin GPG key is present in the GPG keyring.
@@ -156,7 +163,7 @@ class AdminGPG:
         password = admin_secret["adminpassword"]
         signature = self.gpg.sign(
             request,
-            keyid=self.admin_fingerprint,
+            keyid=self.admin_fingerprint(),
             passphrase=password,
             detach=True,
         )

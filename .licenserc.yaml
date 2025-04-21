@@ -25,4 +25,5 @@ header:
     - 'pyproject.toml'
     - 'zap_rules.tsv'
     - 'lib/**'
+    - 'icon.svg'
   comment: on-failure
