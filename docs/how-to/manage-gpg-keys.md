@@ -1,6 +1,6 @@
 # Manage GPG keys
 
-The `hockeypuck-k8s` charm provides both Juju actions and HTTP APIs for managing OpenPGP keys stored on the keyserver.
+The hockeypuck-k8s charm provides both Juju actions and HTTP APIs for managing OpenPGP keys stored on the keyserver.
 
 ## Juju actions
 The charm provides two main actions for database management: `block-keys` and `lookup-key`.

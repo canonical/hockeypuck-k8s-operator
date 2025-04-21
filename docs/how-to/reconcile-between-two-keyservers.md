@@ -25,7 +25,7 @@ juju config hockeypuck-k8s external-peers=@peers.txt
 ```bash
 kubectl logs hockeypuck-k8s-0 -c app -n $JUJU_MODEL_NAME
 ```
-You might find logs that look like the one below (The following logs are extracted from a Hockeypuck keyserver deployed in a secondary model and reconciled with a keyserver deployed in a primary model with a single key):
+You might find logs that look like the one below. The following logs are extracted from a Hockeypuck keyserver deployed in a secondary model and reconciled with a keyserver deployed in a primary model with a single key:
 ```
 2025-04-17T05:26:59.063Z [go] time="2025-04-17T05:26:59Z" level=info msg="accepted recon from [recon=10.1.39.177:11370, http=10.1.39.177:11371, weight=0, addr=<nil>, ips=[10.1.39.177]]" label="serve :11370"
 2025-04-17T05:26:59.066Z [go] time="2025-04-17T05:26:59Z" level=info msg="reconciliation done" label="serve :11370" remoteAddr="10.1.39.177:42586"

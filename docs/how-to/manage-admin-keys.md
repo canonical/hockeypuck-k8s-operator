@@ -8,7 +8,7 @@ However, you can supplement the default admin key by setting the `admin-keys` co
 juju config hockeypuck-k8s admin-keys=$ADMIN_FINGERPRINT
 ```
 
-For hockeypuck to identify this fingerprint as an admin key, you must also upload the admin key to the keyserver:
+For Hockeypuck to identify this fingerprint as an admin key, you must also upload the admin key to the keyserver:
 
 ```bash
 # store the public key of admin in a file

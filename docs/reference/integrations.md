@@ -1,7 +1,5 @@
 # Integrations
 
-<!-- Use the template below to add information about integrations supported by this charm. -->
-
 See [Integrations](https://charmhub.io/hockeypuck-k8s/integrations).
 
 ### database
@@ -35,11 +33,11 @@ The `hockeypuck-k8s` charm satisfies the `grafana_dashboard` interface by provid
 pre-made dashboard template to the Grafana relation data bag under the "dashboards" key. 
 Requires Prometheus datasource to be already integrated with Grafana.
 
-Grafana-Prometheus integrate command: 
+Example Grafana-Prometheus integrate command: 
 ```
 juju integrate grafana-k8s:grafana-source prometheus-k8s:grafana-source
 ```  
-Grafana-dashboard integrate command: 
+Example Grafana-dashboard integrate command: 
 ```
 juju integrate hockeypuck-k8s grafana-dashboard
 ```
@@ -70,7 +68,7 @@ contents of hockeypuck kubernetes pod logs to Loki.
 This can then be queried through the Loki API or easily visualized through Grafana. Learn more about COS
 [here](https://charmhub.io/topics/canonical-observability-stack).
 
-Logging-endpoint integrate command: 
+Example logging-endpoint integrate command: 
 ```
 juju integrate hockeypuck-k8s loki-k8s
 ```
@@ -83,7 +81,7 @@ _Supported charms_: [prometheus-k8s](https://charmhub.io/prometheus-k8s)
 The metrics-endpoint relation allows scraping the `/metrics` endpoint provided by Hockeypuck
 on port 9626, which provides [Hockeypuck metrics](https://charmhub.io/hockeypuck-k8s/docs/explanation-architecture). 
 
-Metrics-endpoint integrate command: 
+Example metrics-endpoint integrate command: 
 ```
 juju integrate hockeypuck-k8s prometheus-k8s
 ```
@@ -93,10 +91,10 @@ juju integrate hockeypuck-k8s prometheus-k8s
 _Interface_: [traefik_route](https://charmhub.io/traefik-k8s/integrations#traefik-route)  
 _Supported charms_: [traefik-k8s](https://charmhub.io/traefik-k8s)
 
-The traefik-route relation provides low-level access to traefik configuration. Hockeypuck requires 
+The traefik-route relation provides low-level access to Traefik configuration. Hockeypuck requires 
 this interface to expose the reconciliation port (11370) to [peer](https://hockeypuck.io/configuration.html#:~:text=1.4.-,Recon,-Hockeypuck%20supports%20the) with other keyservers.
 
-Traefik-route integrate command: 
+Example traefik-route integrate command: 
 ```
 juju integrate hockeypuck-k8s traefik-k8s:traefik-route
 ```

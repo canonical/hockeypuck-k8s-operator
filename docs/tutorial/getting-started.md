@@ -5,7 +5,7 @@
 - Deploy the [hockeypuck-k8s charm](https://charmhub.io/hockeypuck-k8s)
 - Access the Hockeypuck web UI
 
-By the end, you’ll have a working Hockeypuck server running on a Kubernetes cluster managed by Juju.
+By the end of this tutorial, you’ll have a working Hockeypuck server running on a Kubernetes cluster managed by Juju.
 
 ### What you'll need
 
@@ -31,7 +31,7 @@ juju add-model hockeypuck-tutorial
 
 ### Deploy the hockeypuck-k8s charm
 
-Deploy the hockeypuck-k8s charm, postgresql-k8s charm and relate them.
+Deploy the Hockeypuck charm, PostgreSQL charm and relate them.
 
 ```bash
 juju deploy hockeypuck-k8s --channel=2.2/edge --config metrics-port=9626 app-port=11371
@@ -45,21 +45,21 @@ juju wait-for application hockeypuck-k8s
 ```
 
 [note]
-The hockeypuck application supports only a single unit. Adding more units through `--num-units`
+The Hockeypuck application supports only a single unit. Adding more units through the `--num-units`
 flag will result in the application entering a blocked state. To achieve redundancy, 
 deploy multiple independent instances of Hockeypuck and [configure peering](https://charmhub.io/hockeypuck-k8s/docs/how-to-reconcile-between-two-keyservers) between them.
 [/note]
 
 ### Expose Hockeypuck webserver through ingress
 
-Deploy the traefik-k8s charm and integrate it with the Hockeypuck charm:
+Deploy the Traefik charm and integrate it with the Hockeypuck charm:
 ```bash
 juju deploy traefik-k8s --channel=latest/edge --trust
 juju integrate hockeypuck-k8s:ingress traefik-k8s
 ```
 
 [note]
-traefik-k8s must be deployed on the same k8s cluster as hockeypuck-k8s charm.
+The Traefik charm must be deployed on the same Kubernetes cluster as Hockeypuck charm.
 [/note]
 
 You can check the status with:
@@ -70,7 +70,7 @@ juju status --relations
 After a few minutes, the deployment will be finished and all the units should be in 
 the active status.
 
-Run the following command to retrieve the URL for hockeypuck UI:
+Run the following command to retrieve the URL for the Hockeypuck UI:
 ```bash
 juju run traefik-k8s/0 show-proxied-endpoints --format=yaml
 ```
@@ -100,8 +100,8 @@ The exact IP address may differ depending on your environment. You can now acces
 
 ### Cleaning up the environment
 
-Congratulations! You have successfully finished the hockeypuck-k8s tutorial. You can now remove the
-model environment that you’ve created using the following commands.
+Congratulations! You have successfully finished the Hockeypuck charm tutorial. You can now remove the
+model environment that you’ve created using the following command.
 
 
 ```bash
