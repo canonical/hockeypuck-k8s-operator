@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2025-04-21
+
+### Modified
+
+- Cleaned up Github workflows for Hockeypuck and modified the charm source code to 
+remove business logic from constructors.
+
 ## 2025-04-16
 
 ### Added
