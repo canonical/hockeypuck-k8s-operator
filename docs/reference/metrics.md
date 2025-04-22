@@ -1,6 +1,6 @@
 ## Metrics
 
-The following metrics are provided by the workload container at the `/metrics` endpoint at port 9626:
+The following metrics are provided by the workload container at the `/metrics` endpoint at port 9626.
 
 ### Server metrics
 
