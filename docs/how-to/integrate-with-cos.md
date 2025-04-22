@@ -37,7 +37,7 @@ tutorial-controller  admin/cos-lite.grafana     admin   grafana_dashboard:grafan
 Switch back to the charm model and integrate your charm with the exposed endpoints:
 
 ```bash
-juju switch $HOCKEYPUCK_CHARM_MODEL
+juju switch <Hockeypuck charm model>
 juju integrate hockeypuck-k8s admin/cos-lite.grafana
 juju integrate hockeypuck-k8s admin/cos-lite.loki
 juju integrate hockeypuck-k8s admin/cos-lite.prometheus
