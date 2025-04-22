@@ -47,7 +47,7 @@ juju integrate hockeypuck-k8s grafana-dashboard
 _Interface_: ingress  
 _Supported charms_: [nginx-ingress-integrator](https://charmhub.io/nginx-ingress-integrator), [traefik-k8s](https://charmhub.io/traefik-k8s)
 
-Ingress manages external http/https access to services in a Kubernetes cluster.
+Ingress manages external HTTP/HTTPS access to services in a Kubernetes cluster.
 Note that the Kubernetes cluster must already have an nginx ingress controller deployed. 
 Documentation to enable ingress in MicroK8s can be found 
 [here](https://microk8s.io/docs/addon-ingress).
