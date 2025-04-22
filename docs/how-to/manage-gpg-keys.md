@@ -9,7 +9,7 @@ The `block-keys` action allows you to remove public keys from the keyserver and 
 ```bash
 juju run hockeypuck-k8s/0 block-keys fingerprints=2CF6A6A3B93C138FD51037564415DC328A6C8E00,7EG5A6A3B93C138FD51037568415DC326A6C8F01 comment=R123
 ```
-This command ensures that the public keys associated with the fingerprints `2CF6A6A3B93C138FD51037564415DC328A6C8E00` and `7EG5A6A3B93C138FD51037568415DC326A6C8F01` are deleted from the keyserver and added to the hockeypuck's [blocklist](https://hockeypuck.io/configuration.html#:~:text=the%20OpenPGP%20engine-,blacklist,-contains%20a%20list) to prevent the keys from being reconciled again.
+This command ensures that the public keys associated with the fingerprints `2CF6A6A3B93C138FD51037564415DC328A6C8E00` and `7EG5A6A3B93C138FD51037568415DC326A6C8F01` are deleted from the keyserver and added to Hockeypuck's [blocklist](https://hockeypuck.io/configuration.html#:~:text=the%20OpenPGP%20engine-,blacklist,-contains%20a%20list) to prevent the keys from being reconciled again.
 
 The `lookup-key` action allows you to check if a key associated with the fingerprint is present in the keyserver:
 ```
