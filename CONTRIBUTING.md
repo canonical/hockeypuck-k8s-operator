@@ -89,7 +89,7 @@ your pull request must provide the following details:
 
 To improve contribution tracking,
 we use the developer certificate of origin
-([DCO 1.1](<https://developercertificate.org/))
+([DCO 1.1](https://developercertificate.org/))
 and require a "sign-off" for any changes going into each branch.
 
 The sign-off is a simple line at the end of the commit message
