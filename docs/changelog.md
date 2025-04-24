@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2025-04-24
+
+### Modified
+
+- Modified publish charm workflow to use `2.2/edge` track instead of `latest/edge`
+
 ## 2025-04-21
 
 ### Added
