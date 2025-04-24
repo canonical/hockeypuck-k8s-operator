@@ -8,7 +8,7 @@ Each revision is versioned by the date of the revision.
 
 ## 2025-04-24
 
-### Modifed
+### Modified
 
 - Modified publish charm workflow to use `2.2/edge` track instead of `latest/edge`
 
