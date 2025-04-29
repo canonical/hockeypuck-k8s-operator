@@ -26,5 +26,5 @@ jobs:
       base-channel: 24.04
       base-name: ubuntu
       base-architecture: amd64
-      doc-automation-disabled: true
+      doc-automation-disabled: false
     secrets: inherit
