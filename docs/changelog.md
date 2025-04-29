@@ -8,7 +8,7 @@ Each revision is versioned by the date of the revision.
 
 ## 2025-04-29
 
-- Fix PromQL query to remove numeric comparisions on string labels.
+- Fix PromQL query to remove numeric comparisons on string labels.
 
 ## 2025-04-24
 
