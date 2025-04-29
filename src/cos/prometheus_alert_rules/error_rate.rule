@@ -1,6 +1,6 @@
 alert: HighErrorRate
 expr: |
-    sum by(juju_charm) (increase(hockeypuck_http_request_duration_seconds_count{juju_charm="hockeypuck", status_code>="400"}[5m])) > 30
+    sum by(juju_charm) (increase(hockeypuck_http_request_duration_seconds_count{juju_charm="hockeypuck", status_code=~"4..|5.."}[5m])) > 30
 for: 2m
 labels:
     severity: critical
