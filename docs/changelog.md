@@ -8,7 +8,7 @@ Each revision is versioned by the date of the revision.
 
 ## 2025-04-29
 
-- Fix PromQL query to remove numeric comparisons on string labels.
+- Fixed issues found in the COS integration during staging.
 
 ## 2025-04-24
 
