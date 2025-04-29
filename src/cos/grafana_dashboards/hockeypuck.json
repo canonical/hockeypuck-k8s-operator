@@ -90,7 +90,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "process_start_time_seconds{juju_charm=\"hockeypuck\"} * 1000",
+          "expr": "process_start_time_seconds{juju_charm=\"hockeypuck-k8s\"} * 1000",
           "format": "heatmap",
           "legendFormat": "__auto",
           "range": true,
@@ -299,7 +299,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "sum by(method) (increase(hockeypuck_http_request_duration_seconds_bucket{juju_charm=\"hockeypuck\"}[5m]))",
+          "expr": "sum by(method) (increase(hockeypuck_http_request_duration_seconds_bucket{juju_charm=\"hockeypuck-k8s\"}[5m]))",
           "format": "heatmap",
           "hide": true,
           "legendFormat": "__auto",
@@ -312,7 +312,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "sum by(method, status_code) (increase(hockeypuck_http_request_duration_seconds_count{juju_charm=\"hockeypuck\"}[5m]))",
+          "expr": "sum by(method, status_code) (increase(hockeypuck_http_request_duration_seconds_count{juju_charm=\"hockeypuck-k8s\"}[5m]))",
           "format": "heatmap",
           "hide": false,
           "legendFormat": "__auto",
@@ -413,7 +413,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "sum by(le) (rate(hockeypuck_http_request_duration_seconds_bucket{method=\"POST\", juju_charm=\"hockeypuck\"}[2m]))",
+          "expr": "sum by(le) (rate(hockeypuck_http_request_duration_seconds_bucket{method=\"POST\", juju_charm=\"hockeypuck-k8s\"}[2m]))",
           "format": "heatmap",
           "hide": true,
           "legendFormat": "__auto",
@@ -427,7 +427,7 @@
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "sum by(le) (increase(hockeypuck_http_request_duration_seconds_bucket{juju_charm=\"hockeypuck\"}[5m]))",
+          "expr": "sum by(le) (increase(hockeypuck_http_request_duration_seconds_bucket{juju_charm=\"hockeypuck-k8s\"}[5m]))",
           "format": "heatmap",
           "hide": false,
           "instant": false,
@@ -757,7 +757,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_mspan_inuse_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_mspan_inuse_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "range": true,
@@ -769,7 +769,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_mspan_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_mspan_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "range": true,
@@ -781,7 +781,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_mcache_inuse_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_mcache_inuse_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "range": true,
@@ -793,7 +793,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_mcache_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_mcache_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "range": true,
@@ -805,7 +805,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_buck_hash_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_buck_hash_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "range": true,
@@ -817,7 +817,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_gc_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_gc_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "range": true,
@@ -829,7 +829,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_other_sys_bytes{juju_charm=\"hockeypuck\"} - go_memstats_other_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_other_sys_bytes{juju_charm=\"hockeypuck-k8s\"} - go_memstats_other_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "bytes of memory are used for other runtime allocations {instance={{instance}}}",
@@ -842,7 +842,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_next_gc_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_next_gc_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "range": true,
@@ -940,7 +940,7 @@
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "go_memstats_heap_alloc_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_heap_alloc_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -955,7 +955,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_heap_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_heap_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "hide": true,
           "intervalFactor": 1,
@@ -969,7 +969,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_heap_idle_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_heap_idle_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -983,7 +983,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_heap_inuse_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_heap_inuse_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -997,7 +997,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_heap_released_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_heap_released_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1096,7 +1096,7 @@
             "type": "prometheus",
             "uid": "${prometheusds}"
           },
-          "expr": "go_memstats_stack_inuse_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_stack_inuse_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -1106,7 +1106,7 @@
             "type": "prometheus",
             "uid": "${prometheusds}"
           },
-          "expr": "go_memstats_stack_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_stack_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "B"
@@ -1202,7 +1202,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "code",
-          "expr": "go_memstats_sys_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_sys_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{juju_unit}}",
@@ -1301,7 +1301,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "code",
-          "expr": "go_memstats_mallocs_total{juju_charm=\"hockeypuck\"} - go_memstats_frees_total{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_mallocs_total{juju_charm=\"hockeypuck-k8s\"} - go_memstats_frees_total{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{juju_unit}}",
@@ -1401,7 +1401,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "code",
-          "expr": "rate(go_memstats_mallocs_total{juju_charm=\"hockeypuck\"}[5m])",
+          "expr": "rate(go_memstats_mallocs_total{juju_charm=\"hockeypuck-k8s\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{juju_unit}}",
@@ -1501,7 +1501,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "code",
-          "expr": "rate(go_memstats_lookups_total{juju_charm=\"hockeypuck\"}[5m])",
+          "expr": "rate(go_memstats_lookups_total{juju_charm=\"hockeypuck-k8s\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{juju_unit}}",
@@ -1600,7 +1600,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "code",
-          "expr": "rate(go_memstats_alloc_bytes_total{juju_charm=\"hockeypuck\"}[5m])",
+          "expr": "rate(go_memstats_alloc_bytes_total{juju_charm=\"hockeypuck-k8s\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{juju_unit}}",
@@ -1699,7 +1699,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "code",
-          "expr": "go_goroutines{juju_charm=\"hockeypuck\"}",
+          "expr": "go_goroutines{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{juju_unit}}",
@@ -1798,7 +1798,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "code",
-          "expr": "go_gc_duration_seconds{juju_charm=\"hockeypuck\"}",
+          "expr": "go_gc_duration_seconds{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{juju_unit}} - quantile:{{quantile}}",
@@ -1909,7 +1909,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_goroutines{juju_charm=\"hockeypuck\"}",
+          "expr": "go_goroutines{juju_charm=\"hockeypuck-k8s\"}",
           "hide": false,
           "legendFormat": "{{juju_unit}}",
           "range": true,
@@ -2095,7 +2095,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_gc_duration_seconds{juju_charm=\"hockeypuck\"}",
+          "expr": "go_gc_duration_seconds{juju_charm=\"hockeypuck-k8s\"}",
           "hide": false,
           "legendFormat": "{{juju_unit}} - quantile: {{quantile}}",
           "range": true,
@@ -2182,7 +2182,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "sum by(le) (increase(conflux_reconciliation_duration_seconds_bucket{juju_charm=\"hockeypuck\"}[$__interval]))",
+          "expr": "sum by(le) (increase(conflux_reconciliation_duration_seconds_bucket{juju_charm=\"hockeypuck-k8s\"}[$__interval]))",
           "format": "heatmap",
           "interval": "",
           "intervalFactor": 1,
@@ -2289,7 +2289,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_alloc_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_alloc_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -2303,7 +2303,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "rate(go_memstats_alloc_bytes_total{juju_charm=\"hockeypuck\"}[2m])",
+          "expr": "rate(go_memstats_alloc_bytes_total{juju_charm=\"hockeypuck-k8s\"}[2m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2317,7 +2317,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_stack_inuse_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_stack_inuse_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2331,7 +2331,7 @@
             "uid": "${prometheusds}"
           },
           "editorMode": "builder",
-          "expr": "go_memstats_heap_inuse_bytes{juju_charm=\"hockeypuck\"}",
+          "expr": "go_memstats_heap_inuse_bytes{juju_charm=\"hockeypuck-k8s\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
