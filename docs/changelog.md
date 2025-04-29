@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2025-04-29
+
+- Fix PromQL query to remove numeric comparisions on string labels.
+
 ## 2025-04-24
 
 ### Modified
