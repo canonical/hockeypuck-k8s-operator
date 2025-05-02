@@ -22,7 +22,7 @@ The Hockeypuck database might become inaccessible, corrupted, or may be destroye
 
 - Avoid manual key deletion:
 
-  Manually deleting PGP keys from the PostgreSQL database does not remove the key entirely from Hockeypuck. Hockeypuck maintains another leveldb database locally apart from the PostgreSQL database to build the prefix tree. Deleting the key from PostgreSQL does not delete the key from the leveldb database. To ensure the key is properly removed from Hockeypuck, refer to [Hockeypuck's CharmHub documentation](https://charmhub.io/hockeypuck-k8s/docs/how-to-manage-gpg-keys) on how to use Hockeypuck's `delete` API or the `block-keys` action.
+  Manually deleting PGP keys from the PostgreSQL database does not remove the key entirely from Hockeypuck. Hockeypuck maintains another leveldb database locally apart from the PostgreSQL database to build the prefix tree. Deleting the key from PostgreSQL does not delete the key from the leveldb database. To ensure the key is properly removed from Hockeypuck, refer to [How to manage GPG keys](https://charmhub.io/hockeypuck-k8s/docs/how-to-manage-gpg-keys) on how to use Hockeypuck's `delete` API or the `block-keys` action.
 
 ### Denial-of-Service (DoS) attacks
 
