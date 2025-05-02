@@ -10,7 +10,7 @@ The following items include descriptions of the risks, their corresponding best 
 
 ### Loss of data
 
-Hockeypuck database might be destroyed, corrupted, or become inaccessible.
+The Hockeypuck database might become inaccessible, corrupted, or may be destroyed.
 
 #### Best practices
 
