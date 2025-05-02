@@ -8,3 +8,4 @@ ignore_files:
   # master.
   - lib/charms/redis_k8s/v0/redis.py
   - lib/charms/operator_libs_linux/v0/apt.py
+  - docs/explanation/security.md
