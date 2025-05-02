@@ -34,7 +34,7 @@ The current Hockeypuck charm does not have the DOS protection rules implemented 
 
 ### Security vulnerabilities
 
-Running Hockeypuck with one or more weakness that can be exploited by attackers.
+Running Hockeypuck with one or more weaknesses can be exploited by attackers.
 
 #### Best practices
 
