@@ -18,7 +18,7 @@ The Hockeypuck database might become inaccessible, corrupted, or may be destroye
 
   Follow the [charm documentation](https://charmhub.io/hockeypuck-k8s/docs/how-to-backup-and-restore-hockeypuck) for guidance on creating regular backups and restoring them when required.
   
-  Hockeypuck charm maintains a table `deleted_keys` that contains a list of all the blocklisted keys. This table is read and fed into the `hockypuck.conf` file used by Hockeypuck during the startup process. If this data is lost, Hockeypuck will not block any keys during startup. It is important to have a backup of the charm to avoid the blocked keys from being reconciled while peering.
+  The Hockeypuck charm maintains a table `deleted_keys` that contains a list of all the blocklisted keys. This table is read and fed into the `hockypuck.conf` file used by Hockeypuck during the startup process. If this data is lost, Hockeypuck will not block any keys during startup. It is important to have a backup of the charm to avoid the blocked keys from being reconciled while peering.
 
 - Avoid manual key deletion:
 
