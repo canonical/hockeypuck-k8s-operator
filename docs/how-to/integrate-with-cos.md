@@ -43,7 +43,7 @@ juju integrate hockeypuck-k8s admin/cos-lite.loki
 juju integrate hockeypuck-k8s admin/cos-lite.prometheus
 ```
 
-Ensure that Hockeypuck and the COS Lite applications are deployed and settled down (you can monitor this by using `juju status --watch 2s`).
+Ensure that Hockeypuck and the COS Lite applications are settled down (you can monitor this by using `juju status --watch 2s`).
 
 Obtain the Grafana dashboard credentials by running the `get-admin-password` action:
 
