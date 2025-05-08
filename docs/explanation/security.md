@@ -26,7 +26,7 @@ The Hockeypuck database might become inaccessible, corrupted, or may be destroye
 
 ### Denial-of-Service (DoS) attacks
 
-A denial-of-service attack could overwhelm Hockeypuck with traffic, preventing legitimate users from accessing the service. Following the recent [DoS attack on keyservers](https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f), implementing the [DOS protection rules](https://github.com/hockeypuck/hockeypuck/tree/master/contrib/docker-compose/standalone/haproxy/etc) provided by Hockeypuck is mandatory to allow peering with other external servers.
+A denial-of-service attack could overwhelm Hockeypuck with traffic, preventing legitimate users from accessing the service. Following the recent [DoS attack on keyservers](https://gist.github.com/rjhansen/67ab921ffb4084c865b3618d6955275f), implementing the [DoS protection rules](https://github.com/hockeypuck/hockeypuck/tree/master/contrib/docker-compose/standalone/haproxy/etc) provided by Hockeypuck is mandatory to allow peering with other external servers.
 
 [note]
 The current Hockeypuck charm does not have the DoS protection rules implemented due to implementation constraints and hence will not be able to reconcile with external peers. The DoS protection will be incorporated in future releases.
