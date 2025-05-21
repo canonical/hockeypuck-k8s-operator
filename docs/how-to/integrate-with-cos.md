@@ -43,4 +43,15 @@ juju integrate hockeypuck-k8s admin/cos-lite.loki
 juju integrate hockeypuck-k8s admin/cos-lite.prometheus
 ```
 
+Ensure that Hockeypuck and the COS Lite applications are settled down (you can monitor this by using `juju status --watch 2s`).
+
+Obtain the Grafana dashboard credentials by running the `get-admin-password` action:
+
+```bash
+juju switch cos-lite
+juju run grafana/0 get-admin-password
+```
+
+This action returns the URL and the admin password to access the Hockeypuck dashboard. Now, on your host machine, open a web browser, enter the Grafana URL, and use the username “admin” and your Grafana password to log in. Under **Home > Dashboards**, you should be able to see the Hockeypuck dashboard listed.
+
 This effectively integrates your application with Prometheus, Loki, and Grafana.

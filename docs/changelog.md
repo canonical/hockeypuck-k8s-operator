@@ -10,6 +10,10 @@ Each revision is versioned by the date of the revision.
 
 - Update promote charm workflow.
 
+## 2025-05-02
+
+- Added security documentation.
+
 ## 2025-04-29
 
 - Fixed issues found in the COS integration during staging.
