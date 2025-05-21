@@ -98,4 +98,3 @@ Example traefik-route integrate command:
 ```
 juju integrate hockeypuck-k8s traefik-k8s:traefik-route
 ```
-
