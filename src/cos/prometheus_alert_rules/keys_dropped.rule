@@ -1,0 +1,8 @@
+alert: HockeypuckKeysDrop
+expr: delta(hockeypuck_keys_removed[5m]) > 100
+for: 0m
+labels:
+    severity: critical
+annotations:
+    summary: "Hockeypuck Keys Dropped Significantly"
+    description: "The number of keys deleted from Hockeypuck has increased by more than 100 in the last 5 minutes."

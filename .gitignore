@@ -1,0 +1,17 @@
+venv/
+build/
+*.charm
+.tox/
+.coverage
+__pycache__/
+*.py[cod]
+.idea
+.vscode
+.mypy_cache
+*.egg-info/
+*/*.rock
+**/.terraform/
+**/.terraform.lock.hcl
+**/*.tfstate*
+**/*.tfvars
+*.asc

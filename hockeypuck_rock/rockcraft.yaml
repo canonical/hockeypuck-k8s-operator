@@ -1,0 +1,56 @@
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: hockeypuck
+base: ubuntu@24.04
+version: 0.2
+summary: Hockeypuck is an OpenPGP public keyserver.
+description: |
+  Hockeypuck is an OpenPGP public keyserver tool used to manage public key
+  infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing
+  communication through encryption and digital signatures.
+platforms:
+  amd64:
+    build-on:
+    - amd64
+    build-for:
+    - amd64
+run-user: _daemon_
+parts:
+  hockeypuck:
+    plugin: make
+    source: https://github.com/hockeypuck/hockeypuck.git
+    source-tag: 2.2.3
+    source-type: git
+    source-depth: 1
+    build-snaps:
+      - go
+    organize:
+      usr/bin/hockeypuck: hockeypuck/bin/hockeypuck
+      usr/bin/hockeypuck-dump: hockeypuck/bin/hockeypuck-dump
+      usr/bin/hockeypuck-load: hockeypuck/bin/hockeypuck-load
+      usr/bin/hockeypuck-pbuild: hockeypuck/bin/hockeypuck-pbuild
+      var/lib/hockeypuck/*: hockeypuck/lib/
+    stage-packages:
+      - postgresql-client
+  copy-files:
+    plugin: dump
+    source: .
+    organize:
+      hockeypuck.conf: hockeypuck/etc/hockeypuck.conf
+      hockeypuck_wrapper.sh: hockeypuck/bin/hockeypuck_wrapper.sh
+      block_keys.py: hockeypuck/bin/block_keys.py
+      migrate.sh: app/migrate.sh
+  python:
+    plugin: python
+    source: .
+    stage-packages: 
+      - python3-venv
+    python-packages: 
+      - psycopg2-binary
+services:
+  go:
+    override: replace
+    command: "/hockeypuck/bin/hockeypuck_wrapper.sh"
+    startup: enabled
+    working-dir: /hockeypuck
