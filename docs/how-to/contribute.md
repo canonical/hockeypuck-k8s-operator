@@ -4,4 +4,4 @@ Our documentation is hosted on the [Charmhub forum](https://charmhub.io/hockeypu
 
 Our documentation is also available alongside the [source code on GitHub](https://github.com/canonical/hockeypuck-k8s-operator/). You may open a pull request with your documentation changes, or you can [file a bug](https://github.com/canonical/hockeypuck-k8s-operator/issues) to provide constructive feedback or suggestions.
 
-See [CONTRIBUTING.md]((https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md)) for information on contributing to the source code.
+See [CONTRIBUTING.md](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md) for information on contributing to the source code.

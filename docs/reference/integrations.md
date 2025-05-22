@@ -79,7 +79,7 @@ _Interface_: [prometheus_scrape](https://charmhub.io/interfaces/prometheus_scrap
 _Supported charms_: [prometheus-k8s](https://charmhub.io/prometheus-k8s)
 
 The metrics-endpoint relation allows scraping the `/metrics` endpoint provided by Hockeypuck
-on port 9626, which provides [Hockeypuck metrics](https://charmhub.io/hockeypuck-k8s/docs/explanation-architecture). 
+on port 9626, which provides [Hockeypuck metrics](https://charmhub.io/hockeypuck-k8s/docs/reference-metrics). 
 
 Example metrics-endpoint integrate command: 
 ```
