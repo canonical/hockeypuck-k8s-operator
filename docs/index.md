@@ -37,3 +37,26 @@ projects, contributions, suggestions, fixes, and constructive feedback.
 
 Thinking about using the Hockeypuck K8s Operator for your next project? 
 [Get in touch](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)!
+
+# Contents
+
+1. [Changelog](changelog.md)
+1. [Explanation](explanation)
+  1. [Charm architecture](explanation/charm-architecture.md)
+  1. [Security](explanation/security.md)
+1. [How To](how-to)
+  1. [Back up and restore](how-to/backup-and-restore-hockeypuck.md)
+  1. [How to contribute](how-to/contribute.md)
+  1. [Integrate with COS](how-to/integrate-with-cos.md)
+  1. [Manage admin keys in Hockeypuck](how-to/manage-admin-keys.md)
+  1. [Manage GPG keys](how-to/manage-gpg-keys.md)
+  1. [Reconcile between two keyservers](how-to/reconcile-between-two-keyservers.md)
+  1. [Upgrade](how-to/upgrade.md)
+1. [Reference](reference)
+  1. [Actions](reference/actions.md)
+  1. [Configurations](reference/configurations.md)
+  1. [Integrations](reference/integrations.md)
+  1. [## Metrics](reference/metrics.md)
+  1. [Hockeypuck ports](reference/ports.md)
+1. [Tutorial](tutorial)
+  1. [Deploy the Hockeypuck charm for the first time](tutorial/getting-started.md)
