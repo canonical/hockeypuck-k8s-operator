@@ -1,0 +1,18 @@
+name: Integration tests
+
+on:
+  pull_request:
+
+jobs:
+  integration-tests:
+    uses: canonical/operator-workflows/.github/workflows/integration_test.yaml@main
+    secrets: inherit
+    with:
+      trivy-fs-enabled: true
+      trivy-image-config: "trivy.yaml"
+      self-hosted-runner: true
+      self-hosted-runner-label: "edge"
+      juju-channel: '3.6/stable'
+      channel: '1.32-strict/stable'
+      pre-run-script: |
+        -c "./tests/integration/pre_run_script.sh"

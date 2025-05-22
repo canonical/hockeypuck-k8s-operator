@@ -1,0 +1,9 @@
+alert: HighRequestLatency
+expr: |
+    rate(hockeypuck_http_request_duration_seconds_sum[5m]) / rate(hockeypuck_http_request_duration_seconds_count[5m])  > 10
+for: 2m
+labels:
+    severity: critical
+annotations:
+    summary: "High HTTP Request Latency"
+    description: "The average HTTP request duration for hockeypuck is above 10 seconds for the past 2 minutes."
