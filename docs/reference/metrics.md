@@ -1,8 +1,8 @@
-## Metrics
+# Metrics
 
 The following metrics are provided by the workload container at the `/metrics` endpoint at port 9626.
 
-### Server metrics
+## Server metrics
 
 * **hockeypuck_keys_added**: Number of new keys added since startup.
 * **hockeypuck_keys_added_jitter**: Number of lost PTree (Probabilistic Tree) entries recreated.
@@ -12,7 +12,7 @@ The following metrics are provided by the workload container at the `/metrics` e
 * **hockeypuck_keys_updated**: Number of keys that have been updated.
 * **hockeypuck_http_request_duration_seconds**: Time spent generating HTTP responses.
 
-### Reconciliation metrics
+## Reconciliation metrics
 
 * **conflux_reconciliation_items_recovered**: Count of items recovered since startup.
 * **conflux_reconciliation_busy_peer**: Count of reconciliations attempted against busy peers since startup.
