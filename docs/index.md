@@ -56,7 +56,7 @@ Thinking about using the Hockeypuck K8s Operator for your next project?
   1. [Actions](reference/actions.md)
   1. [Configurations](reference/configurations.md)
   1. [Integrations](reference/integrations.md)
-  1. [## Metrics](reference/metrics.md)
+  1. [Metrics](reference/metrics.md)
   1. [Hockeypuck ports](reference/ports.md)
 1. [Tutorial](tutorial)
   1. [Deploy the Hockeypuck charm for the first time](tutorial/getting-started.md)
