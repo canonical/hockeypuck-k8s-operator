@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2025-05-27
+
+- Use a local constant for workload container name instead of reading it from upstream paas-charm.
+
 ## 2025-05-22
 
 - Fix broken links found in Charmhub docs.

@@ -10,8 +10,9 @@ import typing
 import ops
 import paas_app_charmer.go
 import requests
-from paas_charm.go.charm import WORKLOAD_CONTAINER_NAME
 from requests.exceptions import RequestException
+
+WORKLOAD_CONTAINER_NAME = "app"
 
 from admin_gpg import AdminGPG
 
