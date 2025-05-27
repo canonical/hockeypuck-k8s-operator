@@ -12,7 +12,7 @@ links:
   contact: https://launchpad.net/~canonical-is-devops
 
 description: |
-  A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators)
+  A [Juju](https://juju.is/) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/)
   for deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an
   OpenPGP public keyserver tool used to manage public key infrastructure for PGP 
   (Pretty Good Privacy). PGP is a system for securing communication through encryption and 
@@ -37,6 +37,7 @@ requires:
   traefik-route:
     interface: traefik_route
     limit: 1
+    optional: true
 
 actions:
   block-keys:

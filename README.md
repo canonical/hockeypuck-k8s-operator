@@ -5,7 +5,7 @@
 [![Promote charm](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/promote_charm.yaml/badge.svg)](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/promote_charm.yaml)
 [![Discourse Status](https://img.shields.io/discourse/status?server=https%3A%2F%2Fdiscourse.charmhub.io&style=flat&label=CharmHub%20Discourse)](https://discourse.charmhub.io)
 
-A [Juju](https://juju.is/) [12-factor](https://documentation.ubuntu.com/juju/3.6/reference/charm/#factor-app-charm) [charm](https://juju.is/docs/olm/charmed-operators) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an [OpenPGP](https://www.openpgp.org/) public keyserver tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
+A [Juju](https://juju.is/) [12-factor](https://documentation.ubuntu.com/juju/3.6/reference/charm/#factor-app-charm) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an [OpenPGP](https://www.openpgp.org/) public keyserver tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
 
 The server provides interfaces to add, look up, replace and delete public keys from the keyserver. Hockeypuck can synchronize public key material with SKS (Synchronizing Key Server) and other Hockeypuck servers. It implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
 
