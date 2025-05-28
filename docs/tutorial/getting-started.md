@@ -14,10 +14,10 @@ By the end of this tutorial, you’ll have a working Hockeypuck server running o
 - Juju MicroK8s controller created and active named `microk8s`, with the [MetalLB addon](https://microk8s.io/docs/addon-metallb) enabled (required for Traefik ingress to work).
 
 [note]
-All the requirements can be met using the [Multipass charm-dev blueprint](https://juju.is/docs/juju/set-up--tear-down-your-test-environment#heading--set-up---tear-down-automatically). Use the Multipass VM shell to run all commands in this tutorial.
+All the requirements can be met using the [Multipass charm-dev blueprint](https://documentation.ubuntu.com/juju/3.6/howto/manage-your-deployment/manage-your-deployment-environment/#set-things-up). Use the Multipass VM shell to run all commands in this tutorial.
 [/note]
 
-For more information about how to install Juju, see [Get started with Juju](https://juju.is/docs/olm/get-started-with-juju).
+For more information about how to install Juju, see [Get started with Juju](https://documentation.ubuntu.com/juju/3.6/tutorial/).
 
 ### Set up a tutorial model
 
@@ -34,7 +34,7 @@ juju add-model hockeypuck-tutorial
 Deploy the Hockeypuck charm and PostgreSQL charm, and integrate them.
 
 ```bash
-juju deploy hockeypuck-k8s --channel=2.2/edge --config metrics-port=9626 app-port=11371
+juju deploy hockeypuck-k8s --channel=2.2/edge --config metrics-port=9626 --config app-port=11371
 juju deploy postgresql-k8s --channel 14/stable --trust
 juju integrate hockeypuck-k8s postgresql-k8s
 ```

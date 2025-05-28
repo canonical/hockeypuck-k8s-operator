@@ -1,6 +1,6 @@
 # Hockeypuck K8s Operator
 
-A [Juju](https://juju.is/) [charm](https://juju.is/docs/olm/charmed-operators) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an OpenPGP public keyserver tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
+A [Juju](https://juju.is/) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an OpenPGP public keyserver tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
 
 The server provides interfaces to add, look up, replace and delete public keys from the keyserver. Hockeypuck can synchronize public key material with SKS (Synchronizing Key Server) and other Hockeypuck servers. It implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
 
