@@ -1,6 +1,6 @@
-# Integrate with COS
+# Integrate with Canonical Observability Stack
 
-## Deploy COS Lite
+## Deploy COS lite
 Create a Juju model and deploy the Canonical Observability Stack bundle [cos-lite](https://charmhub.io/topics/canonical-observability-stack) to this model:
 
 ```bash

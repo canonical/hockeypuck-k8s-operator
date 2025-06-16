@@ -30,7 +30,7 @@ The Hockeypuck server also provides a set of SKS-compatible endpoints for intera
 Retrieve key information by fingerprint, name, or email.
 
 **Query Parameters:**
-- op: The operation type, e.g., get, vindex, or index.
+- op: The operation type, e.g., `get`, `vindex`, or `index`.
 - search: The search term (e.g., key ID, fingerprint, email, or name).
 - fingerprint: Optional. If on, returns full fingerprints instead of short key IDs.
 
