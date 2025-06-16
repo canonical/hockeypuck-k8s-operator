@@ -22,7 +22,7 @@ to enable easy collaboration. Please use the "Help us improve this documentation
 either directly change something you see that's wrong, ask a question or make a suggestion about a potential change via 
 the comments section.
 
-If there's a particular area of documentation that you'd like to see that's missing, please 
+If there's a particular area of documentation that you'd like to see that's missing, please test
 [file a bug](https://github.com/canonical/hockeypuck-k8s-operator/issues).
 
 ## Project and community
