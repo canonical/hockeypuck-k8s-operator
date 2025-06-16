@@ -11,7 +11,7 @@ By the end of this tutorial, you’ll have a working Hockeypuck server running o
 
 - A machine with amd64 architecture.
 - Juju 3.x installed.
-- Juju MicroK8s controller created and active named `microk8s`, with the [MetalLB addon](https://microk8s.io/docs/addon-metallb) enabled (required for Traefik ingress to work).
+- Juju MicroK8s controller created and active named `microk8s`, with the [MetalLB add-on](https://microk8s.io/docs/addon-metallb) enabled (required for Traefik ingress to work).
 
 [note]
 All the requirements can be met using the [Multipass charm-dev blueprint](https://documentation.ubuntu.com/juju/3.6/howto/manage-your-deployment/manage-your-deployment-environment/#set-things-up). Use the Multipass VM shell to run all commands in this tutorial.
@@ -29,7 +29,7 @@ juju switch microk8s
 juju add-model hockeypuck-tutorial
 ```
 
-### Deploy the hockeypuck-k8s charm
+### Deploy the Hockeypuck charm
 
 Deploy the Hockeypuck charm and PostgreSQL charm, and integrate them.
 

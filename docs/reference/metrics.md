@@ -4,8 +4,8 @@ The following metrics are provided by the workload container at the `/metrics` e
 
 ## Server metrics
 
-* **hockeypuck_keys_added**: Number of new keys added since startup.
-* **hockeypuck_keys_added_jitter**: Number of lost PTree (Probabilistic Tree) entries recreated.
+* `hockeypuck_keys_added`: Number of new keys added since startup.
+* `**hockeypuck_keys_added_jitter**`: Number of lost PTree (Probabilistic Tree) entries recreated.
 * **hockeypuck_keys_ignored**: Number of keys with no-op (unchanged) updates.
 * **hockeypuck_keys_removed**: Number of keys removed since startup.
 * **hockeypuck_keys_removed_jitter**: Number of stale PTree entries cleaned up.

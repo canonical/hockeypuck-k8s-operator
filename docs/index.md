@@ -1,8 +1,8 @@
 # Hockeypuck K8s Operator
 
-A [Juju](https://juju.is/) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an OpenPGP public keyserver tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
+A [Juju](https://juju.is/) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an OpenPGP public key server tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
 
-The server provides interfaces to add, look up, replace and delete public keys from the keyserver. Hockeypuck can synchronize public key material with SKS (Synchronizing Key Server) and other Hockeypuck servers. It implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
+The server provides interfaces to add, look up, replace and delete public keys from the key server. Hockeypuck can synchronize public key material with SKS (Synchronizing Key Server) and other Hockeypuck servers. It implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
 
 For DevOps and SRE teams, this charm will make operating Hockeypuck simple and straightforward through Juju's clean interface.
 
@@ -27,7 +27,7 @@ If there's a particular area of documentation that you'd like to see that's miss
 
 ## Project and community
 
-The Hockeypuck K8s Operator is a member of the Ubuntu family. It's an open-source project that warmly welcomes community 
+The Hockeypuck kubernetes operator is a member of the Ubuntu family. It's an open-source project that warmly welcomes community 
 projects, contributions, suggestions, fixes, and constructive feedback.
 
 - [Code of conduct](https://ubuntu.com/community/code-of-conduct)
