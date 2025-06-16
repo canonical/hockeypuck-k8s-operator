@@ -34,7 +34,7 @@ Pebble is a lightweight, API-driven process supervisor that is responsible for c
 
 Pebble `services` are configured through [layers](https://github.com/canonical/pebble#layer-specification), and the following container represents one layer forming the effective Pebble configuration, or `plan`:
 
-1. The [Hockeypuck](https://hockeypuck.io/) container itself, which has a webserver configured in HTTP mode.
+1. The [Hockeypuck](https://hockeypuck.io/) container itself, which has a web server configured in HTTP mode.
 
 As a result, if you run a `kubectl get pods` on a namespace named for the Juju model you've deployed the Hockeypuck charm into, you'll see something like the following:
 
@@ -43,7 +43,7 @@ NAME                                    READY    STATUS    RESTARTS   AGE
 hockeypuck-k8s-0                         2/2     Running   0         6h4m
 ```
 
-This shows there are 2 containers - the one named above, as well as a container for the charm code itself.
+This shows there are two containers - the one named above, as well as a container for the charm code itself.
 
 And if you run `kubectl describe pod hockeypuck-k8s-0`, all the containers will have a command ```/charm/bin/pebble```. That's because Pebble is responsible for the processes' startup as explained above. 
 
@@ -64,7 +64,7 @@ See [Metrics](https://charmhub.io/hockeypuck-k8s/docs/reference-metrics) for a f
 
 For this charm, the following Juju events are observed:
 
-1. [app_pebble_ready](https://documentation.ubuntu.com/juju/3.6/reference/hook/index.html#container-pebble-ready): fired on Kubernetes charms when the requested container is ready. **Action**: validate the charm configuration, run pending migrations and restart the workload.
+1. [`app_pebble_ready`](https://documentation.ubuntu.com/juju/3.6/reference/hook/index.html#container-pebble-ready): fired on Kubernetes charms when the requested container is ready. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 
 2. [config_changed](https://documentation.ubuntu.com/juju/latest/reference/hook/index.html#config-changed): usually fired in response to a configuration change using the CLI. **Action**: validate the charm configuration, run pending migrations and restart the workload.
 

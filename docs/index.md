@@ -1,4 +1,4 @@
-# Hockeypuck K8s Operator
+# Hockeypuck Kubernetes operator
 
 A [Juju](https://juju.is/) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an OpenPGP public key server tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
 
@@ -35,7 +35,7 @@ projects, contributions, suggestions, fixes, and constructive feedback.
 - [Join our online chat](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
 - [Contribute](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md)
 
-Thinking about using the Hockeypuck K8s Operator for your next project? 
+Thinking about using the Hockeypuck kubernetes operator for your next project? 
 [Get in touch](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)!
 
 # Contents
@@ -50,7 +50,7 @@ Thinking about using the Hockeypuck K8s Operator for your next project?
   1. [Integrate with COS](how-to/integrate-with-cos.md)
   1. [Manage admin keys in Hockeypuck](how-to/manage-admin-keys.md)
   1. [Manage GPG keys](how-to/manage-gpg-keys.md)
-  1. [Reconcile between two keyservers](how-to/reconcile-between-two-keyservers.md)
+  1. [Reconcile between two key servers](how-to/reconcile-between-two-keyservers.md)
   1. [Upgrade](how-to/upgrade.md)
 1. [Reference](reference)
   1. [Actions](reference/actions.md)

@@ -1,14 +1,14 @@
-# Reconcile between two keyservers
+# Reconcile between two key servers
 
-Hockeypuck supports peering with other SKS-compatible keyservers to synchronize public key data through **reconciliation**.
+Hockeypuck supports peering with other SKS-compatible key servers to synchronize public key data through **reconciliation**.
 
 1. Create a file `peers.txt` and add the external peers you want to reconcile with. Each line must be in the following format:
 ```
 <peer_address>,<http_port>,<reconciliation_port>
 ```
-* **peer_address**: The IP or fully qualified domain name (FQDN) of the peer.
-* **http_port**: The port where the peer exposes its SKS HTTP API (usually 11371).
-* **reconciliation_port**: The port used for reconciliation (usually 11370).
+* `peer_address`: The IP or fully qualified domain name (FQDN) of the peer.
+* `http_port`: The port where the peer exposes its SKS HTTP API (usually 11371).
+* `reconciliation_port`: The port used for reconciliation (usually 11370).
 
 Example `peers.txt`:
 ```
