@@ -35,7 +35,7 @@ projects, contributions, suggestions, fixes, and constructive feedback.
 - [Join our online chat](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
 - [Contribute](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md)
 
-Thinking about using the Hockeypuck kubernetes operator for your next project? 
+Thinking about using the Hockeypuck Kubernetes operator for your next project? 
 [Get in touch](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)!
 
 # Contents
