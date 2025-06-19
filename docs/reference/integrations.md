@@ -2,7 +2,7 @@
 
 See [Integrations](https://charmhub.io/hockeypuck-k8s/integrations).
 
-### Database
+### `database`
 
 _Interface_: `postgresql_client`
 _Supported charms_: [Charmed PostgreSQL](https://charmhub.io/postgresql), [Charmed PostgreSQL-K8s](https://charmhub.io/postgresql-k8s)
@@ -16,7 +16,7 @@ Example database integrate command:
 juju integrate hockeypuck-k8s postgresql-k8s
 ```
 
-### Grafana-dashboard
+### `grafana-dashboard`
 
 _Interface_: `grafana-dashboard`
 _Supported charms_: [grafana-k8s](https://charmhub.io/grafana-k8s)
@@ -42,7 +42,7 @@ Example Grafana-dashboard integrate command:
 juju integrate hockeypuck-k8s grafana-dashboard
 ```
 
-### Ingress
+### `ingress`
 
 _Interface_: `ingress`
 _Supported charms_: [nginx-ingress-integrator](https://charmhub.io/nginx-ingress-integrator), [traefik-k8s](https://charmhub.io/traefik-k8s)
@@ -57,7 +57,7 @@ Example ingress integrate command:
 juju integrate hockeypuck-k8s nginx-ingress-integrator
 ```
 
-### Logging
+### `logging`
 
 _Interface_: `loki_push_api`
 _Supported charms_: [loki-k8s](https://charmhub.io/loki-k8s)
@@ -73,7 +73,7 @@ Example logging-endpoint integrate command:
 juju integrate hockeypuck-k8s loki-k8s
 ```
 
-### Metrics-endpoint
+### `metrics-endpoint`
 
 _Interface_: [`prometheus_scrape`](https://charmhub.io/interfaces/prometheus_scrape-v0)  
 _Supported charms_: [prometheus-k8s](https://charmhub.io/prometheus-k8s)
@@ -86,7 +86,7 @@ Example metrics-endpoint integrate command:
 juju integrate hockeypuck-k8s prometheus-k8s
 ```
 
-### Traefik-route
+### `traefik-route`
 
 _Interface_: [`traefik_route`](https://charmhub.io/traefik-k8s/integrations#traefik-route)  
 _Supported charms_: [traefik-k8s](https://charmhub.io/traefik-k8s)
