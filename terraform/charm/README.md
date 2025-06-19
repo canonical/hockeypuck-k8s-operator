@@ -15,7 +15,7 @@ deployment onto any Kubernetes environment managed by [Juju][Juju].
   the Juju application name.
 - **versions.tf** - Defines the Terraform provider version.
 
-## Using hockeypuck-k8s base module in higher level modules
+## Using `hockeypuck-k8s` base module in higher level modules
 
 If you want to use `hockeypuck-k8s` base module as part of your Terraform module, import it
 like shown below:

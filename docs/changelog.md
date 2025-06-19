@@ -43,7 +43,7 @@ Each revision is versioned by the date of the revision.
 
 ### Modified
 
-- Cleaned up Github workflows for Hockeypuck and modified the charm source code to 
+- Cleaned up GitHub workflows for Hockeypuck and modified the charm source code to 
 remove business logic from constructors.
 
 ## 2025-04-16
