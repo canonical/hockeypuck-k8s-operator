@@ -1,4 +1,4 @@
-# hockeypuck-k8s-operator
+# `hockeypuck-k8s-operator`
 
 [![CharmHub Badge](https://charmhub.io/hockeypuck-k8s/badge.svg)](https://charmhub.io/hockeypuck-k8s)
 [![Publish to edge](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/publish_charm.yaml/badge.svg)](https://github.com/canonical/hockeypuck-k8s-operator/actions/workflows/publish_charm.yaml)
