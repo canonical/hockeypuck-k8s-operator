@@ -8,7 +8,6 @@ Each revision is versioned by the date of the revision.
 
 ## 2025-05-27
 
-- Use a local constant for workload container name instead of reading it from upstream paas-charm.
 - Address review comments provided by charmcraft team during the enlisting process.
 
 ## 2025-05-22
@@ -43,7 +42,7 @@ Each revision is versioned by the date of the revision.
 
 ### Modified
 
-- Cleaned up GitHub workflows for Hockeypuck and modified the charm source code to 
+- Cleaned up Github workflows for Hockeypuck and modified the charm source code to 
 remove business logic from constructors.
 
 ## 2025-04-16
