@@ -1,5 +1,5 @@
 # Back up and restore
-A backup is a snapshot of the Hockeypuck data (public keys, subkeys, blocked keys) at a given point in time. This backup can be used to:
+A backup is a snapshot of the Hockeypuck data (public keys, sub keys, blocked keys) at a given point in time. This backup can be used to:
 * Restore Hockeypuck to a previous stable state (during disaster recovery).
 * Migrate data to a new Hockeypuck charm instance.
 

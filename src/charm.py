@@ -47,7 +47,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         self.framework.observe(self.on.install, self.install_gnupg)
         self.framework.observe(self.on.upgrade_charm, self.install_gnupg)
 
-    def install_gnupg(self, _: ops.ActionEvent) -> None:
+    def install_gnupg(self, _: ops.InstallEvent) -> None:
         """Install gnupg package."""
         # The python-gnupg package requires gnupg package to be installed.
         # Charmcraft currently does not support staging packages in charmcraft.yaml.

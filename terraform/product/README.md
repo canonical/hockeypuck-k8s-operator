@@ -1,4 +1,4 @@
-# Terraform Modules
+# Terraform modules
 
 This project contains the [Terraform][Terraform] modules to deploy the 
 [Hockeypuck charm][Hockeypuck charm] with its dependencies.

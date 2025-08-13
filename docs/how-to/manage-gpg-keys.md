@@ -25,12 +25,12 @@ juju run hockeypuck-k8s/0 lookup-key keyword=0x2CF6A6A3B93C138FD51037564415DC328
 
 The Hockeypuck server also provides a set of SKS-compatible endpoints for interacting with the keyserver over HTTP.
 
-### /pks/lookup
+### `/pks/lookup`
 **Purpose:**
 Retrieve key information by fingerprint, name, or email.
 
 **Query Parameters:**
-- op: The operation type, e.g., get, vindex, or index.
+- op: The operation type, e.g., `get`, `vindex`, or `index`.
 - search: The search term (e.g., key ID, fingerprint, email, or name).
 - fingerprint: Optional. If on, returns full fingerprints instead of short key IDs.
 
@@ -39,7 +39,7 @@ Retrieve key information by fingerprint, name, or email.
 curl "http://$HOCKEYPUCK_ADDRESS/pks/lookup?op=get&search=$FINGERPRINT&fingerprint=on"
 ```
 
-### /pks/add
+### `/pks/add`
 **Purpose:**
 Add a new public key to the keyserver.
 
@@ -51,7 +51,7 @@ gpg --armor --export $ADMIN_FINGERPRINT > public_key.asc
 curl -X POST -H "Content-Type: application/x-www-form-urlencoded" --data-urlencode "keytext=$(cat public_key.asc)" http://$HOCKEYPUCK_URL/pks/add
 ```
 
-### /pks/replace
+### `/pks/replace`
 **Purpose:**
 Replace an existing public key on the keyserver with a new one.
 
@@ -61,7 +61,7 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" --data-urlenco
 ```
 Refer to the [Hockeypuck Server Administration](https://hockeypuck.io/admin.html) for more information on how to generate the signature and the request.
 
-### /pks/delete
+### `/pks/delete`
 **Purpose:**
 Delete a public key from the keyserver.
 

@@ -2,13 +2,13 @@
 
 See [Integrations](https://charmhub.io/hockeypuck-k8s/integrations).
 
-### database
+### `database`
 
-_Interface_: postgresql_client    
+_Interface_: `postgresql_client`
 _Supported charms_: [Charmed PostgreSQL](https://charmhub.io/postgresql), [Charmed PostgreSQL-K8s](https://charmhub.io/postgresql-k8s)
 
 The database endpoint can be integrated with PostgreSQL based charms, providing long term storage for Hockeypuck.
-The database relation connects hockeypuck-k8s with charms that support the `postgresql_client` interface on port 5432
+The database relation connects `hockeypuck-k8s` with charms that support the `postgresql_client` interface on port 5432
 in the database side.
 
 Example database integrate command: 
@@ -16,9 +16,9 @@ Example database integrate command:
 juju integrate hockeypuck-k8s postgresql-k8s
 ```
 
-### grafana-dashboard
+### `grafana-dashboard`
 
-_Interface_: grafana-dashboard  
+_Interface_: `grafana-dashboard`
 _Supported charms_: [grafana-k8s](https://charmhub.io/grafana-k8s)
 
 Grafana-dashboard is a part of the COS relation to enhance observability.
@@ -31,7 +31,7 @@ persisted upon restart or redeployment of the charm.
 
 The Hockeypuck charm satisfies the `grafana_dashboard` interface by providing the 
 pre-made dashboard template to the Grafana relation data bag under the "dashboards" key. 
-Requires Prometheus datasource to be already integrated with Grafana.
+Requires Prometheus data source to be already integrated with Grafana.
 
 Example Grafana-Prometheus integrate command: 
 ```
@@ -42,9 +42,9 @@ Example Grafana-dashboard integrate command:
 juju integrate hockeypuck-k8s grafana-dashboard
 ```
 
-### ingress
+### `ingress`
 
-_Interface_: ingress  
+_Interface_: `ingress`
 _Supported charms_: [nginx-ingress-integrator](https://charmhub.io/nginx-ingress-integrator), [traefik-k8s](https://charmhub.io/traefik-k8s)
 
 Ingress manages external HTTP/HTTPS access to services in a Kubernetes cluster.
@@ -57,13 +57,13 @@ Example ingress integrate command:
 juju integrate hockeypuck-k8s nginx-ingress-integrator
 ```
 
-### logging
+### `logging`
 
-_Interface_: loki_push_api  
+_Interface_: `loki_push_api`
 _Supported charms_: [loki-k8s](https://charmhub.io/loki-k8s)
 
 The logging relation is a part of the COS relation to enhance logging observability.
-Logging relation through the `loki_push_api` interface installs and runs promtail which ships the
+Logging relation through the `loki_push_api` interface installs and runs `promtail` which ships the
 contents of the Hockeypuck kubernetes pod logs to Loki.
 This can then be queried through the Loki API or easily visualized through Grafana. Learn more about COS
 [here](https://charmhub.io/topics/canonical-observability-stack).
@@ -73,9 +73,9 @@ Example logging-endpoint integrate command:
 juju integrate hockeypuck-k8s loki-k8s
 ```
 
-### metrics-endpoint
+### `metrics-endpoint`
 
-_Interface_: [prometheus_scrape](https://charmhub.io/interfaces/prometheus_scrape-v0)  
+_Interface_: [`prometheus_scrape`](https://charmhub.io/interfaces/prometheus_scrape-v0)  
 _Supported charms_: [prometheus-k8s](https://charmhub.io/prometheus-k8s)
 
 The metrics-endpoint relation allows scraping the `/metrics` endpoint provided by Hockeypuck
@@ -86,13 +86,13 @@ Example metrics-endpoint integrate command:
 juju integrate hockeypuck-k8s prometheus-k8s
 ```
 
-### traefik-route
+### `traefik-route`
 
-_Interface_: [traefik_route](https://charmhub.io/traefik-k8s/integrations#traefik-route)  
+_Interface_: [`traefik_route`](https://charmhub.io/traefik-k8s/integrations#traefik-route)  
 _Supported charms_: [traefik-k8s](https://charmhub.io/traefik-k8s)
 
 The traefik-route relation provides low-level access to Traefik configuration. Hockeypuck requires 
-this interface to expose the reconciliation port (11370) to [peer](https://hockeypuck.io/configuration.html#:~:text=1.4.-,Recon,-Hockeypuck%20supports%20the) with other keyservers.
+this interface to expose the reconciliation port (11370) to [peer](https://hockeypuck.io/configuration.html#:~:text=1.4.-,Recon,-Hockeypuck%20supports%20the) with other key servers.
 
 Example traefik-route integrate command: 
 ```
