@@ -14,5 +14,6 @@ jobs:
       self-hosted-runner-label: "edge"
       juju-channel: '3.6/stable'
       channel: '1.32-strict/stable'
+      self-hosted-runner-image: jammy
       pre-run-script: |
         -c "./tests/integration/pre_run_script.sh"
