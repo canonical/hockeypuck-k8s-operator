@@ -3,3 +3,4 @@ paas-charm==1.8.6
 passlib==1.7.4
 python-gnupg==0.5.5
 requests==2.32.5
+setuptools==80.9.0
