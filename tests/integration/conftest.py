@@ -132,6 +132,8 @@ def gpg_key_fixture() -> Any:
         name_real="Test User", name_email="test@gmail.com", passphrase=password
     )
     key = gpg.gen_key(input_data)
+    if not key.fingerprint:
+        raise RuntimeError(f"GPG key generation failed: {key.stderr}")
     return key
 
 
