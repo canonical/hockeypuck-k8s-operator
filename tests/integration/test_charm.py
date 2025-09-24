@@ -47,8 +47,8 @@ async def test_adding_records(gpg_key: Any, hockeypuck_url: str) -> None:
     assert: API is added successfully and lookup of key returns the key.
     """
     gpg = GPG()
-    assert fingerprint, "Generated key has no fingerprint"
     fingerprint = gpg_key.fingerprint
+    assert fingerprint, "Generated key has no fingerprint"
     public_key = gpg.export_keys(fingerprint)
     assert "BEGIN PGP PUBLIC KEY BLOCK" in public_key, "No public key exported"
     response = requests.post(
