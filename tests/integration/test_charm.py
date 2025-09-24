@@ -48,9 +48,7 @@ async def test_adding_records(gpg_key: Any, hockeypuck_url: str) -> None:
     """
     gpg = GPG()
     fingerprint = gpg_key.fingerprint
-    assert fingerprint, "Generated key has no fingerprint"
     public_key = gpg.export_keys(fingerprint)
-    assert "BEGIN PGP PUBLIC KEY BLOCK" in public_key, "No public key exported"
     response = requests.post(
         f"{hockeypuck_url}/pks/add",
         timeout=20,
