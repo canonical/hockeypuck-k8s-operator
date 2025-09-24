@@ -133,7 +133,7 @@ def gpg_key_fixture() -> Any:
         key_length=2048,
         name_real="Test User",
         name_email="test@gmail.com",
-        passphrase=password
+        passphrase=password,
     )
     key = gpg.gen_key(input_data)
     if not key.fingerprint:
