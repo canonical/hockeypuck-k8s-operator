@@ -10,4 +10,5 @@ jobs:
     with:
       self-hosted-runner: true
       self-hosted-runner-label: "edge"
+      self-hosted-runner-image: "jammy"
       vale-style-check: true
