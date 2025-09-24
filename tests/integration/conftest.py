@@ -137,7 +137,7 @@ def gpg_key_fixture() -> Any:
     )
     key = gpg.gen_key(input_data)
     if not key.fingerprint:
-        raise RuntimeError(f"GPG key generation failed.")
+        raise RuntimeError("GPG key generation failed.")
     return key
 
 
