@@ -129,11 +129,15 @@ def gpg_key_fixture() -> Any:
     gpg = gnupg.GPG()
     password = genword(length=10)
     input_data = gpg.gen_key_input(
-        name_real="Test User", name_email="test@gmail.com", passphrase=password
+        key_type="RSA",
+        key_length=2048,
+        name_real="Test User", 
+        name_email="test@gmail.com", 
+        passphrase=password
     )
     key = gpg.gen_key(input_data)
     if not key.fingerprint:
-        raise RuntimeError(f"GPG key generation failed: {key.stderr}")
+        raise RuntimeError(f"GPG key generation failed: {key}. Fingerprint: {key.fingerprint}.")
     return key
 
 
