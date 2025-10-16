@@ -1,4 +1,4 @@
-ops==3.3.0
+ops==3.3.1
 paas-charm==1.9.0
 passlib==1.7.4
 python-gnupg==0.5.5
