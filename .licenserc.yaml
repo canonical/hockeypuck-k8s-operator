@@ -1,0 +1,29 @@
+header:
+  license:
+    spdx-id: Apache-2.0
+    copyright-owner: Canonical Ltd.
+    content: |
+      Copyright [year] [owner]
+      See LICENSE file for licensing details.
+  paths:
+    - '**'
+  paths-ignore:
+    - '.github/**'
+    - '**/*.json'
+    - '**/*.md'
+    - '**/*.conf'
+    - '**/*.txt'
+    - '**/*.rule'
+    - '.jujuignore'
+    - '.gitignore'
+    - '.licenserc.yaml'
+    - '.trivyignore'
+    - '.woke.yaml'
+    - 'CODEOWNERS'
+    - 'LICENSE'
+    - 'trivy.yaml'
+    - 'pyproject.toml'
+    - 'zap_rules.tsv'
+    - 'lib/**'
+    - 'icon.svg'
+  comment: on-failure
