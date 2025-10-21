@@ -1,0 +1,100 @@
+[32mINFO    [0m pytest_operator.plugin:plugin.py:951 Model status:
+
+Model                 Controller                Cloud/Region        Version  SLA          Timestamp
+hockeypuck-secondary  github-pr-1ed61-microk8s  microk8s/localhost  3.6.11   unsupported  10:30:50Z
+
+App             Version  Status  Scale  Charm           Channel    Rev  Address         Exposed  Message
+hockeypuck-k8s           active      1  hockeypuck-k8s               0  10.152.183.78   no       
+postgresql-k8s  14.15    active      1  postgresql-k8s  14/stable  495  10.152.183.187  no       
+
+Unit               Workload  Agent  Address     Ports  Message
+hockeypuck-k8s/0*  active    idle   10.1.53.20         
+postgresql-k8s/0*  active    idle   10.1.53.22         Primary
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:957 Juju error logs:
+
+unit-postgresql-k8s-0: 10:28:15 ERROR unit.postgresql-k8s/0.juju-log failed to change plugins: 
+Traceback (most recent call last):
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/postgresql_k8s/v0/postgresql.py", line 338, in enable_disable_extensions
+    with self._connect_to_database() as connection, connection.cursor() as cursor:
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/tempo_coordinator_k8s/v0/charm_tracing.py", line 1065, in wrapped_function
+    return callable(*args, **kwargs)  # type: ignore
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/postgresql_k8s/v0/postgresql.py", line 153, in _connect_to_database
+    connection = psycopg2.connect(
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/venv/lib/python3.10/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "postgresql-k8s-primary.hockeypuck-secondary.svc.cluster.local" (10.152.183.68), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/src/charm.py", line 728, in _handle_enable_disable_extensions
+    self.postgresql.enable_disable_extensions(extensions, database)
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/tempo_coordinator_k8s/v0/charm_tracing.py", line 1065, in wrapped_function
+    return callable(*args, **kwargs)  # type: ignore
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/postgresql_k8s/v0/postgresql.py", line 365, in enable_disable_extensions
+    raise PostgreSQLEnableDisableExtensionError() from e
+charms.postgresql_k8s.v0.postgresql.PostgreSQLEnableDisableExtensionError
+unit-postgresql-k8s-0: 10:28:28 ERROR unit.postgresql-k8s/0.juju-log failed to change plugins: 
+Traceback (most recent call last):
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/postgresql_k8s/v0/postgresql.py", line 338, in enable_disable_extensions
+    with self._connect_to_database() as connection, connection.cursor() as cursor:
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/tempo_coordinator_k8s/v0/charm_tracing.py", line 1065, in wrapped_function
+    return callable(*args, **kwargs)  # type: ignore
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/postgresql_k8s/v0/postgresql.py", line 153, in _connect_to_database
+    connection = psycopg2.connect(
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/venv/lib/python3.10/site-packages/psycopg2/__init__.py", line 122, in connect
+    conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+psycopg2.OperationalError: connection to server at "postgresql-k8s-primary.hockeypuck-secondary.svc.cluster.local" (10.152.183.68), port 5432 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/src/charm.py", line 728, in _handle_enable_disable_extensions
+    self.postgresql.enable_disable_extensions(extensions, database)
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/tempo_coordinator_k8s/v0/charm_tracing.py", line 1065, in wrapped_function
+    return callable(*args, **kwargs)  # type: ignore
+  File "/var/lib/juju/agents/unit-postgresql-k8s-0/charm/lib/charms/postgresql_k8s/v0/postgresql.py", line 365, in enable_disable_extensions
+    raise PostgreSQLEnableDisableExtensionError() from e
+charms.postgresql_k8s.v0.postgresql.PostgreSQLEnableDisableExtensionError
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:1039 Forgetting model secondary-model...
+[32mINFO    [0m pytest_operator.plugin:plugin.py:951 Model status:
+
+Model    Controller                Cloud/Region        Version  SLA          Timestamp
+testing  github-pr-1ed61-microk8s  microk8s/localhost  3.6.11   unsupported  10:30:50Z
+
+App             Version  Status  Scale  Charm           Channel        Rev  Address         Exposed  Message
+hockeypuck-k8s           active      1  hockeypuck-k8s                   0  10.152.183.147  no       
+postgresql-k8s  14.15    active      1  postgresql-k8s  14/stable      495  10.152.183.211  no       
+traefik-k8s     2.11.0   active      1  traefik-k8s     latest/stable  254  10.152.183.99   no       Serving at http://10.151.33.84
+
+Unit               Workload  Agent  Address     Ports  Message
+hockeypuck-k8s/0*  active    idle   10.1.53.17         
+postgresql-k8s/0*  active    idle   10.1.53.16         Primary
+traefik-k8s/0*     active    idle   10.1.53.13         Serving at http://10.151.33.84
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:957 Juju error logs:
+
+unit-traefik-k8s-0: 10:22:47 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:47 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:47 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:48 ERROR unit.traefik-k8s/0.juju-log peers:0: Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:48 ERROR unit.traefik-k8s/0.juju-log peers:0: Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:48 ERROR unit.traefik-k8s/0.juju-log peers:0: Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:49 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:49 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:49 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:51 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:51 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 10:22:51 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-hockeypuck-k8s-0: 10:25:55 ERROR unit.hockeypuck-k8s/0.juju-log Action failed: 404 Client Error: Not Found for url: http://127.0.0.1:11371/pks/lookup?op=get&search=0xRANDOMKEY
+unit-traefik-k8s-0: 10:30:31 ERROR juju.worker.dependency "log-sender" manifold worker returned unexpected error: sending log message: websocket: close 1005 (no status): websocket: close sent
+model-480aa004-94b6-4ab6-8ab3-a25ff26f90b2: 10:30:37 ERROR juju.worker.dependency "log-sender" manifold worker returned unexpected error: sending log message: websocket: close 1005 (no status): websocket: close sent
+unit-hockeypuck-k8s-0: 10:30:43 ERROR juju.worker.dependency "log-sender" manifold worker returned unexpected error: sending log message: websocket: close 1005 (no status): websocket: close sent
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:1039 Forgetting model main...
