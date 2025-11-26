@@ -5,7 +5,7 @@ The Hockeypuck charm provides both Juju actions and HTTP APIs for managing OpenP
 ## Juju actions
 The charm provides two main actions for database management: `block-keys` and `lookup-key`.
 
-The `block-keys` action allows you to remove public keys from the keyserver and prevent them from being re-imported via reconciliation. This is useful for managing compromised or spam-related keys.
+The `block-keys` action allows you to remove public keys from the keyserver and prevent them from being re-imported through reconciliation. This is useful for managing compromised or spam-related keys.
 ```bash
 juju run hockeypuck-k8s/0 block-keys fingerprints=2CF6A6A3B93C138FD51037564415DC328A6C8E00,7EG5A6A3B93C138FD51037568415DC326A6C8F01 comment=R123
 ```
