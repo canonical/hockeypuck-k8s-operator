@@ -1,0 +1,1 @@
+[32mINFO    [0m pytest_dependency:pytest_dependency.py:100 skip test_lookup_key because it depends on test_adding_records
