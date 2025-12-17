@@ -42,7 +42,6 @@ Thinking about using the Hockeypuck Kubernetes operator for your next project?
 
 1. [Changelog](changelog.md)
 1. [Explanation](explanation)
-  1. [Charm architecture](explanation/charm-architecture.md)
   1. [Security](explanation/security.md)
 1. [How To](how-to)
   1. [Back up and restore](how-to/backup-and-restore-hockeypuck.md)
@@ -54,6 +53,7 @@ Thinking about using the Hockeypuck Kubernetes operator for your next project?
   1. [Upgrade](how-to/upgrade.md)
 1. [Reference](reference)
   1. [Actions](reference/actions.md)
+  1. [Charm architecture](reference/charm-architecture.md)
   1. [Configurations](reference/configurations.md)
   1. [Integrations](reference/integrations.md)
   1. [Metrics](reference/metrics.md)
