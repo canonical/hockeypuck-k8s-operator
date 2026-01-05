@@ -1,6 +1,6 @@
-ops==3.4.0
+ops==3.5.0
 paas-charm==1.9.2
 passlib==1.7.4
-python-gnupg==0.5.5
+python-gnupg==0.5.6
 requests==2.32.5
 setuptools==80.9.0
