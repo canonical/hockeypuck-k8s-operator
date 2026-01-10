@@ -1,0 +1,36 @@
+[32mINFO    [0m gnupg:_util.py:322 Creating directory: /home/ubuntu/.config/python-gnupg
+[32mINFO    [0m gnupg:_meta.py:442 Setting homedir to '/home/ubuntu/.config/python-gnupg'
+[32mINFO    [0m gnupg:gnupg.py:128 
+Initialised settings:
+binary: /usr/bin/gpg
+binary version: 2.4.4\ncfg:pubkey:1;16;17;18;19;22\ncfg:pubkeyname:RSA;ELG;DSA;ECDH;ECDSA;EDDSA\ncfg:cipher:1;2;3;4;7;8;9;10;11;12;13\ncfg:ciphername:IDEA;3DES;CAST5;BLOWFISH;AES;AES192;AES256;TWOFISH;CAMELLIA128;CAMELLIA192;CAMELLIA256\ncfg:digest:2;3;8;9;10;11\ncfg:digestname:SHA1;RIPEMD160;SHA256;SHA384;SHA512;SHA224\ncfg:compress:0;1;2;3\ncfg:compressname:Uncompressed;ZIP;ZLIB;BZIP2\ncfg:curve:cv25519;ed25519;cv25519;ed25519;cv448;ed448;nistp256;nistp384;nistp521;brainpoolP256r1;brainpoolP384r1;brainpoolP512r1;secp256k1\n'
+homedir: /home/ubuntu/.config/python-gnupg
+ignore_homedir_permissions: False
+keyring: /home/ubuntu/.config/python-gnupg/pubring.gpg
+secring: /home/ubuntu/.config/python-gnupg/secring.gpg
+default_preference_list: SHA512 SHA384 SHA256 AES256 CAMELLIA256 TWOFISH AES192 ZLIB ZIP Uncompressed
+keyserver: hkp://wwwkeys.pgp.net
+options: None
+verbose: False
+use_agent: False
+
+[32mINFO    [0m gnupg:_trust.py:37 GnuPG complained that your trustdb file was missing. This is likely due to changing to a new homedir.
+[32mINFO    [0m gnupg:_trust.py:39 Creating trustdb.gpg file in your GnuPG homedir.
+[33mWARNING [0m gnupg:_meta.py:657 "--secret-keyring" is an obsolete option - it has no effect
+[32mINFO    [0m gnupg:gnupg.py:675 Key created. Fingerprint: A98F3720196FE4F1A9F4367FDA94F2E45FFCA589
+[32mINFO    [0m gnupg:_meta.py:442 Setting homedir to '/home/ubuntu/.config/python-gnupg'
+[32mINFO    [0m gnupg:gnupg.py:128 
+Initialised settings:
+binary: /usr/bin/gpg
+binary version: 2.4.4\ncfg:pubkey:1;16;17;18;19;22\ncfg:pubkeyname:RSA;ELG;DSA;ECDH;ECDSA;EDDSA\ncfg:cipher:1;2;3;4;7;8;9;10;11;12;13\ncfg:ciphername:IDEA;3DES;CAST5;BLOWFISH;AES;AES192;AES256;TWOFISH;CAMELLIA128;CAMELLIA192;CAMELLIA256\ncfg:digest:2;3;8;9;10;11\ncfg:digestname:SHA1;RIPEMD160;SHA256;SHA384;SHA512;SHA224\ncfg:compress:0;1;2;3\ncfg:compressname:Uncompressed;ZIP;ZLIB;BZIP2\ncfg:curve:cv25519;ed25519;cv25519;ed25519;cv448;ed448;nistp256;nistp384;nistp521;brainpoolP256r1;brainpoolP384r1;brainpoolP512r1;secp256k1\n'
+homedir: /home/ubuntu/.config/python-gnupg
+ignore_homedir_permissions: False
+keyring: /home/ubuntu/.config/python-gnupg/pubring.gpg
+secring: /home/ubuntu/.config/python-gnupg/secring.gpg
+default_preference_list: SHA512 SHA384 SHA256 AES256 CAMELLIA256 TWOFISH AES192 ZLIB ZIP Uncompressed
+keyserver: hkp://wwwkeys.pgp.net
+options: None
+verbose: False
+use_agent: False
+
+[33mWARNING [0m gnupg:_meta.py:657 "--secret-keyring" is an obsolete option - it has no effect
