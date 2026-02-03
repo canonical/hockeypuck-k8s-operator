@@ -5,7 +5,6 @@
 
 """This script adds fingerprints to the deleted_keys table in the Hockeypuck's database."""
 
-
 import argparse
 import logging
 import os
