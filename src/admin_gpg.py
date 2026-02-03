@@ -4,7 +4,6 @@
 
 """Admin GPG Module."""
 
-
 import logging
 import time
 import typing
