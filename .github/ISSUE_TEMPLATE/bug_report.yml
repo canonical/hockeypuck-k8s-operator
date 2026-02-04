@@ -16,6 +16,18 @@ body:
         If applicable, add screenshots to help explain the problem you are facing.
     validations:
       required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is the impact of this bug?
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
   - type: textarea
     id: reproduction
     attributes:

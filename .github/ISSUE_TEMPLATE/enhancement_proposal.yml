@@ -15,3 +15,15 @@ body:
         Describe the enhancement you would like to see in as much detail as needed.      
     validations:
       required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How urgent is this requirement?
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
