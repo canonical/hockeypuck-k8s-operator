@@ -27,3 +27,9 @@ body:
         - Critical
     validations:
       required: true
+  - type: textarea
+    id: severity-reasoning
+    attributes:
+      label: Severity Reasoning
+      description: >
+        If severity is high or critical, please provide the rationale behind your assessment.
