@@ -16,20 +16,21 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: severity
+    id: impact
     attributes:
-      label: Severity
-      description: How urgent is this requirement?
+      label: Impact
+      description: What is the impact of this feature?
       options:
-        - Low
-        - Medium
-        - High
-        - Critical
+        - Low (The feature is nice to have)
+        - Medium (The feature may be helpful in the future)
+        - High (The feature has short-term technical value)
+        - Critical (The feature has big short-term business value)
     validations:
       required: true
   - type: textarea
-    id: severity-reasoning
+    id: impact-rationale
     attributes:
-      label: Severity Reasoning
+      label: Impact Rationale
       description: >
-        If severity is high or critical, please provide the rationale behind your assessment.
+        If impact is high or critical, please provide the rationale behind your assessment with as
+        much context as possible.

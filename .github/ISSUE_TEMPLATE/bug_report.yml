@@ -17,23 +17,24 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: severity
+    id: impact
     attributes:
-      label: Severity
-      description: How severe is the impact of this bug?
+      label: Impact
+      description: How severe is the business impact of this bug?
       options:
-        - Low
-        - Medium
-        - High
-        - Critical
+        - Low (minor issue or cosmetic problem)
+        - Medium (functionality degraded, workaround exists)
+        - High (major functionality broken, no workaround)
+        - Critical (system down, data loss, affecting deployment in production)
     validations:
       required: true
   - type: textarea
-    id: severity-reasoning
+    id: impact-rationale
     attributes:
-      label: Severity Reasoning
+      label: Impact Rationale
       description: >
-        If severity is high or critical, please provide the rationale behind your assessment.
+        If impact is high or critical, please provide the rationale behind your assessment, impacted
+        project reference and any relevant project deadline dates which will be affected by this bug.
   - type: textarea
     id: reproduction
     attributes:
