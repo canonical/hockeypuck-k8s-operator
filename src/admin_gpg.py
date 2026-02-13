@@ -5,13 +5,14 @@
 """Admin GPG Module."""
 
 import logging
+import secrets
+import string
 import time
 import typing
 
 import gnupg
 import ops
 import requests
-from passlib.pwd import genword
 from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
@@ -73,7 +74,8 @@ class AdminGPG:
         Returns:
             The admin credentials.
         """
-        password = genword(length=10)
+        alphabet = string.ascii_letters + string.digits
+        password = "".join(secrets.choice(alphabet) for _ in range(10))
         input_data = self.gpg.gen_key_input(
             name_real="Admin User", name_email="admin@user.com", passphrase=password
         )
