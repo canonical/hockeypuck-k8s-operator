@@ -1,0 +1,52 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"
+    arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
+    act: Test connectivity to the reconciliation port.
+    assert: Connection request is successful.
+    ","2021","test_traefik_route_integration","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Deploy the Hockeypuck charm and integrate with Postgres and Traefik.
+    act: Execute the rebuild prefix tree action.
+    assert: Action returns 0.
+    ","2020","test_rebuild_prefix_tree_action","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Create a GPG Key
+    act: Send a request to add a PGP key and lookup the key using the API
+    assert: API is added successfully and lookup of key returns the key.
+    ","17","test_adding_records","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Deploy the Hockeypuck charm and create a GPG key.
+    act: Execute the lookup-key action.
+    assert: Action returns 0.
+    ","1018","test_lookup_key","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Deploy the Hockeypuck charm.
+    act: Add a unit to the application.
+    assert: The application is blocked.
+    ","69923","test_unit_limit","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Deploy the Hockeypuck charm.
+    act: Execute the delete and blocklist action with multiple keys (one valid and present,
+    one invalid, one valid but not present).
+    assert: Action returns 0 and event result contains the status of each key.
+    ","3024","test_block_keys_action_multiple","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Build and deploy the Hockeypuck charm.
+    act: Send a request to the main page.
+    assert: Returns 200 and the page contains the title.
+    ","6","test_hockeypuck_health","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Deploy the Hockeypuck charm.
+    act: Execute the lookup-key action with an invalid key.
+    assert: Action raises a 404 error
+    ","1018","test_lookup_key_not_found","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
+    act: Reconcile the application with the first hockeypuck server.
+    assert: Key is present in the secondary model hockeypuck server.
+    ","21","test_reconciliation","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
+"
+    arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
+    act: Execute the delete and blocklist action.
+    assert: Lookup for the key returns 404.
+    ","3044","test_block_keys_action","tests.integration","2026-02-14","passed","2026-02-14","","test_charm","",""
