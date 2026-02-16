@@ -24,7 +24,7 @@ module "hockeypuck_k8s" {
 }
 
 module "postgresql" {
-  source          = "git::https://github.com/canonical/postgresql-operator//terraform"
+  source          = "git::https://github.com/canonical/postgresql-operator//terraform?ref=v16/1.195.0&depth=1"
   app_name        = var.postgresql.app_name
   channel         = var.postgresql.channel
   config          = var.postgresql.config
