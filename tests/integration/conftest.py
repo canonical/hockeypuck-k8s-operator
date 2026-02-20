@@ -5,125 +5,199 @@
 
 import json
 import logging
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import gnupg
-import pytest_asyncio
-from juju.application import Application
-from juju.model import Model
+import jubilant
+import pytest
 from passlib.pwd import genword
 from pytest import Config
-from pytest_operator.plugin import OpsTest
 
 from actions import HTTP_PORT, METRICS_PORT, RECONCILIATION_PORT
 
 logger = logging.getLogger(__name__)
 
-
-@pytest_asyncio.fixture(scope="module", name="model")
-async def model_fixture(ops_test: OpsTest) -> Model:
-    """Return the current testing juju model."""
-    assert ops_test.model
-    return ops_test.model
+# renovate: depName="postgresql-k8s"
+POSTGRESQL_REVISION = 450
+# renovate: depName="traefik-k8s"
+TRAEFIK_REVISION = 247
 
 
-@pytest_asyncio.fixture(scope="module", name="secondary_model_alias")
-async def secondary_model_fixture(ops_test: OpsTest) -> str:
-    """Create a secondary Juju model for external peer reconcilitation."""
-    model_alias = "secondary-model"
+@pytest.fixture(scope="session", name="juju")
+def juju_fixture(request: pytest.FixtureRequest) -> Generator[jubilant.Juju, None, None]:
+    """Pytest fixture that wraps :meth:`jubilant.with_model`."""
+
+    def show_debug_log(juju: jubilant.Juju):
+        """Show debug log.
+
+        Args:
+            juju: the Juju object.
+        """
+        if request.session.testsfailed:
+            log = juju.debug_log(limit=1000)
+            print(log, end="")
+
+    use_existing = request.config.getoption("--use-existing", default=False)
+    if use_existing:
+        juju = jubilant.Juju()
+        yield juju
+        show_debug_log(juju)
+        return
+
+    model = request.config.getoption("--model")
+    if model:
+        juju = jubilant.Juju(model=model)
+        yield juju
+        show_debug_log(juju)
+        return
+
+    keep_models = cast(bool, request.config.getoption("--keep-models"))
+    with jubilant.temp_model(keep=keep_models) as juju:
+        juju.wait_timeout = 10 * 60
+        yield juju
+        show_debug_log(juju)
+        return
+
+
+@pytest.fixture(scope="module", name="secondary_juju")
+def secondary_juju_fixture(
+    request: pytest.FixtureRequest,
+) -> Generator[jubilant.Juju, None, None]:
+    """Create a secondary Juju model for external peer reconciliation."""
+
+    def show_debug_log(juju: jubilant.Juju):
+        """Show debug log.
+
+        Args:
+            juju: the Juju object.
+        """
+        if request.session.testsfailed:
+            log = juju.debug_log(limit=1000)
+            print(log, end="")
+
     model_name = "hockeypuck-secondary"
-    await ops_test.track_model(model_alias, model_name=model_name)
-    return model_alias
+    keep_models = cast(bool, request.config.getoption("--keep-models"))
+
+    # Create a Juju instance and add the model manually
+    juju = jubilant.Juju()
+    juju.add_model(model_name)
+    juju_secondary = jubilant.Juju(model=model_name)
+    juju_secondary.wait_timeout = 10 * 60
+
+    try:
+        yield juju_secondary
+        show_debug_log(juju_secondary)
+    finally:
+        if not keep_models:
+            juju.destroy_model(model_name)
 
 
-@pytest_asyncio.fixture(scope="module", name="postgresql_app")
-async def postgresql_app_fixture(
-    model: Model,
-) -> Application:
+@pytest.fixture(scope="module", name="postgresql_app")
+def postgresql_app_fixture(
+    juju: jubilant.Juju,
+) -> str:
     """Deploy postgresql-k8s charm."""
-    app = await model.deploy(
-        "postgresql-k8s",
-        channel="14/stable",
+    app_name = "postgresql-k8s"
+    if juju.status().apps.get(app_name):
+        logger.info("%s already deployed", app_name)
+        return app_name
+
+    juju.deploy(
+        app_name,
+        channel="14/edge",
+        revision=POSTGRESQL_REVISION,
         trust=True,
     )
-    await model.wait_for_idle(status="active", apps=[app.name])
-    return app
+    juju.wait(lambda status: status.apps[app_name].is_active, timeout=10 * 60)
+    return app_name
 
 
-@pytest_asyncio.fixture(scope="module", name="traefik_app")
-async def traefik_app_fixture(
-    model: Model,
-) -> Application:
+@pytest.fixture(scope="module", name="traefik_app")
+def traefik_app_fixture(
+    juju: jubilant.Juju,
+) -> str:
     """Deploy traefik-k8s charm."""
-    traefik_app = await model.deploy(
-        "traefik-k8s",
-        channel="latest/stable",
+    app_name = "traefik-k8s"
+    if juju.status().apps.get(app_name):
+        logger.info("%s already deployed", app_name)
+        return app_name
+
+    juju.deploy(
+        app_name,
+        channel="latest/edge",
+        revision=TRAEFIK_REVISION,
         trust=True,
     )
-    await model.wait_for_idle(status="active", apps=[traefik_app.name])
-    return traefik_app
+    juju.wait(lambda status: status.apps[app_name].is_active, timeout=10 * 60)
+    return app_name
 
 
-@pytest_asyncio.fixture(scope="module", name="hockeypuck_url")
-async def hockeypuck_url_fixture(
-    traefik_app: Application,
+@pytest.fixture(scope="module", name="hockeypuck_url")
+def hockeypuck_url_fixture(
+    juju: jubilant.Juju,
+    traefik_app: str,
 ) -> str:
     """Get the endpoint proxied by Traefik."""
-    action = await traefik_app.units[0].run_action("show-proxied-endpoints")
-    await action.wait()
-    proxied_endpoints = json.loads(action.results.get("proxied-endpoints"))
+    result = juju.run(f"{traefik_app}/0", "show-proxied-endpoints", wait=True)
+    proxied_endpoints = json.loads(result.results.get("proxied-endpoints", "{}"))
     hockeypuck_url = proxied_endpoints["hockeypuck-k8s"]["url"]
     return hockeypuck_url
 
 
-@pytest_asyncio.fixture(scope="module", name="hockeypuck_charm")
-async def hockeypuck_charm_fixture(pytestconfig: Config, ops_test: OpsTest) -> str | Path:
+@pytest.fixture(scope="module", name="hockeypuck_charm")
+def hockeypuck_charm_fixture(pytestconfig: Config) -> str | Path:
     """Get value from parameter charm-file."""
     charm = pytestconfig.getoption("--charm-file")
-    if not charm:
-        charm = await ops_test.build_charm(".")
-        assert charm, "Charm not built"
-        return charm
-    return charm
+    use_existing = pytestconfig.getoption("--use-existing", default=False)
+    if not use_existing:
+        assert charm, "--charm-file must be set"
+    return charm if charm else ""
 
 
-@pytest_asyncio.fixture(scope="module", name="hockeypuck_app_image")
-async def hockeypuck_app_image_fixture(pytestconfig: Config) -> str:
+@pytest.fixture(scope="module", name="hockeypuck_app_image")
+def hockeypuck_app_image_fixture(pytestconfig: Config) -> str:
     """Get value from parameter rock-file."""
     rock = pytestconfig.getoption("--hockeypuck-image")
     assert rock, "--hockeypuck-image must be set"
     return rock
 
 
-@pytest_asyncio.fixture(scope="module", name="hockeypuck_k8s_app")
-async def hockeypuck_k8s_app_fixture(
-    model: Model,
+@pytest.fixture(scope="module", name="hockeypuck_k8s_app")
+def hockeypuck_k8s_app_fixture(
+    juju: jubilant.Juju,
     hockeypuck_charm: str | Path,
     hockeypuck_app_image: str,
-    traefik_app: Application,
-    postgresql_app: Application,
-) -> Application:
+    traefik_app: str,
+    postgresql_app: str,
+) -> str:
     """Deploy the hockeypuck-k8s application, relates with Postgresql and Traefik."""
+    app_name = "hockeypuck-k8s"
+    if juju.status().apps.get(app_name):
+        logger.info("%s already deployed", app_name)
+        return app_name
+
     resources = {
         "app-image": hockeypuck_app_image,
     }
-    app = await model.deploy(
-        f"./{hockeypuck_charm}",
+    juju.deploy(
+        str(hockeypuck_charm),
+        app=app_name,
         resources=resources,
         config={
             "app-port": HTTP_PORT,
             "metrics-port": METRICS_PORT,
         },
     )
-    await model.add_relation(app.name, postgresql_app.name)
-    await model.add_relation(app.name, f"{traefik_app.name}:ingress")
-    await model.add_relation(app.name, f"{traefik_app.name}:traefik-route")
-    await model.wait_for_idle(status="active")
-    return app
+    juju.integrate(app_name, postgresql_app)
+    juju.integrate(app_name, f"{traefik_app}:ingress")
+    juju.integrate(app_name, f"{traefik_app}:traefik-route")
+    juju.wait(jubilant.all_active, timeout=15 * 60)
+    return app_name
 
 
-@pytest_asyncio.fixture(scope="module", name="gpg_key")
+@pytest.fixture(scope="module", name="gpg_key")
 def gpg_key_fixture() -> Any:
     """Return a GPG key."""
     gpg = gnupg.GPG()
@@ -141,62 +215,72 @@ def gpg_key_fixture() -> Any:
     return key
 
 
-@pytest_asyncio.fixture(scope="module", name="hockeypuck_secondary_app")
-async def hockeypuck_secondary_app_fixture(
-    secondary_model_alias: str,
+@pytest.fixture(scope="module", name="hockeypuck_secondary_app")
+def hockeypuck_secondary_app_fixture(
+    secondary_juju: jubilant.Juju,
     hockeypuck_charm: str | Path,
     hockeypuck_app_image: str,
-    ops_test: OpsTest,
-) -> Application:
+) -> str:
     """Deploy the hockeypuck-k8s application in the secondary model and relate with Postgresql"""
+    app_name = "hockeypuck-k8s"
+    if secondary_juju.status().apps.get(app_name):
+        logger.info("%s already deployed in secondary model", app_name)
+        return app_name
+
     resources = {
         "app-image": hockeypuck_app_image,
     }
-    # Switch context to the new model
-    with ops_test.model_context(secondary_model_alias) as secondary_model:
-        app = await secondary_model.deploy(
-            f"./{hockeypuck_charm}",
-            resources=resources,
-            config={
-                "app-port": HTTP_PORT,
-                "metrics-port": METRICS_PORT,
-            },
-        )
-        postgresql_app = await secondary_model.deploy(
-            "postgresql-k8s",
-            channel="14/stable",
-            trust=True,
-        )
-        await secondary_model.wait_for_idle(status="active", apps=[postgresql_app.name])
-        await secondary_model.add_relation(app.name, postgresql_app.name)
-        await secondary_model.wait_for_idle(status="active")
-        return app
+    secondary_juju.deploy(
+        str(hockeypuck_charm),
+        app=app_name,
+        resources=resources,
+        config={
+            "app-port": HTTP_PORT,
+            "metrics-port": METRICS_PORT,
+        },
+    )
+    secondary_juju.deploy(
+        "postgresql-k8s",
+        channel="14/edge",
+        revision=POSTGRESQL_REVISION,
+        trust=True,
+    )
+    secondary_juju.wait(lambda status: status.apps["postgresql-k8s"].is_active, timeout=10 * 60)
+    secondary_juju.integrate(app_name, "postgresql-k8s")
+    secondary_juju.wait(jubilant.all_active, timeout=15 * 60)
+    return app_name
 
 
-@pytest_asyncio.fixture(scope="module", name="external_peer_config")
-async def external_peer_config_fixture(
-    hockeypuck_k8s_app: Application,
-    hockeypuck_secondary_app: Application,
+@pytest.fixture(scope="module", name="external_peer_config")
+def external_peer_config_fixture(
+    juju: jubilant.Juju,
+    secondary_juju: jubilant.Juju,
+    hockeypuck_k8s_app: str,
+    hockeypuck_secondary_app: str,
 ) -> None:
     """Set external peers on both hockeypuck servers for peer reconciliation."""
     # <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
-    primary_unit_name = (hockeypuck_k8s_app.units[0].name).replace("/", "-")
+    primary_status = juju.status()
+    primary_model_name = primary_status.model.name
+    primary_unit_name = f"{hockeypuck_k8s_app}-0".replace("/", "-")
     hockeypuck_primary_fqdn = (
         f"{primary_unit_name}."
-        f"{hockeypuck_k8s_app.name}-endpoints."
-        f"{hockeypuck_k8s_app.model.name}.svc.cluster.local"
+        f"{hockeypuck_k8s_app}-endpoints."
+        f"{primary_model_name}.svc.cluster.local"
     )
     primary_config = f"{hockeypuck_primary_fqdn},{HTTP_PORT},{RECONCILIATION_PORT}"
-    await hockeypuck_secondary_app.set_config({"external-peers": primary_config})
+    secondary_juju.config(hockeypuck_secondary_app, {"external-peers": primary_config})
 
-    secondary_unit_name = (hockeypuck_secondary_app.units[0].name).replace("/", "-")
+    secondary_status = secondary_juju.status()
+    secondary_model_name = secondary_status.model.name
+    secondary_unit_name = f"{hockeypuck_secondary_app}-0".replace("/", "-")
     hockeypuck_secondary_fqdn = (
         f"{secondary_unit_name}."
-        f"{hockeypuck_secondary_app.name}-endpoints."
-        f"{hockeypuck_secondary_app.model.name}.svc.cluster.local"
+        f"{hockeypuck_secondary_app}-endpoints."
+        f"{secondary_model_name}.svc.cluster.local"
     )
     secondary_config = f"{hockeypuck_secondary_fqdn},{HTTP_PORT},{RECONCILIATION_PORT}"
-    await hockeypuck_k8s_app.set_config({"external-peers": secondary_config})
+    juju.config(hockeypuck_k8s_app, {"external-peers": secondary_config})
 
-    await hockeypuck_k8s_app.model.wait_for_idle(status="active")
-    await hockeypuck_secondary_app.model.wait_for_idle(status="active")
+    juju.wait(jubilant.all_active, timeout=10 * 60)
+    secondary_juju.wait(jubilant.all_active, timeout=10 * 60)
