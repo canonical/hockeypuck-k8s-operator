@@ -2,21 +2,24 @@
 # See LICENSE file for licensing details.
 
 data "juju_model" "hockeypuck" {
-  name = var.model
+  uuid = var.model_uuid
 }
 
 data "juju_model" "hockeypuck_db" {
-  name = var.db_model
+  uuid = var.db_model_uuid
 
   provider = juju.hockeypuck_db
 }
+
+# Copyright 2025 Canonical Ltd.
+# See LICENSE file for licensing details.
 
 module "hockeypuck_k8s" {
   source      = "../charm"
   app_name    = var.hockeypuck.app_name
   channel     = var.hockeypuck.channel
   config      = var.hockeypuck.config
-  model       = data.juju_model.hockeypuck.name
+  model_uuid  = var.model_uuid
   constraints = var.hockeypuck.constraints
   revision    = var.hockeypuck.revision
   base        = var.hockeypuck.base
@@ -45,7 +48,7 @@ module "traefik_k8s" {
   channel     = var.traefik_k8s.channel
   config      = var.traefik_k8s.config
   constraints = var.traefik_k8s.constraints
-  model       = data.juju_model.hockeypuck.name
+  model_uuid  = var.model_uuid
   revision    = var.traefik_k8s.revision
   base        = var.traefik_k8s.base
   units       = var.traefik_k8s.units
