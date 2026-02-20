@@ -20,7 +20,6 @@ from actions import HTTP_PORT, RECONCILIATION_PORT
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.abort_on_fail
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
 def test_hockeypuck_health(hockeypuck_url: str) -> None:
     """
