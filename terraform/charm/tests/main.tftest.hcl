@@ -12,7 +12,7 @@ run "basic_deploy" {
     model_uuid = run.setup_tests.model_uuid
     channel    = "2.2/edge"
     # renovate: depName="hockeypuck-k8s"
-    revision = 1
+    revision = 6
   }
 
   assert {
