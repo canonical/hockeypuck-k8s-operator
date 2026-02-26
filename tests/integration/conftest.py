@@ -9,7 +9,6 @@ import secrets
 from pathlib import Path
 from typing import Any
 
-from admin_gpg import PASSWORD_ALPHABET
 import gnupg
 import pytest_asyncio
 from juju.application import Application
@@ -18,6 +17,7 @@ from pytest import Config
 from pytest_operator.plugin import OpsTest
 
 from actions import HTTP_PORT, METRICS_PORT, RECONCILIATION_PORT
+from admin_gpg import PASSWORD_ALPHABET
 
 logger = logging.getLogger(__name__)
 
