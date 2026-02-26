@@ -5,14 +5,15 @@
 
 import json
 import logging
+import secrets
 from pathlib import Path
 from typing import Any
 
+from admin_gpg import PASSWORD_ALPHABET
 import gnupg
 import pytest_asyncio
 from juju.application import Application
 from juju.model import Model
-from passlib.pwd import genword
 from pytest import Config
 from pytest_operator.plugin import OpsTest
 
@@ -127,7 +128,7 @@ async def hockeypuck_k8s_app_fixture(
 def gpg_key_fixture() -> Any:
     """Return a GPG key."""
     gpg = gnupg.GPG()
-    password = genword(length=10)
+    password = "".join(secrets.choice(PASSWORD_ALPHABET) for _ in range(10))
     input_data = gpg.gen_key_input(
         key_type="RSA",
         key_length=2048,
