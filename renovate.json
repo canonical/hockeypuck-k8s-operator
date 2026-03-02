@@ -31,6 +31,13 @@
       "matchStrings": ["# renovate: depName=\"(?<packageName>[^\"]+)\"\\s*\\n\\s*(?<fieldName>[a-zA-Z0-9_]+)\\s*=\\s*(?<currentValue>\\d+)"],
       "versioningTemplate": "semver-coerced",
       "datasourceTemplate": "custom.charmhub"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["/tests/.*\\.py$"],
+      "matchStrings": ["# renovate: depName=\"(?<packageName>[^\"]+)\"\\s*\\n\\s*[A-Z_]+\\s*=\\s*(?<currentValue>\\d+)"],
+      "versioningTemplate": "semver-coerced",
+      "datasourceTemplate": "custom.charmhub"
     }
   ],
   "extends": [
