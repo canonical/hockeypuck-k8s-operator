@@ -11,9 +11,6 @@ data "juju_model" "hockeypuck_db" {
   provider = juju.hockeypuck_db
 }
 
-# Copyright 2025 Canonical Ltd.
-# See LICENSE file for licensing details.
-
 module "hockeypuck_k8s" {
   source      = "../charm"
   app_name    = var.hockeypuck.app_name
