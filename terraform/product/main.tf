@@ -1,6 +1,7 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
+
 data "juju_model" "hockeypuck" {
   uuid = var.model_uuid
 }
