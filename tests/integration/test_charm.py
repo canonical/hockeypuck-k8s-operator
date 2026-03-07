@@ -205,7 +205,8 @@ def test_rebuild_prefix_tree_action(juju: jubilant.Juju, hockeypuck_k8s_app: str
     assert task.return_code == 0
 
 
-def test_traefik_route_integration(juju: jubilant.Juju, traefik_app: str) -> None:
+@pytest.mark.usefixtures("traefik_app")
+def test_traefik_route_integration(juju: jubilant.Juju) -> None:
     """
     arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
     act: Test connectivity to the reconciliation port.
