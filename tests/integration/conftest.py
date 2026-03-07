@@ -159,9 +159,9 @@ def external_peer_config_fixture(
     juju_secondary.config(hockeypuck_secondary_app, {"external-peers": primary_config})
 
     status_secondary = juju_secondary.status()
-    secondary_unit_name = next(
-        iter(status_secondary.get_units(hockeypuck_secondary_app))
-    ).replace("/", "-")
+    secondary_unit_name = next(iter(status_secondary.get_units(hockeypuck_secondary_app))).replace(
+        "/", "-"
+    )
     secondary_model_name = status_secondary.model.name
     hockeypuck_secondary_fqdn = (
         f"{secondary_unit_name}."
