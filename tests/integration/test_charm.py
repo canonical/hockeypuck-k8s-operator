@@ -16,7 +16,7 @@ import requests
 from gnupg import GPG
 
 from actions import HTTP_PORT, RECONCILIATION_PORT
-from tests.integration.conftest import APP_NAME, TRAEFIK_APP_NAME
+from tests.integration.conftest import TRAEFIK_APP_NAME
 
 logger = logging.getLogger(__name__)
 
