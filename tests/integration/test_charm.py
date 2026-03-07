@@ -8,23 +8,21 @@
 import json
 import logging
 import socket
-import typing
 from typing import Any
 
+import jubilant
 import pytest
 import requests
 from gnupg import GPG
-from juju.application import Application
-from juju.client._definitions import UnitStatus
 
 from actions import HTTP_PORT, RECONCILIATION_PORT
+from tests.integration.conftest import APP_NAME, TRAEFIK_APP_NAME
 
 logger = logging.getLogger(__name__)
 
 
-@pytest.mark.abort_on_fail
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
-async def test_hockeypuck_health(hockeypuck_url: str) -> None:
+def test_hockeypuck_health(hockeypuck_url: str) -> None:
     """
     arrange: Build and deploy the Hockeypuck charm.
     act: Send a request to the main page.
@@ -40,7 +38,7 @@ async def test_hockeypuck_health(hockeypuck_url: str) -> None:
 
 @pytest.mark.usefixtures("hockeypuck_k8s_app")
 @pytest.mark.dependency(name="test_adding_records")
-async def test_adding_records(gpg_key: Any, hockeypuck_url: str) -> None:
+def test_adding_records(gpg_key: Any, hockeypuck_url: str) -> None:
     """
     arrange: Create a GPG Key
     act: Send a request to add a PGP key and lookup the key using the API
@@ -67,58 +65,56 @@ async def test_adding_records(gpg_key: Any, hockeypuck_url: str) -> None:
 
 
 @pytest.mark.dependency(depends=["test_adding_records"])
-async def test_lookup_key(hockeypuck_k8s_app: Application, gpg_key: Any) -> None:
+def test_lookup_key(juju: jubilant.Juju, hockeypuck_k8s_app: str, gpg_key: Any) -> None:
     """
     arrange: Deploy the Hockeypuck charm and create a GPG key.
     act: Execute the lookup-key action.
     assert: Action returns 0.
     """
     fingerprint = gpg_key.fingerprint
-    action = await hockeypuck_k8s_app.units[0].run_action(
-        "lookup-key", **{"keyword": f"0x{fingerprint}"}
-    )
-    await action.wait()
-    assert action.results["return-code"] == 0
-    assert "result" in action.results
-    assert "BEGIN PGP PUBLIC KEY BLOCK" in action.results["result"]
+    task = juju.run(f"{hockeypuck_k8s_app}/0", "lookup-key", {"keyword": f"0x{fingerprint}"})
+    assert task.return_code == 0
+    assert "result" in task.results
+    assert "BEGIN PGP PUBLIC KEY BLOCK" in task.results["result"]
 
 
-async def test_lookup_key_not_found(hockeypuck_k8s_app: Application) -> None:
+def test_lookup_key_not_found(juju: jubilant.Juju, hockeypuck_k8s_app: str) -> None:
     """
     arrange: Deploy the Hockeypuck charm.
     act: Execute the lookup-key action with an invalid key.
     assert: Action raises a 404 error
     """
     fingerprint = "RANDOMKEY"
-    action = await hockeypuck_k8s_app.units[0].run_action(
-        "lookup-key", **{"keyword": f"0x{fingerprint}"}
-    )
-    await action.wait()
-    assert "Not Found" in action.data["message"]
+    with pytest.raises(jubilant.TaskError) as exc_info:
+        juju.run(f"{hockeypuck_k8s_app}/0", "lookup-key", {"keyword": f"0x{fingerprint}"})
+    assert "Not Found" in exc_info.value.task.message
 
 
-async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
+def test_unit_limit(juju: jubilant.Juju, hockeypuck_k8s_app: str) -> None:
     """
     arrange: Deploy the Hockeypuck charm.
     act: Add a unit to the application.
     assert: The application is blocked.
     """
-    await hockeypuck_k8s_app.add_unit()
-    await hockeypuck_k8s_app.model.wait_for_idle(status="blocked", apps=[hockeypuck_k8s_app.name])
-    assert hockeypuck_k8s_app.status == "blocked"
+    juju.add_unit(hockeypuck_k8s_app)
+    juju.wait(lambda s: jubilant.all_blocked(s, hockeypuck_k8s_app))
+    status = juju.status()
+    assert status.apps[hockeypuck_k8s_app].app_status.current == "blocked"
     assert (
-        hockeypuck_k8s_app.status_message == "Hockeypuck does not support multi-unit deployments"
+        status.apps[hockeypuck_k8s_app].app_status.message
+        == "Hockeypuck does not support multi-unit deployments"
     )
-    await hockeypuck_k8s_app.scale(scale=1)
-    await hockeypuck_k8s_app.model.wait_for_idle(status="active", apps=[hockeypuck_k8s_app.name])
-    assert hockeypuck_k8s_app.status == "active"
+    juju.remove_unit(hockeypuck_k8s_app, num_units=1)
+    juju.wait(lambda s: jubilant.all_active(s, hockeypuck_k8s_app))
+    assert juju.status().apps[hockeypuck_k8s_app].app_status.current == "active"
 
 
 @pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
 @pytest.mark.flaky(reruns=10, reruns_delay=10)
-async def test_reconciliation(
-    hockeypuck_secondary_app: Application,
+def test_reconciliation(
+    juju_secondary: jubilant.Juju,
+    hockeypuck_secondary_app: str,
     gpg_key: Any,
 ) -> None:
     """
@@ -126,18 +122,9 @@ async def test_reconciliation(
     act: Reconcile the application with the first hockeypuck server.
     assert: Key is present in the secondary model hockeypuck server.
     """
-    status = await hockeypuck_secondary_app.model.get_status()
-    hockeypuck_secondary_application = typing.cast(
-        Application, status.applications[hockeypuck_secondary_app.name]
-    )
-    units = hockeypuck_secondary_application.units
-    for unit in units.values():
-        unit_status: UnitStatus = unit
-        unit_address: str = (
-            unit_status.address.decode()
-            if isinstance(unit_status.address, bytes)
-            else typing.cast(str, unit_status.address)
-        )
+    status = juju_secondary.status()
+    for _unit_name, unit_info in status.get_units(hockeypuck_secondary_app).items():
+        unit_address = unit_info.address
         response = requests.get(
             f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
             f"?op=get&search=0x{gpg_key.fingerprint}",
@@ -149,30 +136,25 @@ async def test_reconciliation(
 
 
 @pytest.mark.dependency(depends=["test_adding_records"])
-async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key: Any) -> None:
+def test_block_keys_action(
+    juju_secondary: jubilant.Juju, hockeypuck_secondary_app: str, gpg_key: Any
+) -> None:
     """
     arrange: Deploy the Hockeypuck charm in the secondary model and set up peering.
     act: Execute the delete and blocklist action.
     assert: Lookup for the key returns 404.
     """
     fingerprint = gpg_key.fingerprint
-    action = await hockeypuck_secondary_app.units[0].run_action(
-        "block-keys", **{"fingerprints": fingerprint, "comment": "R1234"}
+    task = juju_secondary.run(
+        f"{hockeypuck_secondary_app}/0",
+        "block-keys",
+        {"fingerprints": fingerprint, "comment": "R1234"},
     )
-    await action.wait()
-    assert action.results["return-code"] == 0
+    assert task.return_code == 0
 
-    status = await hockeypuck_secondary_app.model.get_status()
-    hockeypuck_secondary_application = typing.cast(
-        Application, status.applications[hockeypuck_secondary_app.name]
-    )
-    for unit in hockeypuck_secondary_application.units.values():
-        unit_status: UnitStatus = unit
-        unit_address: str = (
-            unit_status.address.decode()
-            if isinstance(unit_status.address, bytes)
-            else typing.cast(str, unit_status.address)
-        )
+    status = juju_secondary.status()
+    for _unit_name, unit_info in status.get_units(hockeypuck_secondary_app).items():
+        unit_address = unit_info.address
         response = requests.get(
             f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
             f"?op=get&search=0x{gpg_key.fingerprint}",
@@ -183,7 +165,9 @@ async def test_block_keys_action(hockeypuck_secondary_app: Application, gpg_key:
 
 
 @pytest.mark.dependency(depends=["test_adding_records"])
-async def test_block_keys_action_multiple(hockeypuck_k8s_app: Application, gpg_key: Any) -> None:
+def test_block_keys_action_multiple(
+    juju: jubilant.Juju, hockeypuck_k8s_app: str, gpg_key: Any
+) -> None:
     """
     arrange: Deploy the Hockeypuck charm.
     act: Execute the delete and blocklist action with multiple keys (one valid and present,
@@ -193,11 +177,11 @@ async def test_block_keys_action_multiple(hockeypuck_k8s_app: Application, gpg_k
     fingerprint1 = str(gpg_key.fingerprint).lower()  # valid key that is present in the database
     fingerprint2 = "eaf2dd785260ec0cd047f463e449a664b36b34b1"  # valid key that is not present
     fingerprint3 = "shbfsdiuf98hu"  # invalid key
-    action = await hockeypuck_k8s_app.units[0].run_action(
+    task = juju.run(
+        f"{hockeypuck_k8s_app}/0",
         "block-keys",
-        **{"fingerprints": f"{fingerprint1},{fingerprint2},{fingerprint3}", "comment": "R1234"},
+        {"fingerprints": f"{fingerprint1},{fingerprint2},{fingerprint3}", "comment": "R1234"},
     )
-    await action.wait()
     expected_result = {}
     expected_result[fingerprint1] = "Deleted and blocked successfully."
     expected_result[fingerprint2] = "Fingerprint unavailable in the database."
@@ -206,33 +190,31 @@ async def test_block_keys_action_multiple(hockeypuck_k8s_app: Application, gpg_k
         "Fingerprints must be 40 or 64 characters long and "
         "consist of hexadecimal characters only."
     )
-    assert action.results[fingerprint1] == expected_result[fingerprint1]
-    assert action.results[fingerprint2] == expected_result[fingerprint2]
-    assert action.results[fingerprint3] == expected_result[fingerprint3]
+    assert task.results[fingerprint1] == expected_result[fingerprint1]
+    assert task.results[fingerprint2] == expected_result[fingerprint2]
+    assert task.results[fingerprint3] == expected_result[fingerprint3]
 
 
-async def test_rebuild_prefix_tree_action(hockeypuck_k8s_app: Application) -> None:
+def test_rebuild_prefix_tree_action(juju: jubilant.Juju, hockeypuck_k8s_app: str) -> None:
     """
     arrange: Deploy the Hockeypuck charm and integrate with Postgres and Traefik.
     act: Execute the rebuild prefix tree action.
     assert: Action returns 0.
     """
-    action = await hockeypuck_k8s_app.units[0].run_action("rebuild-prefix-tree")
-    await action.wait()
-    assert action.results["return-code"] == 0
+    task = juju.run(f"{hockeypuck_k8s_app}/0", "rebuild-prefix-tree")
+    assert task.return_code == 0
 
 
-async def test_traefik_route_integration(traefik_app: Application) -> None:
+def test_traefik_route_integration(juju: jubilant.Juju, traefik_app: str) -> None:
     """
     arrange: Deploy the traefik-k8s charm and integrate with Hockeypuck.
     act: Test connectivity to the reconciliation port.
     assert: Connection request is successful.
     """
-    action = await traefik_app.units[0].run_action("show-proxied-endpoints")
-    await action.wait()
-    assert action.results["return-code"] == 0
-    result = json.loads(action.results["proxied-endpoints"])
-    host = result["traefik-k8s"]["url"].removeprefix("http://")
+    task = juju.run(f"{TRAEFIK_APP_NAME}/0", "show-proxied-endpoints")
+    assert task.return_code == 0
+    result = json.loads(task.results["proxied-endpoints"])
+    host = result[TRAEFIK_APP_NAME]["url"].removeprefix("http://")
     port = RECONCILIATION_PORT
     try:
         with socket.create_connection((host, port), timeout=5):
