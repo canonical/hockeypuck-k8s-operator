@@ -31,7 +31,7 @@ def hockeypuck_charm_fixture(pytestconfig: Config) -> Path:
     charm = pytestconfig.getoption("--charm-file")
     if not charm:
         return pytest_jubilant.pack(".")
-    return Path(charm)
+    return Path(charm).resolve()
 
 
 @pytest.fixture(scope="module", name="hockeypuck_app_image")
