@@ -58,6 +58,8 @@ resource "juju_access_offer" "postgresql" {
 }
 
 resource "juju_integration" "hockeypuck_postgresql_database" {
+  model_uuid = var.model_uuid
+
   application {
     name     = module.hockeypuck_k8s.app_name
     endpoint = module.hockeypuck_k8s.requires.postgresql
