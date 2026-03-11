@@ -23,15 +23,15 @@ module "hockeypuck_k8s" {
 }
 
 module "postgresql" {
-  source          = "git::https://github.com/canonical/postgresql-operator//terraform?ref=v16/1.99.0"
-  app_name        = var.postgresql.app_name
-  channel         = var.postgresql.channel
-  config          = var.postgresql.config
-  constraints     = var.postgresql.constraints
-  juju_model_name = data.juju_model.hockeypuck_db.name
-  revision        = var.postgresql.revision
-  base            = var.postgresql.base
-  units           = var.postgresql.units
+  source      = "git::https://github.com/canonical/postgresql-operator//terraform?ref=v16/1.220.0"
+  app_name    = var.postgresql.app_name
+  channel     = var.postgresql.channel
+  config      = var.postgresql.config
+  constraints = var.postgresql.constraints
+  juju_model  = var.db_model_uuid
+  revision    = var.postgresql.revision
+  base        = var.postgresql.base
+  units       = var.postgresql.units
 
   providers = {
     juju = juju.hockeypuck_db
@@ -78,6 +78,8 @@ resource "juju_integration" "hockeypuck_postgresql_database" {
 }
 
 resource "juju_integration" "hockeypuck_traefik_nginx" {
+  model_uuid = var.model_uuid
+
   application {
     name     = module.hockeypuck_k8s.app_name
     endpoint = module.hockeypuck_k8s.requires.ingress
@@ -90,6 +92,8 @@ resource "juju_integration" "hockeypuck_traefik_nginx" {
 }
 
 resource "juju_integration" "hockeypuck_traefik_traefik_route" {
+  model_uuid = var.model_uuid
+
   application {
     name     = module.hockeypuck_k8s.app_name
     endpoint = module.hockeypuck_k8s.requires.traefik_route
