@@ -32,7 +32,7 @@ module "postgresql" {
   channel         = var.postgresql.channel
   config          = var.postgresql.config
   constraints     = var.postgresql.constraints
-  juju_model_name = data.juju_model.hockeypuck_db.name
+  model_uuid      = data.juju_model.hockeypuck_db.uuid
   revision        = var.postgresql.revision
   base            = var.postgresql.base
   units           = var.postgresql.units
@@ -71,8 +71,6 @@ resource "juju_access_offer" "postgresql" {
 }
 
 resource "juju_integration" "hockeypuck_postgresql_database" {
-  model = data.juju_model.hockeypuck.name
-
   application {
     name     = module.hockeypuck_k8s.app_name
     endpoint = module.hockeypuck_k8s.requires.postgresql
@@ -84,8 +82,6 @@ resource "juju_integration" "hockeypuck_postgresql_database" {
 }
 
 resource "juju_integration" "hockeypuck_traefik_nginx" {
-  model = data.juju_model.hockeypuck.name
-
   application {
     name     = module.hockeypuck_k8s.app_name
     endpoint = module.hockeypuck_k8s.requires.ingress
@@ -98,8 +94,6 @@ resource "juju_integration" "hockeypuck_traefik_nginx" {
 }
 
 resource "juju_integration" "hockeypuck_traefik_traefik_route" {
-  model = data.juju_model.hockeypuck.name
-
   application {
     name     = module.hockeypuck_k8s.app_name
     endpoint = module.hockeypuck_k8s.requires.traefik_route
