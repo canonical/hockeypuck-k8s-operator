@@ -1,10 +1,6 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-data "juju_model" "hockeypuck" {
-  uuid = var.model_uuid
-}
-
 data "juju_model" "hockeypuck_db" {
   uuid = var.db_model_uuid
 
@@ -32,7 +28,7 @@ module "postgresql" {
   channel         = var.postgresql.channel
   config          = var.postgresql.config
   constraints     = var.postgresql.constraints
-  model_uuid      = data.juju_model.hockeypuck_db.uuid
+  juju_model_name = data.juju_model.hockeypuck_db.name
   revision        = var.postgresql.revision
   base            = var.postgresql.base
   units           = var.postgresql.units
