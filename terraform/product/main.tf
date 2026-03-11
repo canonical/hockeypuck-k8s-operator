@@ -1,15 +1,6 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-data "juju_model" "hockeypuck_db" {
-  uuid = var.db_model_uuid
-
-  provider = juju.hockeypuck_db
-}
-
-# Copyright 2025 Canonical Ltd.
-# See LICENSE file for licensing details.
-
 module "hockeypuck_k8s" {
   source      = "../charm"
   app_name    = var.hockeypuck.app_name
@@ -51,9 +42,9 @@ module "traefik_k8s" {
 }
 
 resource "juju_offer" "postgresql" {
-  model            = data.juju_model.hockeypuck_db.name
+  model_uuid       = var.db_model_uuid
   application_name = module.postgresql.application_name
-  endpoint         = module.postgresql.provides.database
+  endpoints        = module.postgresql.provides.database
 
   provider = juju.hockeypuck_db
 }
