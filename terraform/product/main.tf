@@ -44,7 +44,7 @@ module "traefik_k8s" {
 resource "juju_offer" "postgresql" {
   model_uuid       = var.db_model_uuid
   application_name = module.postgresql.application_name
-  endpoints        = module.postgresql.provides.database
+  endpoints        = [module.postgresql.provides.database]
 
   provider = juju.hockeypuck_db
 }
