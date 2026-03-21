@@ -1,0 +1,61 @@
+[32mINFO    [0m pytest_operator.plugin:plugin.py:951 Model status:
+
+Model                 Controller                Cloud/Region        Version  SLA          Timestamp
+hockeypuck-secondary  github-pr-3ce12-microk8s  microk8s/localhost  3.6.19   unsupported  15:28:11Z
+
+App             Version  Status  Scale  Charm           Channel    Rev  Address         Exposed  Message
+hockeypuck-k8s           active      1  hockeypuck-k8s               0  10.152.183.164  no       
+postgresql-k8s  14.20    active      1  postgresql-k8s  14/stable  774  10.152.183.174  no       
+
+Unit               Workload  Agent  Address     Ports  Message
+hockeypuck-k8s/0*  active    idle   10.1.53.20         
+postgresql-k8s/0*  active    idle   10.1.53.22         Primary
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:957 Juju error logs:
+
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:1039 Forgetting model secondary-model...
+[32mINFO    [0m pytest_operator.plugin:plugin.py:951 Model status:
+
+Model    Controller                Cloud/Region        Version  SLA          Timestamp
+testing  github-pr-3ce12-microk8s  microk8s/localhost  3.6.19   unsupported  15:28:12Z
+
+App             Version  Status  Scale  Charm           Channel        Rev  Address         Exposed  Message
+hockeypuck-k8s           active      1  hockeypuck-k8s                   0  10.152.183.96   no       
+postgresql-k8s  14.20    active      1  postgresql-k8s  14/stable      774  10.152.183.37   no       
+traefik-k8s     2.11.0   active      1  traefik-k8s     latest/stable  272  10.152.183.128  no       Serving at http://10.151.33.171
+
+Unit               Workload  Agent  Address     Ports  Message
+hockeypuck-k8s/0*  active    idle   10.1.53.17         
+postgresql-k8s/0*  active    idle   10.1.53.16         Primary
+traefik-k8s/0*     active    idle   10.1.53.14         Serving at http://10.151.33.171
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:957 Juju error logs:
+
+unit-traefik-k8s-0: 15:20:41 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:41 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:41 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:41 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:42 ERROR unit.traefik-k8s/0.juju-log peers:0: Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:42 ERROR unit.traefik-k8s/0.juju-log peers:0: Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:42 ERROR unit.traefik-k8s/0.juju-log peers:0: Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:42 ERROR unit.traefik-k8s/0.juju-log peers:0: Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:43 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:43 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:43 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:43 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:44 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:44 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:44 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:44 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:45 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:45 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:45 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-traefik-k8s-0: 15:20:45 ERROR unit.traefik-k8s/0.juju-log Failed to fetch LoadBalancer traefik-k8s-lb: services "traefik-k8s-lb" not found
+unit-hockeypuck-k8s-0: 15:24:13 ERROR unit.hockeypuck-k8s/0.juju-log Action failed: 404 Client Error: Not Found for url: http://127.0.0.1:11371/pks/lookup?op=get&search=0xRANDOMKEY
+unit-postgresql-k8s-0: 15:27:33 ERROR juju.worker.dependency "log-sender" manifold worker returned unexpected error: sending log message: websocket: close 1005 (no status): websocket: close sent
+model-ccdd2b9e-30b5-4b0c-8d14-cb473a6e600a: 15:27:33 ERROR juju.worker.dependency "log-sender" manifold worker returned unexpected error: sending log message: websocket: close 1005 (no status): websocket: close sent
+unit-hockeypuck-k8s-0: 15:27:41 ERROR juju.worker.dependency "log-sender" manifold worker returned unexpected error: sending log message: websocket: close 1005 (no status): write tcp 10.1.53.17:39974->10.152.183.52:17070: write: broken pipe
+unit-traefik-k8s-0: 15:27:48 ERROR juju.worker.dependency "log-sender" manifold worker returned unexpected error: sending log message: websocket: close 1005 (no status): websocket: close sent
+
+[32mINFO    [0m pytest_operator.plugin:plugin.py:1039 Forgetting model main...
