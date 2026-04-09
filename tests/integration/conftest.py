@@ -6,19 +6,48 @@
 import json
 import logging
 import secrets
+import shlex
+import subprocess
 from pathlib import Path
 from typing import Any
 
 import gnupg
 import jubilant
 import pytest
-import pytest_jubilant
 from pytest import Config
 
 from actions import HTTP_PORT, METRICS_PORT, RECONCILIATION_PORT
 from admin_gpg import PASSWORD_ALPHABET
 
 logger = logging.getLogger(__name__)
+
+
+def pack(root: Path | str = "./", platform: str | None = None) -> Path:
+    """Pack a local charm with charmcraft and return the path to the .charm file."""
+    platform_arg = f" --platform {platform}" if platform else ""
+    cmd = f"charmcraft pack -p {root}{platform_arg}"
+    proc = subprocess.run(
+        shlex.split(cmd),
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    # charmcraft outputs "Packed <filename>" lines to stderr.
+    packed_charms = [
+        line.split()[1] for line in proc.stderr.strip().splitlines() if line.startswith("Packed")
+    ]
+    if not packed_charms:
+        raise ValueError(
+            f"unable to get packed charm(s) ({cmd!r} completed with "
+            f"{proc.returncode=}, {proc.stdout=}, {proc.stderr=})"
+        )
+    if len(packed_charms) > 1:
+        raise ValueError(
+            "This charm supports multiple platforms. "
+            "Pass a `platform` argument to control which charm you're getting instead."
+        )
+    return Path(packed_charms[0]).resolve()
+
 
 APP_NAME = "hockeypuck-k8s"
 POSTGRESQL_APP_NAME = "postgresql-k8s"
@@ -30,7 +59,7 @@ def hockeypuck_charm_fixture(pytestconfig: Config) -> Path:
     """Get or build the charm file."""
     charm = pytestconfig.getoption("--charm-file")
     if not charm:
-        return pytest_jubilant.pack(".")
+        return pack(".")
     return Path(charm).resolve()
 
 
