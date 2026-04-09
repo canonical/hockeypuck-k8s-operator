@@ -22,25 +22,6 @@ from admin_gpg import PASSWORD_ALPHABET
 logger = logging.getLogger(__name__)
 
 
-def pytest_addoption(parser: pytest.Parser):
-    """Accept --keep-models for backwards compatibility with operator-workflows CI.
-
-    TODO: Remove once canonical/operator-workflows passes --no-juju-teardown
-    instead of --keep-models.
-    """
-    parser.addoption("--keep-models", action="store_true", default=False)
-
-
-def pytest_configure(config: pytest.Config):
-    """Translate --keep-models to --no-juju-teardown.
-
-    TODO: Remove once canonical/operator-workflows passes --no-juju-teardown
-    instead of --keep-models.
-    """
-    if config.getoption("--keep-models", default=False):
-        config.option.no_juju_teardown = True
-
-
 def pack(root: Path | str = "./", platform: str | None = None) -> Path:
     """Pack a local charm with charmcraft and return the path to the .charm file.
 
