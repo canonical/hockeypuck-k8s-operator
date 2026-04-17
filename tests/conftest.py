@@ -3,7 +3,7 @@
 
 """Additional pytest options for tests."""
 
-from pytest import Parser
+from pytest import Config, Parser
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -16,3 +16,20 @@ def pytest_addoption(parser: Parser) -> None:
         "--hockeypuck-image", action="store", help="Hockeypuck app image to be deployed"
     )
     parser.addoption("--charm-file", action="store", help="Charm file to be deployed")
+    # Compat shim: operator-workflows passes --keep-models, which was renamed
+    # to --no-juju-teardown in pytest-jubilant 2.0. Remove once operator-workflows
+    # is updated.
+    parser.addoption("--keep-models", action="store_true", default=False)
+
+
+def pytest_configure(config: Config) -> None:
+    """Translate --keep-models to --no-juju-teardown for pytest-jubilant 2.0.
+
+    Remove once canonical/operator-workflows passes --no-juju-teardown
+    instead of --keep-models.
+
+    Args:
+        config: The pytest configuration object.
+    """
+    if config.getoption("--keep-models", default=False):
+        config.option.no_juju_teardown = True
