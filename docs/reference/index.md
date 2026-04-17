@@ -1,3 +1,9 @@
+---
+myst:
+  html_meta:
+    "description lang=en": "Technical information related to the Hockeypuck charm, including actions, configurations, and architecture."
+---
+
 # Reference
 
 This section contains technical details and specifications for the Hockeypuck charm.
