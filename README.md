@@ -25,11 +25,11 @@ The following actions are available for this charm:
 * **rebuild-prefix-tree**: Rebuild the prefix tree used by Hockeypuck.
 * **lookup-key**: Look up a key by fingerprint / email-id / keyword.
 
-You can obtain more information on the actions [here](https://charmhub.io/hockeypuck-k8s/actions).
+You can obtain more information on the [Hockeypuck actions page](https://charmhub.io/hockeypuck-k8s/actions).
 
 ## Learn more
 
-- [Read more](https://charmhub.io/hockeypuck-k8s/docs)
+- [Hockeypuck documentation](https://charmhub.io/hockeypuck-k8s/docs)
 - [Official Webpage](https://hockeypuck.io/)
 - [Troubleshooting](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
 

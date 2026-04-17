@@ -49,8 +49,7 @@ _Supported charms_: [nginx-ingress-integrator](https://charmhub.io/nginx-ingress
 
 Ingress manages external HTTP/HTTPS access to services in a Kubernetes cluster.
 Note that the Kubernetes cluster must already have an nginx ingress controller deployed. 
-Documentation to enable ingress in MicroK8s can be found 
-[here](https://microk8s.io/docs/addon-ingress).
+See the [MicroK8s ingress documentation](https://microk8s.io/docs/addon-ingress) for instructions on enabling ingress.
 
 Example ingress integrate command: 
 ```
@@ -65,8 +64,7 @@ _Supported charms_: [loki-k8s](https://charmhub.io/loki-k8s)
 The logging relation is a part of the COS relation to enhance logging observability.
 Logging relation through the `loki_push_api` interface installs and runs `promtail` which ships the
 contents of the Hockeypuck kubernetes pod logs to Loki.
-This can then be queried through the Loki API or easily visualized through Grafana. Learn more about COS
-[here](https://charmhub.io/topics/canonical-observability-stack).
+This can then be queried through the Loki API or easily visualized through Grafana. Learn more about COS in the [Canonical Observability Stack](https://charmhub.io/topics/canonical-observability-stack) documentation.
 
 Example logging-endpoint integrate command: 
 ```
@@ -92,7 +90,7 @@ _Interface_: [`traefik_route`](https://charmhub.io/traefik-k8s/integrations#trae
 _Supported charms_: [traefik-k8s](https://charmhub.io/traefik-k8s)
 
 The traefik-route relation provides low-level access to Traefik configuration. Hockeypuck requires 
-this interface to expose the reconciliation port (11370) to [peer](https://hockeypuck.io/configuration.html#:~:text=1.4.-,Recon,-Hockeypuck%20supports%20the) with other key servers.
+this interface to expose the reconciliation port (`11370`) to [peer](https://hockeypuck.io/configuration.html#:~:text=1.4.-,Recon,-Hockeypuck%20supports%20the) with other key servers.
 
 Example traefik-route integrate command: 
 ```
