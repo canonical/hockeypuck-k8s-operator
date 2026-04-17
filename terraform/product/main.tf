@@ -1,19 +1,6 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-data "juju_model" "hockeypuck" {
-  uuid = var.model_uuid
-}
-
-data "juju_model" "hockeypuck_db" {
-  uuid = var.db_model_uuid
-
-  provider = juju.hockeypuck_db
-}
-
-# Copyright 2025 Canonical Ltd.
-# See LICENSE file for licensing details.
-
 module "hockeypuck_k8s" {
   source      = "../charm"
   app_name    = var.hockeypuck.app_name
@@ -27,15 +14,15 @@ module "hockeypuck_k8s" {
 }
 
 module "postgresql" {
-  source          = "git::https://github.com/canonical/postgresql-operator//terraform?ref=v16/1.99.0"
-  app_name        = var.postgresql.app_name
-  channel         = var.postgresql.channel
-  config          = var.postgresql.config
-  constraints     = var.postgresql.constraints
-  juju_model_name = data.juju_model.hockeypuck_db.name
-  revision        = var.postgresql.revision
-  base            = var.postgresql.base
-  units           = var.postgresql.units
+  source      = "git::https://github.com/canonical/postgresql-operator//terraform?ref=v16/1.220.0"
+  app_name    = var.postgresql.app_name
+  channel     = var.postgresql.channel
+  config      = var.postgresql.config
+  constraints = var.postgresql.constraints
+  model_uuid  = var.db_model_uuid
+  revision    = var.postgresql.revision
+  base        = var.postgresql.base
+  units       = var.postgresql.units
 
   providers = {
     juju = juju.hockeypuck_db
@@ -55,9 +42,9 @@ module "traefik_k8s" {
 }
 
 resource "juju_offer" "postgresql" {
-  model            = data.juju_model.hockeypuck_db.name
+  model_uuid       = var.db_model_uuid
   application_name = module.postgresql.application_name
-  endpoint         = module.postgresql.provides.database
+  endpoints        = [module.postgresql.provides.database]
 
   provider = juju.hockeypuck_db
 }
@@ -71,7 +58,7 @@ resource "juju_access_offer" "postgresql" {
 }
 
 resource "juju_integration" "hockeypuck_postgresql_database" {
-  model = data.juju_model.hockeypuck.name
+  model_uuid = var.model_uuid
 
   application {
     name     = module.hockeypuck_k8s.app_name
@@ -84,7 +71,7 @@ resource "juju_integration" "hockeypuck_postgresql_database" {
 }
 
 resource "juju_integration" "hockeypuck_traefik_nginx" {
-  model = data.juju_model.hockeypuck.name
+  model_uuid = var.model_uuid
 
   application {
     name     = module.hockeypuck_k8s.app_name
@@ -98,7 +85,7 @@ resource "juju_integration" "hockeypuck_traefik_nginx" {
 }
 
 resource "juju_integration" "hockeypuck_traefik_traefik_route" {
-  model = data.juju_model.hockeypuck.name
+  model_uuid = var.model_uuid
 
   application {
     name     = module.hockeypuck_k8s.app_name
