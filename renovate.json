@@ -27,6 +27,18 @@
     },
     {
       "customType": "regex",
+      "datasourceTemplate": "github-tags",
+      "description": "Update Hockeypuck workload version from git tags",
+      "fileMatch": [
+        "hockeypuck_rock/rockcraft.yaml"
+      ],
+      "matchStrings": [
+        "# renovate: depName=(?<depName>.*?)\\n\\s+source-tag:\\s(?<currentValue>.*)"
+      ],
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
       "datasourceTemplate": "custom.charmhub",
       "fileMatch": [
         "\\.tftest\\.hcl$",

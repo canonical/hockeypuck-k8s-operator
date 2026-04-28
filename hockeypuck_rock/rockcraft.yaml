@@ -20,6 +20,7 @@ parts:
   hockeypuck:
     plugin: make
     source: https://github.com/hockeypuck/hockeypuck.git
+    # renovate: depName=hockeypuck/hockeypuck
     source-tag: 2.2.3
     source-type: git
     source-depth: 1
