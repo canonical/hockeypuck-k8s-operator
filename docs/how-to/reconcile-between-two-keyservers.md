@@ -7,8 +7,8 @@ Hockeypuck supports peering with other SKS-compatible key servers to synchronize
 <peer_address>,<http_port>,<reconciliation_port>
 ```
 * `peer_address`: The IP or fully qualified domain name (FQDN) of the peer.
-* `http_port`: The port where the peer exposes its SKS HTTP API (usually 11371).
-* `reconciliation_port`: The port used for reconciliation (usually 11370).
+* `http_port`: The port where the peer exposes its SKS HTTP API (usually `11371`).
+* `reconciliation_port`: The port used for reconciliation (usually `11370`).
 
 Example `peers.txt`:
 ```

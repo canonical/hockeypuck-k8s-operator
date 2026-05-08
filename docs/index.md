@@ -10,8 +10,8 @@ For DevOps and SRE teams, this charm will make operating Hockeypuck simple and s
 
 | | |
 |--|--|
-|  [Tutorials](https://charmhub.io/hockeypuck-k8s/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the charm for new users </br> |  [How-to guides](https://charmhub.io/hockeypuck-k8s/docs/how-to-contribute) </br> Step-by-step guides covering key operations and common tasks |
-| [Reference](https://charmhub.io/hockeypuck-k8s/docs/reference-actions) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/hockeypuck-k8s/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
+|  [Tutorials](https://charmhub.io/hockeypuck-k8s/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the charm for new users </br> |  [How-to guides](https://charmhub.io/hockeypuck-k8s/docs/how-to-index) </br> Step-by-step guides covering key operations and common tasks |
+| [Reference](https://charmhub.io/hockeypuck-k8s/docs/reference-index) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/hockeypuck-k8s/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
 
 ## Contributing to this documentation
 
@@ -43,7 +43,7 @@ Thinking about using the Hockeypuck Kubernetes operator for your next project?
 1. [Changelog](changelog.md)
 1. [Explanation](explanation)
   1. [Security](explanation/security.md)
-1. [How To](how-to)
+1. [How To](how-to/index.md)
   1. [Back up and restore](how-to/backup-and-restore-hockeypuck.md)
   1. [How to contribute](how-to/contribute.md)
   1. [Integrate with COS](how-to/integrate-with-cos.md)
@@ -51,7 +51,7 @@ Thinking about using the Hockeypuck Kubernetes operator for your next project?
   1. [Manage GPG keys](how-to/manage-gpg-keys.md)
   1. [Reconcile between two key servers](how-to/reconcile-between-two-keyservers.md)
   1. [Upgrade](how-to/upgrade.md)
-1. [Reference](reference)
+1. [Reference](reference/index.md)
   1. [Actions](reference/actions.md)
   1. [Charm architecture](reference/charm-architecture.md)
   1. [Configurations](reference/configurations.md)
