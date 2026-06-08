@@ -19,7 +19,7 @@ module "postgresql" {
   channel     = var.postgresql.channel
   config      = var.postgresql.config
   constraints = var.postgresql.constraints
-  model_uuid  = var.db_model_uuid
+  juju_model  = var.db_model_uuid
   revision    = var.postgresql.revision
   base        = var.postgresql.base
   units       = var.postgresql.units
