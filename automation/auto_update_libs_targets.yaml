@@ -1,0 +1,224 @@
+generated_at: "2026-07-20T18:00:00Z"
+org: canonical
+selection_criteria:
+  topics:
+    - charm
+    - platform-engineering
+  workflow_name: Auto-update charm libraries
+  failure_conclusion: startup_failure
+  min_consecutive_failures: 7
+issue_summary: >
+  Repositories listed here have a long-running startup_failure streak on the
+  auto-update charm libraries workflow, typically caused by missing explicit
+  workflow caller permissions when repo default workflow permissions are read-only.
+repos:
+  - name: canonical/github-runner-operator
+    url: https://github.com/canonical/github-runner-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:38:21Z"
+    latest_failure_at: "2026-07-20T01:34:05Z"
+    latest_run_url: https://github.com/canonical/github-runner-operator/actions/runs/29711107285
+  - name: canonical/wordpress-k8s-operator
+    url: https://github.com/canonical/wordpress-k8s-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:42:28Z"
+    latest_failure_at: "2026-07-20T01:38:43Z"
+    latest_run_url: https://github.com/canonical/wordpress-k8s-operator/actions/runs/29711224477
+  - name: canonical/indico-operator
+    url: https://github.com/canonical/indico-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:45:50Z"
+    latest_failure_at: "2026-07-20T01:45:07Z"
+    latest_run_url: https://github.com/canonical/indico-operator/actions/runs/29711380940
+  - name: canonical/synapse-operator
+    url: https://github.com/canonical/synapse-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:39:58Z"
+    latest_failure_at: "2026-07-20T01:35:54Z"
+    latest_run_url: https://github.com/canonical/synapse-operator/actions/runs/29711157842
+  - name: canonical/wazuh-server-operator
+    url: https://github.com/canonical/wazuh-server-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:46:06Z"
+    latest_failure_at: "2026-07-20T01:45:59Z"
+    latest_run_url: https://github.com/canonical/wazuh-server-operator/actions/runs/29711404009
+  - name: canonical/haproxy-operator
+    url: https://github.com/canonical/haproxy-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:35:35Z"
+    latest_failure_at: "2026-07-20T01:31:06Z"
+    latest_run_url: https://github.com/canonical/haproxy-operator/actions/runs/29711035529
+  - name: canonical/nginx-ingress-integrator-operator
+    url: https://github.com/canonical/nginx-ingress-integrator-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:38:18Z"
+    latest_failure_at: "2026-07-20T01:34:01Z"
+    latest_run_url: https://github.com/canonical/nginx-ingress-integrator-operator/actions/runs/29711105827
+  - name: canonical/jenkins-k8s-operator
+    url: https://github.com/canonical/jenkins-k8s-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:44:03Z"
+    latest_failure_at: "2026-07-20T01:40:29Z"
+    latest_run_url: https://github.com/canonical/jenkins-k8s-operator/actions/runs/29711267046
+  - name: canonical/gateway-api-integrator-operator
+    url: https://github.com/canonical/gateway-api-integrator-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:38:57Z"
+    latest_failure_at: "2026-07-20T01:34:35Z"
+    latest_run_url: https://github.com/canonical/gateway-api-integrator-operator/actions/runs/29711121020
+  - name: canonical/jenkins-agent-operator
+    url: https://github.com/canonical/jenkins-agent-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:45:54Z"
+    latest_failure_at: "2026-07-20T01:45:09Z"
+    latest_run_url: https://github.com/canonical/jenkins-agent-operator/actions/runs/29711381946
+  - name: canonical/netbox-k8s-operator
+    url: https://github.com/canonical/netbox-k8s-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:46:25Z"
+    latest_failure_at: "2026-07-20T01:46:06Z"
+    latest_run_url: https://github.com/canonical/netbox-k8s-operator/actions/runs/29711406663
+  - name: canonical/opencti-operator
+    url: https://github.com/canonical/opencti-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:38:24Z"
+    latest_failure_at: "2026-07-20T01:34:01Z"
+    latest_run_url: https://github.com/canonical/opencti-operator/actions/runs/29711105645
+  - name: canonical/aproxy-operator
+    url: https://github.com/canonical/aproxy-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:38:55Z"
+    latest_failure_at: "2026-07-20T01:34:29Z"
+    latest_run_url: https://github.com/canonical/aproxy-operator/actions/runs/29711118664
+  - name: canonical/github-runner-image-builder-operator
+    url: https://github.com/canonical/github-runner-image-builder-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:42:04Z"
+    latest_failure_at: "2026-07-20T01:37:58Z"
+    latest_run_url: https://github.com/canonical/github-runner-image-builder-operator/actions/runs/29711207243
+  - name: canonical/ingress-configurator-operator
+    url: https://github.com/canonical/ingress-configurator-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:39:43Z"
+    latest_failure_at: "2026-07-20T01:35:40Z"
+    latest_run_url: https://github.com/canonical/ingress-configurator-operator/actions/runs/29711152063
+  - name: canonical/maubot-operator
+    url: https://github.com/canonical/maubot-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:40:46Z"
+    latest_failure_at: "2026-07-20T01:36:48Z"
+    latest_run_url: https://github.com/canonical/maubot-operator/actions/runs/29711180011
+  - name: canonical/http-proxy-operators
+    url: https://github.com/canonical/http-proxy-operators
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:44:21Z"
+    latest_failure_at: "2026-07-20T01:41:42Z"
+    latest_run_url: https://github.com/canonical/http-proxy-operators/actions/runs/29711295538
+  - name: canonical/wireguard-gateway-operator
+    url: https://github.com/canonical/wireguard-gateway-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:43:10Z"
+    latest_failure_at: "2026-07-20T01:39:22Z"
+    latest_run_url: https://github.com/canonical/wireguard-gateway-operator/actions/runs/29711239480
+  - name: canonical/smtp-integrator-operator
+    url: https://github.com/canonical/smtp-integrator-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:37:20Z"
+    latest_failure_at: "2026-07-20T01:33:27Z"
+    latest_run_url: https://github.com/canonical/smtp-integrator-operator/actions/runs/29711092552
+  - name: canonical/dns-operators
+    url: https://github.com/canonical/dns-operators
+    workflow_path: .github/workflows/auto-update-libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:42:37Z"
+    latest_failure_at: "2026-07-20T01:38:41Z"
+    latest_run_url: https://github.com/canonical/dns-operators/actions/runs/29711223802
+  - name: canonical/falco-operators
+    url: https://github.com/canonical/falco-operators
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:42:37Z"
+    latest_failure_at: "2026-07-20T01:38:18Z"
+    latest_run_url: https://github.com/canonical/falco-operators/actions/runs/29711215300
+  - name: canonical/backup-operators
+    url: https://github.com/canonical/backup-operators
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:44:44Z"
+    latest_failure_at: "2026-07-20T01:41:31Z"
+    latest_run_url: https://github.com/canonical/backup-operators/actions/runs/29711291222
+  - name: canonical/content-cache-operator
+    url: https://github.com/canonical/content-cache-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:42:17Z"
+    latest_failure_at: "2026-07-20T01:38:02Z"
+    latest_run_url: https://github.com/canonical/content-cache-operator/actions/runs/29711208974
+  - name: canonical/saml-integrator-operator
+    url: https://github.com/canonical/saml-integrator-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:41:50Z"
+    latest_failure_at: "2026-07-20T01:37:52Z"
+    latest_run_url: https://github.com/canonical/saml-integrator-operator/actions/runs/29711205072
+  - name: canonical/penpot-operator
+    url: https://github.com/canonical/penpot-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:44:02Z"
+    latest_failure_at: "2026-07-20T01:40:18Z"
+    latest_run_url: https://github.com/canonical/penpot-operator/actions/runs/29711262455
+  - name: canonical/hockeypuck-k8s-operator
+    url: https://github.com/canonical/hockeypuck-k8s-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:41:47Z"
+    latest_failure_at: "2026-07-20T01:37:42Z"
+    latest_run_url: https://github.com/canonical/hockeypuck-k8s-operator/actions/runs/29711200945
+  - name: canonical/opendkim-operator
+    url: https://github.com/canonical/opendkim-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:39:15Z"
+    latest_failure_at: "2026-07-20T01:34:46Z"
+    latest_run_url: https://github.com/canonical/opendkim-operator/actions/runs/29711125886
+  - name: canonical/mailserver-operators
+    url: https://github.com/canonical/mailserver-operators
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:37:01Z"
+    latest_failure_at: "2026-07-20T01:33:19Z"
+    latest_run_url: https://github.com/canonical/mailserver-operators/actions/runs/29711089332
+  - name: canonical/ubuntu-motd-server-operator
+    url: https://github.com/canonical/ubuntu-motd-server-operator
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:36:54Z"
+    latest_failure_at: "2026-07-20T01:32:28Z"
+    latest_run_url: https://github.com/canonical/ubuntu-motd-server-operator/actions/runs/29711067837
+  - name: canonical/postfix-relay-operators
+    url: https://github.com/canonical/postfix-relay-operators
+    workflow_path: .github/workflows/auto_update_libs.yaml
+    failure_streak: 61
+    first_failure_at: "2026-05-21T01:37:05Z"
+    latest_failure_at: "2026-07-20T01:32:46Z"
+    latest_run_url: https://github.com/canonical/postfix-relay-operators/actions/runs/29711075032
