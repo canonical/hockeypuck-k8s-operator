@@ -50,7 +50,7 @@ flag will result in the application entering a blocked state. To achieve redunda
 deploy multiple independent instances of Hockeypuck and [configure peering](https://charmhub.io/hockeypuck-k8s/docs/how-to-reconcile-between-two-keyservers) between them.
 [/note]
 
-### Expose Hockeypuck webserver through ingress
+### Expose Hockeypuck web server through ingress
 
 Deploy the Traefik charm and integrate it with the Hockeypuck charm:
 ```bash
