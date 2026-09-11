@@ -12,7 +12,7 @@ import typing
 
 import ops
 import paas_charm.go
-from charms.operator_libs_linux.v0 import apt
+from charmlibs import apt
 from paas_charm.charm_state import CharmState
 from requests.exceptions import RequestException
 
