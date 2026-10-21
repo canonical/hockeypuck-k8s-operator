@@ -46,8 +46,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         """
         super().__init__(*args)
 
-        self.actions_observer = actions.Observer(self)
-        self.reconciliation_port = actions.RECONCILIATION_PORT
+        actions.Observer(self)
         self.framework.observe(self.on.install, self.install_gnupg)
         self.framework.observe(self.on.upgrade_charm, self.install_gnupg)
 

@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 HTTP_PORT: typing.Final[int] = 11371  # the port hockeypuck listens to for HTTP requests
 RECONCILIATION_PORT: typing.Final[int] = 11370  # the port hockeypuck listens to for reconciliation
-METRICS_PORT: typing.Final[int] = 9626  # the metrics port
 FINGERPRINT_REGEX = re.compile(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}")
 
 
