@@ -16,7 +16,7 @@ variable "channel" {
 variable "config" {
   description = "Application config. Details about available options can be found at https://charmhub.io/hockeypuck-k8s/configurations."
   type        = map(string)
-  default     = {}
+  default     = { "metrics-port" : 9626, "app-port" : 11371 }
 }
 
 variable "constraints" {
@@ -39,7 +39,7 @@ variable "revision" {
 variable "base" {
   description = "The operating system on which to deploy"
   type        = string
-  default     = "ubuntu@26.04"
+  default     = "ubuntu@24.04"
 }
 
 variable "units" {

@@ -8,7 +8,7 @@ Each revision is versioned by the date of the revision.
 
 ## 2026-10-21
 
-- Migrated the charm and rock to paas-charm 2.0 and Ubuntu 26.04. The `app-port` and
+- Migrated the charm and rock to paas-charm 2.0 and Ubuntu 26.04 LTS. The `app-port` and
   `metrics-port` options are replaced by `paas-config.yaml`, and the prefix tree moved to
   `/app-data/ptree`.
 
