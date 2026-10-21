@@ -112,30 +112,29 @@ class AdminGPG:
 
         Raises:
             RuntimeError: If the admin GPG key is not found in Juju secret store.
+            RequestException: If the key could not be pushed after all attempts.
         """
         try:
             admin_secret = self.model.get_secret(label=ADMIN_LABEL).get_content()
         except ops.SecretNotFoundError as e:
             raise RuntimeError(f"Admin GPG key not found in Juju secret store. {e}") from e
         for attempt in range(1, num_tries + 1):
-            response = requests.post(
-                "http://127.0.0.1:11371/pks/add",
-                timeout=20,
-                data={"keytext": admin_secret["adminpublickey"]},
-            )
-            logger.info(
-                "Pushing admin key to hockeypuck (attempt %s/%s). Response text: %s, code: %s",
-                attempt,
-                num_tries,
-                response.text,
-                response.status_code,
-            )
-            if response.status_code == 200:
+            try:
+                response = requests.post(
+                    "http://127.0.0.1:11371/pks/add",
+                    timeout=20,
+                    data={"keytext": admin_secret["adminpublickey"]},
+                )
+                response.raise_for_status()
+                logger.info("Admin key pushed to hockeypuck (attempt %s/%s)", attempt, num_tries)
                 return
-            if attempt < num_tries:
-                logger.info("Waiting for Hockeypuck to be reachable")
+            except requests.RequestException as exc:
+                logger.info(
+                    "Pushing admin key failed (attempt %s/%s): %s", attempt, num_tries, exc
+                )
+                if attempt == num_tries:
+                    raise
                 time.sleep(5)
-        response.raise_for_status()
 
     def generate_signature(self, request: str) -> str:
         """Generate signature for the given request.
