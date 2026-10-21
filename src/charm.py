@@ -77,6 +77,9 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
 
         Args:
             rerun_migrations: Whether to rerun migrations.
+
+        Raises:
+            RequestException: If the admin key can't be pushed to Hockeypuck.
         """
         self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
         super()._reconcile(rerun_migrations)
@@ -87,7 +90,8 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
                 admin_gpg = AdminGPG(self.model)
                 admin_gpg.push_admin_key()
         except RequestException:
-            ops.ErrorStatus("Unable to push admin key to Hockeypuck")
+            logger.exception("Unable to push admin key to Hockeypuck")
+            raise
 
     def _create_charm_state(self) -> CharmState:
         """Create charm state.
