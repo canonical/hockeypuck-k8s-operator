@@ -360,7 +360,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "ops", specifier = "==3.9.0" },
-    { name = "paas-charm", specifier = ">=2.0.dev1,<3" },
+    { name = "paas-charm", specifier = "==2.0b1" },
     { name = "python-gnupg", specifier = "==0.5.6" },
     { name = "requests", specifier = "==2.34.2" },
 ]

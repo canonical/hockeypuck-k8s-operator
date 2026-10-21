@@ -84,10 +84,11 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         # paas-charm sets the unit ports to the application port only, so the reconciliation
         # port has to be opened after it. Juju applies port changes once the hook finishes.
         self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
+        # The parent reconcile leaves the unit active only if the workload was restarted.
+        if not isinstance(self.unit.status, ops.ActiveStatus):
+            return
         try:
-            if self.is_ready():
-                admin_gpg = AdminGPG(self.model)
-                admin_gpg.push_admin_key()
+            AdminGPG(self.model).push_admin_key()
         except RequestException:
             logger.exception("Unable to push admin key to Hockeypuck")
             raise

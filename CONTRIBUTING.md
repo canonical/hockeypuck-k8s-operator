@@ -159,7 +159,7 @@ pack the OCI image and push the image into the registry:
 
 ```shell
 cd [project_dir]/hockeypuck_rock && rockcraft pack
-rockcraft.skopeo --insecure-policy copy --dest-tls-verify=false oci-archive:hockeypuck_0.2_amd64.rock docker://localhost:32000/hockeypuck:0.2
+rockcraft.skopeo --insecure-policy copy --dest-tls-verify=false oci-archive:hockeypuck_0.3_amd64.rock docker://localhost:32000/hockeypuck:0.3
 ```
 
 ### Deploying
@@ -170,5 +170,5 @@ juju add-model hockeypuck-test
 # Enable DEBUG logging
 juju model-config logging-config="<root>=INFO;unit=DEBUG"
 # Deploy the charm (assuming you're on amd64)
-juju deploy ./hockeypuck-k8s_amd64.charm --resource app-image=localhost:32000/hockeypuck:0.2
+juju deploy ./hockeypuck-k8s_amd64.charm --resource app-image=localhost:32000/hockeypuck:0.3
 ```
