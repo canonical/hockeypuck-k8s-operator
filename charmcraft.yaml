@@ -37,6 +37,10 @@ parts:
     stage:
       - cos_custom
 
+peers:
+  peers:
+    interface: peers
+
 requires:
   postgresql:
     interface: postgresql_client
