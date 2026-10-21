@@ -24,7 +24,7 @@ METRICS_PORT: typing.Final[int] = 9626  # the metrics port
 FINGERPRINT_REGEX = re.compile(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}")
 
 
-class Observer(ops.Object):
+class Observer(ops.Object):  # pylint: disable=too-few-public-methods
     """Charm actions observer."""
 
     def __init__(self, charm: paas_charm.go.Charm):
