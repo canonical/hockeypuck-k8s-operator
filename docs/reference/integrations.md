@@ -24,7 +24,7 @@ _Supported charms_: [grafana-k8s](https://charmhub.io/grafana-k8s)
 Grafana-dashboard is a part of the COS relation to enhance observability.
 The relation enables quick dashboard access already tailored to fit the needs of
 operators to monitor the charm. The template for the Grafana dashboard for the
-Hockeypuck charm can be found at `/src/cos/grafana_dashboards/hockeypuck.json`.
+Hockeypuck charm can be found at `/cos_custom/grafana_dashboards/hockeypuck.json`.
 In the Grafana UI, it can be found as “Hockeypuck metrics” under the General section of the 
 dashboard browser (`/dashboards`). Modifications to the dashboard can be made but will not be 
 persisted upon restart or redeployment of the charm.

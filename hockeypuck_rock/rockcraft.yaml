@@ -2,8 +2,8 @@
 # See LICENSE file for licensing details.
 
 name: hockeypuck
-base: ubuntu@24.04
-version: 0.2
+base: ubuntu@26.04
+version: 0.3
 summary: Hockeypuck is an OpenPGP public keyserver.
 description: |
   Hockeypuck is an OpenPGP public keyserver tool used to manage public key
@@ -42,6 +42,13 @@ parts:
       hockeypuck_wrapper.sh: hockeypuck/bin/hockeypuck_wrapper.sh
       block_keys.py: hockeypuck/bin/block_keys.py
       migrate.sh: app/migrate.sh
+  app-data:
+    plugin: nil
+    override-build: mkdir -p ${CRAFT_PART_INSTALL}/app-data
+    permissions:
+      - path: app-data
+        owner: 584792
+        group: 584792
   python:
     plugin: python
     source: .
@@ -53,5 +60,6 @@ services:
   go:
     override: replace
     command: "/hockeypuck/bin/hockeypuck_wrapper.sh"
+    user: _daemon_
     startup: enabled
     working-dir: /hockeypuck

@@ -20,6 +20,9 @@ name: observer-charm
 requires:
   traefik-route:
     interface: traefik_route
+peers:
+  peers:
+    interface: peers
 """
 
 
@@ -33,7 +36,8 @@ class ObservedCharm(ops.CharmBase):
             args: Variable list of positional arguments passed to the parent constructor.
         """
         super().__init__(*args)
-        self.traefik_route = traefik_route_observer.TraefikRouteObserver(self)
+        self.traefik_route = traefik_route_observer.TraefikRouteRelation(self)
+        self.traefik_route.setup(on_change=mock.MagicMock())
 
 
 def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -51,7 +55,7 @@ def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.Monkey
     requirer_mock = mock.MagicMock()
     requirer_mock.is_ready.return_value = True
     requirer_mock.units = set()
-    monkeypatch.setattr(harness.charm.traefik_route, "traefik_route", requirer_mock)
+    monkeypatch.setattr(harness.charm.traefik_route, "_requirer", requirer_mock)
     monkeypatch.setattr(socket, "getfqdn", lambda: "hockeypuck.local")
     monkeypatch.setattr(harness.charm.model, "get_relation", lambda _: requirer_mock)
 
@@ -85,7 +89,8 @@ def test_on_traefik_route_relation_joined_when_not_leader(monkeypatch: pytest.Mo
     harness.set_leader(False)
     harness.add_relation(traefik_route_observer.RELATION_NAME, "traefik-route-provider")
     mock_obj = mock.Mock()
-    monkeypatch.setattr(harness.charm.traefik_route.traefik_route, "submit_to_traefik", mock_obj)
+    requirer = harness.charm.traefik_route._requirer  # pylint: disable=protected-access
+    monkeypatch.setattr(requirer, "submit_to_traefik", mock_obj)
 
     harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=protected-access
 

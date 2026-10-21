@@ -1,3 +1,21 @@
+[project]
+name = "hockeypuck-k8s"
+version = "0.0.1"
+requires-python = ">=3.14"
+
+# Dependencies of the charm code. Charm libraries from Charmhub are declared in the
+# charmcraft.yaml charm-libs block (or by the go-framework extension), not here.
+dependencies = [
+    "ops==3.9.0",
+    "paas-charm>=2.0.dev1,<3",
+    "python-gnupg==0.5.6",
+    "requests==2.34.2",
+]
+
+[dependency-groups]
+# PYDEPS from Charmhub libraries used by the charm.
+charmlibs-pydeps = []
+
 [tool.bandit]
 exclude_dirs = ["/venv/"]
 [tool.bandit.assert_used]

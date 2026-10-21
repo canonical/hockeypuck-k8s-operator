@@ -8,10 +8,12 @@ import typing
 
 import ops
 from charms.traefik_k8s.v0.traefik_route import TraefikRouteRequirer
+from paas_charm.relations import CustomRelation, OnChange
 
 from actions import RECONCILIATION_PORT
 
 RELATION_NAME = "traefik-route"
+PEERS_RELATION_NAME = "peers"
 HOCKEYPUCK_TCP_ROUTER = {
     "hockeypuck-tcp-router": {
         "rule": "ClientIP(`0.0.0.0/0`)",
@@ -21,26 +23,45 @@ HOCKEYPUCK_TCP_ROUTER = {
 }
 
 
-class TraefikRouteObserver(ops.Object):
-    """Traefik route relation observer."""
+class TraefikRouteRelation(CustomRelation):
+    """Traefik route custom relation.
 
-    def __init__(self, charm: ops.CharmBase):
-        """Initialize the observer and register event handlers.
+    The relation only publishes the reconciliation TCP route to Traefik, it neither
+    contributes to the workload environment nor blocks the workload.
+
+    Attrs:
+        relation_name: Name of the traefik-route endpoint.
+    """
+
+    relation_name = RELATION_NAME
+
+    def setup(self, on_change: OnChange) -> None:
+        """Wire the relation events and create the requirer.
 
         Args:
-            charm: The parent charm.
+            on_change: Reconcile callback injected by the framework, unused because the
+                relation has no impact on the workload.
         """
-        super().__init__(charm, RELATION_NAME)
-        self._charm = charm
-        self.traefik_route = TraefikRouteRequirer(
-            self._charm, self.model.get_relation(RELATION_NAME), RELATION_NAME, raw=True
+        del on_change
+        self._requirer = TraefikRouteRequirer(
+            self.charm, self.model.get_relation(RELATION_NAME), RELATION_NAME, raw=True
         )
-        self._configure_traefik_route()
+        on = self.charm.on
+        for event in (
+            self._requirer.on.ready,
+            on[RELATION_NAME].relation_joined,
+            on[PEERS_RELATION_NAME].relation_joined,
+            on[PEERS_RELATION_NAME].relation_departed,
+            on.leader_elected,
+            on.upgrade_charm,
+            on.config_changed,
+        ):
+            self.charm.framework.observe(event, self._configure_traefik_route)
 
-    def _configure_traefik_route(self) -> None:
+    def _configure_traefik_route(self, _: typing.Optional[ops.EventBase] = None) -> None:
         """Build the traefik-route configuration."""
-        if self._charm.unit.is_leader() and self.traefik_route.is_ready():
-            self.traefik_route.submit_to_traefik(self._route_config, static=self._static_config)
+        if self.charm.unit.is_leader() and self._requirer.is_ready():
+            self._requirer.submit_to_traefik(self._route_config, static=self._static_config)
 
     @property
     def _static_config(self) -> dict[str, dict[str, dict[str, str]]]:
@@ -59,18 +80,13 @@ class TraefikRouteObserver(ops.Object):
         """Return the Traefik route configuration for the Hockeypuck service."""
         address_list = []
         address_list.append({"address": f"{socket.getfqdn()}:{RECONCILIATION_PORT}"})
-        secret_storage_relation = typing.cast(
-            ops.Relation, self.model.get_relation("secret-storage")
-        )
-        unit_names = [unit.name for unit in secret_storage_relation.units]
+        peers_relation = self.model.get_relation(PEERS_RELATION_NAME)
+        unit_names = [unit.name for unit in peers_relation.units] if peers_relation else []
         # unit fqdn format: <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
         for unit_name in unit_names:
             unit_name = unit_name.replace("/", "-")
-            unit_fqdn = (
-                f"{unit_name}."
-                f"{self._charm.app.name}-endpoints."
-                f"{self._charm.model.name}.svc"
-            )
+            app_name, model_name = self.charm.app.name, self.charm.model.name
+            unit_fqdn = f"{unit_name}.{app_name}-endpoints.{model_name}.svc"
             address_list.append({"address": f"{unit_fqdn}:{RECONCILIATION_PORT}"})
         route_config = {
             "tcp": {

@@ -170,5 +170,5 @@ juju add-model hockeypuck-test
 # Enable DEBUG logging
 juju model-config logging-config="<root>=INFO;unit=DEBUG"
 # Deploy the charm (assuming you're on amd64)
-juju deploy ./hockeypuck-k8s_amd64.charm --resource app-image=localhost:32000/hockeypuck:0.2 --config metrics-port=9626 --config app-port=11371
+juju deploy ./hockeypuck-k8s_amd64.charm --resource app-image=localhost:32000/hockeypuck:0.2
 ```

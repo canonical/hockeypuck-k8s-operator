@@ -8,7 +8,7 @@ import re
 import typing
 
 import ops
-import paas_app_charmer.go
+import paas_charm.go
 import requests
 from requests.exceptions import RequestException
 
@@ -27,7 +27,7 @@ FINGERPRINT_REGEX = re.compile(r"[0-9A-Fa-f]{40}|[0-9A-Fa-f]{64}")
 class Observer(ops.Object):
     """Charm actions observer."""
 
-    def __init__(self, charm: paas_app_charmer.go.Charm):
+    def __init__(self, charm: paas_charm.go.Charm):
         """Initialize the observer and register actions handlers.
 
         Args:

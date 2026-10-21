@@ -7,7 +7,6 @@
 """Go Charm entrypoint."""
 
 import logging
-import pathlib
 import typing
 
 import ops
@@ -31,7 +30,13 @@ for logger_name in getattr(logging.root.manager, "loggerDict", {}):
 
 
 class HockeypuckK8SCharm(paas_charm.go.Charm):
-    """Go Charm service."""
+    """Go Charm service.
+
+    Attrs:
+        custom_relations: Custom relations handled by the charm.
+    """
+
+    custom_relations = [traefik_route_observer.TraefikRouteRelation]
 
     def __init__(self, *args: typing.Any) -> None:
         """Initialize the instance.
@@ -43,7 +48,6 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
 
         self.actions_observer = actions.Observer(self)
         self.reconciliation_port = actions.RECONCILIATION_PORT
-        self._traefik_route = traefik_route_observer.TraefikRouteObserver(self)
         self.framework.observe(self.on.install, self.install_gnupg)
         self.framework.observe(self.on.upgrade_charm, self.install_gnupg)
 
@@ -68,28 +72,22 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             return False
         return super().is_ready()
 
-    def restart(self, rerun_migrations: bool = False) -> None:
-        """Open reconciliation port and call the parent restart method.
+    def _reconcile(self, rerun_migrations: bool = False) -> None:
+        """Open reconciliation port and call the parent reconcile method.
 
         Args:
             rerun_migrations: Whether to rerun migrations.
         """
         self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
-        super().restart(rerun_migrations)
+        super()._reconcile(rerun_migrations)
+        # The framework resets the unit ports to the application port only.
+        self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
         try:
             if self.is_ready():
                 admin_gpg = AdminGPG(self.model)
                 admin_gpg.push_admin_key()
         except RequestException:
             ops.ErrorStatus("Unable to push admin key to Hockeypuck")
-
-    def get_cos_dir(self) -> str:
-        """Return the directory with COS related files.
-
-        Returns:
-            Return the directory with COS related files.
-        """
-        return str((pathlib.Path(__file__).parent / "cos").absolute())
 
     def _create_charm_state(self) -> CharmState:
         """Create charm state.
@@ -107,7 +105,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             charm_state._user_defined_config["admin_keys"] = admin_fingerprint
         else:
             charm_state._user_defined_config["admin_keys"] = (
-                charm_state._user_defined_config["admin_keys"].rstrip(chars=",")
+                charm_state._user_defined_config["admin_keys"].rstrip(",")
                 + f",{admin_fingerprint}"
             )
 

@@ -34,7 +34,7 @@ juju add-model hockeypuck-tutorial
 Deploy the Hockeypuck charm and PostgreSQL charm, and integrate them.
 
 ```bash
-juju deploy hockeypuck-k8s --channel=2.2/edge --config metrics-port=9626 --config app-port=11371
+juju deploy hockeypuck-k8s --channel=2.2/edge
 juju deploy postgresql-k8s --channel 14/stable --trust
 juju integrate hockeypuck-k8s postgresql-k8s
 ```
