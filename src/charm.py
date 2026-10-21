@@ -16,7 +16,7 @@ from paas_charm.charm_state import CharmState
 from requests.exceptions import RequestException
 
 import actions
-import traefik_route_observer
+import reconciliation_route
 from admin_gpg import AdminGPG
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         custom_relations: Custom relations handled by the charm.
     """
 
-    custom_relations = [traefik_route_observer.TraefikRouteRelation]
+    custom_relations = [reconciliation_route.ReconciliationRouteRelation]
 
     def __init__(self, *args: typing.Any) -> None:
         """Initialize the instance.
@@ -81,9 +81,9 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         Raises:
             RequestException: If the admin key can't be pushed to Hockeypuck.
         """
-        self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
         super()._reconcile(rerun_migrations)
-        # The framework resets the unit ports to the application port only.
+        # paas-charm sets the unit ports to the application port only, so the reconciliation
+        # port has to be opened after it. Juju applies port changes once the hook finishes.
         self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
         try:
             if self.is_ready():

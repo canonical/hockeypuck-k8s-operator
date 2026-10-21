@@ -3,7 +3,7 @@
 
 # Learn more about testing at: https://ops.readthedocs.io/en/latest/index.html#
 
-"""Unit tests for traefik route observer."""
+"""Unit tests for Reconciliation route."""
 
 import socket
 from unittest import mock
@@ -12,7 +12,7 @@ import ops
 import pytest
 from ops.testing import Harness
 
-import traefik_route_observer
+import reconciliation_route
 from actions import RECONCILIATION_PORT
 
 REQUIRER_METADATA = """
@@ -36,7 +36,7 @@ class ObservedCharm(ops.CharmBase):
             args: Variable list of positional arguments passed to the parent constructor.
         """
         super().__init__(*args)
-        self.traefik_route = traefik_route_observer.TraefikRouteRelation(self)
+        self.traefik_route = reconciliation_route.ReconciliationRouteRelation(self)
         self.traefik_route.setup(on_change=mock.MagicMock())
 
 
@@ -50,7 +50,7 @@ def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.Monkey
     harness.set_model_name("testing")
     harness.begin_with_initial_hooks()
     harness.set_leader(True)
-    harness.add_relation(traefik_route_observer.RELATION_NAME, "traefik-route-provider")
+    harness.add_relation(reconciliation_route.RELATION_NAME, "traefik-route-provider")
 
     requirer_mock = mock.MagicMock()
     requirer_mock.is_ready.return_value = True
@@ -64,7 +64,7 @@ def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.Monkey
     requirer_mock.submit_to_traefik.assert_called_once_with(
         {
             "tcp": {
-                "routers": traefik_route_observer.HOCKEYPUCK_TCP_ROUTER,
+                "routers": reconciliation_route.HOCKEYPUCK_TCP_ROUTER,
                 "services": {
                     "hockeypuck-tcp-service": {
                         "loadBalancer": {
@@ -87,7 +87,7 @@ def test_on_traefik_route_relation_joined_when_not_leader(monkeypatch: pytest.Mo
     harness = Harness(ObservedCharm, meta=REQUIRER_METADATA)
     harness.begin_with_initial_hooks()
     harness.set_leader(False)
-    harness.add_relation(traefik_route_observer.RELATION_NAME, "traefik-route-provider")
+    harness.add_relation(reconciliation_route.RELATION_NAME, "traefik-route-provider")
     mock_obj = mock.Mock()
     requirer = harness.charm.traefik_route._requirer  # pylint: disable=protected-access
     monkeypatch.setattr(requirer, "submit_to_traefik", mock_obj)

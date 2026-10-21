@@ -1,7 +1,7 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-"""Traefik route observer module."""
+"""Reconciliation route custom relation module."""
 
 import socket
 import typing
@@ -23,8 +23,8 @@ HOCKEYPUCK_TCP_ROUTER = {
 }
 
 
-class TraefikRouteRelation(CustomRelation):
-    """Traefik route custom relation.
+class ReconciliationRouteRelation(CustomRelation):
+    """Custom relation publishing the reconciliation TCP route to Traefik.
 
     The relation only publishes the reconciliation TCP route to Traefik, it neither
     contributes to the workload environment nor blocks the workload.
