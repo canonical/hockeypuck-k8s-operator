@@ -46,7 +46,6 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         """
         super().__init__(*args)
 
-        # Keep a reference: ops holds observers weakly, so a dropped one never handles actions.
         self.actions_observer = actions.Observer(self)
         self.framework.observe(self.on.install, self.install_gnupg)
         self.framework.observe(self.on.upgrade_charm, self.install_gnupg)
