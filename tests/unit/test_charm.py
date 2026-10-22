@@ -12,7 +12,6 @@ import paas_charm.go
 import pytest
 from requests.exceptions import RequestException
 
-import actions
 from charm import HockeypuckK8SCharm
 
 
@@ -47,20 +46,14 @@ def admin_gpg_fixture():
         yield admin_gpg_cls
 
 
-def test_reconcile_opens_reconciliation_port_and_pushes_key(charm, admin_gpg):
+def test_reconcile_pushes_key_when_active(charm, admin_gpg):
     """
     arrange: a charm whose parent reconcile leaves the unit active.
     act: run the reconcile.
-    assert: the reconciliation port is opened after the parent reconcile and the key is pushed.
+    assert: the key is pushed after the parent reconcile.
     """
-    calls = mock.Mock()
-    paas_charm.go.Charm._reconcile.side_effect = lambda *_: calls.parent()
-    charm.unit.open_port.side_effect = lambda *_: calls.open_port()
-
     charm._reconcile()
 
-    assert [c[0] for c in calls.mock_calls] == ["parent", "open_port"]
-    charm.unit.open_port.assert_called_once_with("tcp", actions.RECONCILIATION_PORT)
     admin_gpg.return_value.push_admin_key.assert_called_once_with()
 
 

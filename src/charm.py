@@ -72,7 +72,7 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         return super().is_ready()
 
     def _reconcile(self, rerun_migrations: bool = False) -> None:
-        """Open reconciliation port and call the parent reconcile method.
+        """Call the parent reconcile method and push the admin key to Hockeypuck.
 
         Args:
             rerun_migrations: Whether to rerun migrations.
@@ -81,9 +81,6 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             RequestException: If the admin key can't be pushed to Hockeypuck.
         """
         super()._reconcile(rerun_migrations)
-        # paas-charm sets the unit ports to the application port only, so the reconciliation
-        # port has to be opened after it. Juju applies port changes once the hook finishes.
-        self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
         # The parent reconcile leaves the unit active only if the workload was restarted.
         if not isinstance(self.unit.status, ops.ActiveStatus):
             return
