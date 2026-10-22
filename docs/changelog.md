@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2026-10-21
+
+- Migrated the charm and rock to paas-charm 2.0 and Ubuntu 26.04 LTS. The `app-port` and
+  `metrics-port` options are removed. The ports are now fixed in `paas-config.yaml` (HTTP on
+  11371, metrics on 9626), so unset both options before refreshing. The prefix tree moved to
+  `/app-data/ptree`.
+
 ## 2026-04-16
 
 - Added landing pages for How-to and Reference documentation sections.

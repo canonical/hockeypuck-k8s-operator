@@ -7,7 +7,6 @@
 """Go Charm entrypoint."""
 
 import logging
-import pathlib
 import typing
 
 import ops
@@ -17,7 +16,7 @@ from paas_charm.charm_state import CharmState
 from requests.exceptions import RequestException
 
 import actions
-import traefik_route_observer
+import reconciliation_route
 from admin_gpg import AdminGPG
 
 logger = logging.getLogger(__name__)
@@ -31,7 +30,13 @@ for logger_name in getattr(logging.root.manager, "loggerDict", {}):
 
 
 class HockeypuckK8SCharm(paas_charm.go.Charm):
-    """Go Charm service."""
+    """Go Charm service.
+
+    Attrs:
+        custom_relations: Custom relations handled by the charm.
+    """
+
+    custom_relations = [reconciliation_route.ReconciliationRouteRelation]
 
     def __init__(self, *args: typing.Any) -> None:
         """Initialize the instance.
@@ -42,8 +47,6 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
         super().__init__(*args)
 
         self.actions_observer = actions.Observer(self)
-        self.reconciliation_port = actions.RECONCILIATION_PORT
-        self._traefik_route = traefik_route_observer.TraefikRouteObserver(self)
         self.framework.observe(self.on.install, self.install_gnupg)
         self.framework.observe(self.on.upgrade_charm, self.install_gnupg)
 
@@ -68,28 +71,24 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             return False
         return super().is_ready()
 
-    def restart(self, rerun_migrations: bool = False) -> None:
-        """Open reconciliation port and call the parent restart method.
+    def _reconcile(self, rerun_migrations: bool = False) -> None:
+        """Call the parent reconcile method and push the admin key to Hockeypuck.
 
         Args:
             rerun_migrations: Whether to rerun migrations.
+
+        Raises:
+            RequestException: If the admin key can't be pushed to Hockeypuck.
         """
-        self.unit.open_port("tcp", actions.RECONCILIATION_PORT)
-        super().restart(rerun_migrations)
+        super()._reconcile(rerun_migrations)
+        # The parent reconcile leaves the unit active only if the workload was restarted.
+        if not isinstance(self.unit.status, ops.ActiveStatus):
+            return
         try:
-            if self.is_ready():
-                admin_gpg = AdminGPG(self.model)
-                admin_gpg.push_admin_key()
+            AdminGPG(self.model).push_admin_key()
         except RequestException:
-            ops.ErrorStatus("Unable to push admin key to Hockeypuck")
-
-    def get_cos_dir(self) -> str:
-        """Return the directory with COS related files.
-
-        Returns:
-            Return the directory with COS related files.
-        """
-        return str((pathlib.Path(__file__).parent / "cos").absolute())
+            logger.exception("Unable to push admin key to Hockeypuck")
+            raise
 
     def _create_charm_state(self) -> CharmState:
         """Create charm state.
@@ -102,14 +101,10 @@ class HockeypuckK8SCharm(paas_charm.go.Charm):
             New CharmState
         """
         charm_state = super()._create_charm_state()
+        config = charm_state.user_defined_config
+        user_keys = str(config.get("admin_keys", "")).rstrip(",")
         admin_fingerprint = AdminGPG(self.model).admin_fingerprint()
-        if "admin_keys" not in charm_state._user_defined_config:
-            charm_state._user_defined_config["admin_keys"] = admin_fingerprint
-        else:
-            charm_state._user_defined_config["admin_keys"] = (
-                charm_state._user_defined_config["admin_keys"].rstrip(chars=",")
-                + f",{admin_fingerprint}"
-            )
+        config["admin_keys"] = ",".join(filter(None, [user_keys, admin_fingerprint]))
 
         return charm_state
 

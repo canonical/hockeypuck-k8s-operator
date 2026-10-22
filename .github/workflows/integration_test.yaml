@@ -20,6 +20,8 @@ jobs:
       self-hosted-runner: true
       self-hosted-runner-label: "medium"
       juju-channel: '3.6/stable'
+      charmcraft-channel: latest/edge
+      rockcraft-channel: latest/candidate
       channel: '1.34-strict/stable'
       pre-run-script: |
         -c "./tests/integration/pre_run_script.sh"

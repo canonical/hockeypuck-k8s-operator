@@ -111,7 +111,7 @@ Take, for example, when a configuration is changed by using the CLI.
 
 1. User runs the configuration command:
 ```bash
-juju config hockeypuck-k8s app-port=11371
+juju config hockeypuck-k8s contact-fingerprint=<fingerprint>
 ```
 2. A `config-changed` event is emitted.
 3. In the `__init__` method is defined how to handle this event like this:

@@ -1,0 +1,8 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Hockeypuck HTTP port.
+port: 11371
+# Hockeypuck Prometheus metrics endpoint.
+metrics-port: 9626
+metrics-path: /metrics
