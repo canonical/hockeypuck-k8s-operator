@@ -116,7 +116,7 @@ tox --notest -e unit
 source .tox/unit/bin/activate
 ```
 
-You can also create an environment for development with [uv](https://docs.astral.sh/uv/). The
+You can also create an environment for development with [`uv`](https://docs.astral.sh/uv/). The
 project requires Python 3.14 and keeps its development dependencies in dependency groups:
 
 ```bash
