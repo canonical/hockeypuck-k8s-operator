@@ -1,97 +1,77 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-# Learn more about testing at: https://ops.readthedocs.io/en/latest/index.html#
-
-"""Unit tests for Reconciliation route."""
-
-import socket
-from unittest import mock
+"""Unit tests for the reconciliation route."""
 
 import ops
 import pytest
-from ops.testing import Harness
+import yaml
+from ops import testing
 
 import reconciliation_route
 from actions import RECONCILIATION_PORT
 
-REQUIRER_METADATA = """
-name: observer-charm
-requires:
-  traefik-route:
-    interface: traefik_route
-peers:
-  peers:
-    interface: peers
-"""
+META = {
+    "name": "hockeypuck",
+    "requires": {reconciliation_route.RELATION_NAME: {"interface": "traefik_route"}},
+    "peers": {reconciliation_route.PEERS_RELATION_NAME: {"interface": "hockeypuck_peers"}},
+}
 
 
-class ObservedCharm(ops.CharmBase):
-    """Class for requirer charm testing."""
+class RouteCharm(ops.CharmBase):
+    """Charm publishing the reconciliation route."""
 
-    def __init__(self, *args):
+    def __init__(self, framework: ops.Framework):
         """Construct.
 
         Args:
-            args: Variable list of positional arguments passed to the parent constructor.
+            framework: The ops framework.
         """
-        super().__init__(*args)
-        self.traefik_route = reconciliation_route.ReconciliationRouteRelation(self)
-        self.traefik_route.setup(on_change=mock.MagicMock())
+        super().__init__(framework)
+        self.route = reconciliation_route.ReconciliationRouteRelation(self)
+        self.route.setup(on_change=lambda: None)
 
 
-def test_on_traefik_route_relation_joined_when_leader(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.fixture(name="context")
+def context_fixture() -> testing.Context:
+    """Create a testing context for the route charm.
+
+    Returns:
+        The testing context.
     """
-    arrange: instantiate a charm with leadership implementing the traefik-route relation.
-    act: integrate the charm leveraging the traefik-route integration.
-    assert: traefik is configured with the appropriate values.
+    return testing.Context(RouteCharm, meta=META)
+
+
+@pytest.fixture(autouse=True)
+def fqdn_fixture(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Make the unit FQDN deterministic.
+
+    Args:
+        monkeypatch: The pytest monkeypatch fixture.
     """
-    harness = Harness(ObservedCharm, meta=REQUIRER_METADATA)
-    harness.set_model_name("testing")
-    harness.begin_with_initial_hooks()
-    harness.set_leader(True)
-    harness.add_relation(reconciliation_route.RELATION_NAME, "traefik-route-provider")
-
-    requirer_mock = mock.MagicMock()
-    requirer_mock.is_ready.return_value = True
-    requirer_mock.units = set()
-    monkeypatch.setattr(harness.charm.traefik_route, "_requirer", requirer_mock)
-    monkeypatch.setattr(socket, "getfqdn", lambda: "hockeypuck.local")
-    monkeypatch.setattr(harness.charm.model, "get_relation", lambda _: requirer_mock)
-
-    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=protected-access
-
-    requirer_mock.submit_to_traefik.assert_called_once_with(
-        {
-            "tcp": {
-                "routers": reconciliation_route.HOCKEYPUCK_TCP_ROUTER,
-                "services": {
-                    "hockeypuck-tcp-service": {
-                        "loadBalancer": {
-                            "servers": [{"address": f"hockeypuck.local:{RECONCILIATION_PORT}"}]
-                        },
-                    }
-                },
-            }
-        },
-        static={"entryPoints": {"reconciliation-port": {"address": f":{RECONCILIATION_PORT}"}}},
-    )
+    monkeypatch.setattr(reconciliation_route.socket, "getfqdn", lambda: "hockeypuck.local")
 
 
-def test_on_traefik_route_relation_joined_when_not_leader(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize("leader", [True, False])
+def test_route_published_by_leader_only(context, leader):
     """
-    arrange: instantiate a charm without leadership implementing the traefik-route relation.
-    act: integrate the charm leveraging the traefik-route integration.
-    assert: the traefik configuration is not changed.
+    arrange: a unit integrated with traefik, as leader or not.
+    act: run the relation-changed event.
+    assert: only the leader publishes the TCP route and the static entrypoint.
     """
-    harness = Harness(ObservedCharm, meta=REQUIRER_METADATA)
-    harness.begin_with_initial_hooks()
-    harness.set_leader(False)
-    harness.add_relation(reconciliation_route.RELATION_NAME, "traefik-route-provider")
-    mock_obj = mock.Mock()
-    requirer = harness.charm.traefik_route._requirer  # pylint: disable=protected-access
-    monkeypatch.setattr(requirer, "submit_to_traefik", mock_obj)
+    relation = testing.Relation(reconciliation_route.RELATION_NAME)
+    state = testing.State(leader=leader, relations=[relation])
 
-    harness.charm.traefik_route._configure_traefik_route()  # pylint: disable=protected-access
+    state_out = context.run(context.on.relation_changed(relation), state)
 
-    mock_obj.assert_not_called()
+    databag = state_out.get_relation(relation.id).local_app_data
+    if not leader:
+        assert "config" not in databag
+        return
+    config = yaml.safe_load(databag["config"])
+    assert config["tcp"]["services"]["hockeypuck-tcp-service"] == {
+        "loadBalancer": {"servers": [{"address": f"hockeypuck.local:{RECONCILIATION_PORT}"}]}
+    }
+    assert yaml.safe_load(databag["static"]) == {
+        "entryPoints": {"reconciliation-port": {"address": f":{RECONCILIATION_PORT}"}}
+    }

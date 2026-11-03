@@ -1,38 +1,37 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-# pylint: disable=protected-access,redefined-outer-name
+"""Unit tests for the Hockeypuck charm."""
 
-"""Unit tests for the Hockeypuck charm reconcile and charm state logic."""
-
+import typing
 from unittest import mock
 
 import ops
 import paas_charm.go
 import pytest
-from requests.exceptions import RequestException
+import requests
+from ops import testing
 
-from charm import HockeypuckK8SCharm
+import charm
+
+ADMIN_FINGERPRINT = "A" * 40
 
 
-@pytest.fixture(name="charm")
-def charm_fixture(monkeypatch: pytest.MonkeyPatch):
-    """Create a charm instance without running the framework, with a mocked unit.
+def _set_status(status: ops.StatusBase) -> typing.Callable[..., None]:
+    """Create a replacement for the framework reconcile that sets a status.
 
     Args:
-        monkeypatch: pytest monkeypatch fixture.
+        status: The status to set.
 
-    Yields:
-        The charm instance.
+    Returns:
+        The replacement reconcile.
     """
-    instance = object.__new__(HockeypuckK8SCharm)
-    unit = mock.MagicMock()
-    unit.status = ops.ActiveStatus()
-    monkeypatch.setattr(HockeypuckK8SCharm, "unit", unit)
-    monkeypatch.setattr(HockeypuckK8SCharm, "model", mock.MagicMock())
-    monkeypatch.setattr(HockeypuckK8SCharm, "app", mock.MagicMock())
-    monkeypatch.setattr(paas_charm.go.Charm, "_reconcile", mock.MagicMock())
-    yield instance
+
+    def reconcile(self: ops.CharmBase, *_args: typing.Any, **_kwargs: typing.Any) -> None:
+        """Set the status."""
+        self.unit.status = status
+
+    return reconcile
 
 
 @pytest.fixture(name="admin_gpg")
@@ -43,48 +42,67 @@ def admin_gpg_fixture():
         The mocked AdminGPG class.
     """
     with mock.patch("charm.AdminGPG") as admin_gpg_cls:
+        admin_gpg_cls.return_value.admin_fingerprint.return_value = ADMIN_FINGERPRINT
         yield admin_gpg_cls
 
 
-def test_reconcile_pushes_key_when_active(charm, admin_gpg):
+@pytest.fixture(name="state")
+def state_fixture() -> testing.State:
+    """Create a leader state with a connectable workload container.
+
+    Returns:
+        The state.
     """
-    arrange: a charm whose parent reconcile leaves the unit active.
-    act: run the reconcile.
-    assert: the key is pushed after the parent reconcile.
+    return testing.State(leader=True, containers=[testing.Container("app", can_connect=True)])
+
+
+def test_admin_key_pushed_after_reconcile(context, state, admin_gpg, monkeypatch):
     """
-    charm._reconcile()
+    arrange: a charm whose framework reconcile leaves the unit active.
+    act: run the config-changed event.
+    assert: the admin key is pushed and the unit is active.
+    """
+    monkeypatch.setattr(paas_charm.go.Charm, "_reconcile", _set_status(ops.ActiveStatus()))
+
+    state_out = context.run(context.on.config_changed(), state)
 
     admin_gpg.return_value.push_admin_key.assert_called_once_with()
+    assert state_out.unit_status == testing.ActiveStatus()
 
 
 @pytest.mark.parametrize(
     "status",
-    [ops.BlockedStatus("blocked"), ops.WaitingStatus("waiting"), ops.MaintenanceStatus("busy")],
+    [
+        testing.BlockedStatus("blocked"),
+        testing.WaitingStatus("waiting"),
+        testing.MaintenanceStatus("busy"),
+    ],
 )
-def test_reconcile_skips_push_when_not_active(charm, admin_gpg, status):
+def test_admin_key_not_pushed_when_not_active(context, state, admin_gpg, monkeypatch, status):
     """
-    arrange: a charm whose parent reconcile left the unit in a non-active status.
-    act: run the reconcile.
-    assert: the admin key is not pushed and the status is untouched.
+    arrange: a charm whose framework reconcile leaves the unit in a non-active status.
+    act: run the config-changed event.
+    assert: the admin key is not pushed and the status is kept.
     """
-    charm.unit.status = status
+    monkeypatch.setattr(paas_charm.go.Charm, "_reconcile", _set_status(status))
 
-    charm._reconcile()
+    state_out = context.run(context.on.config_changed(), state)
 
     admin_gpg.return_value.push_admin_key.assert_not_called()
-    assert charm.unit.status == status
+    assert state_out.unit_status == status
 
 
-def test_reconcile_raises_when_push_fails(charm, admin_gpg, caplog):
+def test_admin_key_push_failure_is_raised(context, state, admin_gpg, monkeypatch, caplog):
     """
     arrange: a charm for which pushing the admin key fails.
-    act: run the reconcile.
-    assert: the error is logged and raised.
+    act: run the config-changed event.
+    assert: the error is logged and the hook fails.
     """
-    admin_gpg.return_value.push_admin_key.side_effect = RequestException("boom")
+    monkeypatch.setattr(paas_charm.go.Charm, "_reconcile", _set_status(ops.ActiveStatus()))
+    admin_gpg.return_value.push_admin_key.side_effect = requests.ConnectionError("refused")
 
-    with pytest.raises(RequestException):
-        charm._reconcile()
+    with pytest.raises(testing.errors.UncaughtCharmError, match="ConnectionError"):
+        context.run(context.on.config_changed(), state)
 
     assert "Unable to push admin key to Hockeypuck" in caplog.text
 
@@ -92,40 +110,60 @@ def test_reconcile_raises_when_push_fails(charm, admin_gpg, caplog):
 @pytest.mark.parametrize(
     "user_keys, expected",
     [
-        pytest.param(None, "FINGERPRINT", id="no user keys"),
-        pytest.param("AAA,BBB", "AAA,BBB,FINGERPRINT", id="user keys"),
-        pytest.param("AAA,", "AAA,FINGERPRINT", id="trailing comma"),
+        pytest.param(None, ADMIN_FINGERPRINT, id="no user keys"),
+        pytest.param("BBBB,CCCC", f"BBBB,CCCC,{ADMIN_FINGERPRINT}", id="user keys"),
+        pytest.param("BBBB,", f"BBBB,{ADMIN_FINGERPRINT}", id="trailing comma"),
     ],
 )
-def test_create_charm_state_adds_admin_fingerprint(
-    charm, admin_gpg, monkeypatch, user_keys, expected
-):
+def test_admin_keys_include_admin_fingerprint(context, state, admin_gpg, user_keys, expected):
     """
-    arrange: a charm state with or without user defined admin keys.
+    arrange: a charm with or without user defined admin keys.
     act: create the charm state.
     assert: the admin fingerprint is appended to the admin keys.
     """
-    config = {} if user_keys is None else {"admin_keys": user_keys}
-    charm_state = mock.MagicMock()
-    charm_state.user_defined_config = config
-    monkeypatch.setattr(
-        paas_charm.go.Charm, "_create_charm_state", mock.MagicMock(return_value=charm_state)
+    del admin_gpg
+    config = {} if user_keys is None else {"admin-keys": user_keys}
+    state = testing.State(
+        leader=True,
+        config=config,
+        containers=[testing.Container("app", can_connect=True)],
     )
-    admin_gpg.return_value.admin_fingerprint.return_value = "FINGERPRINT"
 
-    result = charm._create_charm_state()
+    with context(context.on.config_changed(), state) as manager:
+        charm_state = manager.charm._create_charm_state()  # pylint: disable=protected-access
 
-    assert result.user_defined_config["admin_keys"] == expected
+    assert charm_state.user_defined_config["admin_keys"] == expected
 
 
-def test_is_ready_blocks_multi_unit(charm):
+def test_multi_unit_deployment_is_blocked(context):
     """
     arrange: a charm planned with two units.
-    act: check readiness.
-    assert: the charm is not ready and the unit is blocked.
+    act: run the config-changed event.
+    assert: the unit is blocked.
     """
-    charm.model.app.planned_units.return_value = 2
-    charm.unit.is_leader.return_value = False
+    state = testing.State(
+        leader=True,
+        planned_units=2,
+        containers=[testing.Container("app", can_connect=True)],
+    )
 
-    assert not charm.is_ready()
-    assert isinstance(charm.unit.status, ops.BlockedStatus)
+    state_out = context.run(context.on.config_changed(), state)
+
+    assert state_out.unit_status == testing.BlockedStatus(
+        "Hockeypuck does not support multi-unit deployments"
+    )
+
+
+def test_lookup_key_returns_key(context, state, monkeypatch):
+    """
+    arrange: a ready charm and a keyserver that knows the key.
+    act: run the lookup-key action, which requires the actions observer to be alive.
+    assert: the key is returned.
+    """
+    monkeypatch.setattr(charm.HockeypuckK8SCharm, "is_ready", lambda _: True)
+    response = mock.MagicMock(text="PUBLIC KEY")
+    monkeypatch.setattr(requests, "get", mock.MagicMock(return_value=response))
+
+    context.run(context.on.action("lookup-key", params={"keyword": "alice"}), state)
+
+    assert context.action_results == {"result": "PUBLIC KEY"}

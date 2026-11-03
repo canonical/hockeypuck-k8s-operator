@@ -38,6 +38,7 @@ lint = [
 ]
 unit = [
     "coverage[toml]",
+    "ops[testing]",
     "pytest",
 ]
 static = [
