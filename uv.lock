@@ -799,7 +799,6 @@ integration = [
     { name = "pytest-asyncio" },
     { name = "pytest-dependency" },
     { name = "pytest-operator" },
-    { name = "pytest-rerunfailures" },
 ]
 lint = [
     { name = "allure-pytest" },
@@ -824,7 +823,6 @@ lint = [
     { name = "pytest-asyncio" },
     { name = "pytest-dependency" },
     { name = "pytest-operator" },
-    { name = "pytest-rerunfailures" },
     { name = "types-pyyaml" },
     { name = "types-requests" },
 ]
@@ -853,7 +851,6 @@ integration = [
     { name = "pytest-asyncio" },
     { name = "pytest-dependency" },
     { name = "pytest-operator" },
-    { name = "pytest-rerunfailures" },
 ]
 lint = [
     { name = "allure-pytest", specifier = ">=2.8.18" },
@@ -878,7 +875,6 @@ lint = [
     { name = "pytest-asyncio" },
     { name = "pytest-dependency" },
     { name = "pytest-operator" },
-    { name = "pytest-rerunfailures" },
     { name = "types-pyyaml" },
     { name = "types-requests" },
 ]
@@ -1896,19 +1892,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/2e/48/880facbcaca080b852854f60fd46b37ca2985b27dc7f1713857d9de6d469/pytest_operator-0.43.2.tar.gz", hash = "sha256:3db34dcd9c114a2e41a9bc61da72daf1264e7644fd5b92e855f250cb337e01c3", size = 149628, upload-time = "2025-10-04T14:38:45.16Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/96/a0/22b018287f4ff7a36cdb79745c196f28897184d27e18b90177f5dfc2a0f4/pytest_operator-0.43.2-py3-none-any.whl", hash = "sha256:d7d01ffe35d14b75577fd80a07c34f0a9f4835cfc6d373b8e2f995bcb4146bda", size = 48322, upload-time = "2025-10-04T14:38:43.763Z" },
-]
-
-[[package]]
-name = "pytest-rerunfailures"
-version = "16.7"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "packaging" },
-    { name = "pytest" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d1/b0/6b5337f9d59b26b0069ea3d5e863c31dc04b69e51bbfb1cf2ea6328fba87/pytest_rerunfailures-16.7.tar.gz", hash = "sha256:6956ddfb65ca1d07e7e3d99e2c5359d82300f4cb062e6049563bd2c106f72d5c", size = 59666, upload-time = "2026-09-17T07:08:48.871Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c1/d3/07ea35102cf2020ddaaac368d2a6f0bcc63d6523fb8918805bac3eb8b98f/pytest_rerunfailures-16.7-py3-none-any.whl", hash = "sha256:edf1886209c2b7dafe35b5bf1708d6ec40ccf6c6b357f0f02807efcec0204c99", size = 23952, upload-time = "2026-09-17T07:08:47.635Z" },
 ]
 
 [[package]]

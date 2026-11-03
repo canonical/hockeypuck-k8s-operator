@@ -50,7 +50,6 @@ integration = [
     "pytest-asyncio",
     "pytest-dependency",
     "pytest-operator",
-    "pytest-rerunfailures",
 ]
 
 [tool.bandit]

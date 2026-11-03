@@ -116,14 +116,13 @@ tox --notest -e unit
 source .tox/unit/bin/activate
 ```
 
-You can create an environment for development with `python3-venv`:
+You can also create an environment for development with [uv](https://docs.astral.sh/uv/). The
+project requires Python 3.14 and keeps its development dependencies in dependency groups:
 
 ```bash
-sudo apt install python3-venv
-python3 -m venv venv
+uv sync --group lint
+source .venv/bin/activate
 ```
-
-Install `tox` inside the virtual environment for testing.
 
 ### Testing
 
