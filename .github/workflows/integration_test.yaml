@@ -17,7 +17,8 @@ jobs:
     with:
       trivy-fs-enabled: true
       trivy-image-config: "trivy.yaml"
-      runs-on: ubuntu-24.04
+      self-hosted-runner: true
+      self-hosted-runner-label: "medium"
       juju-channel: '3.6/stable'
       charmcraft-channel: latest/edge
       rockcraft-channel: latest/candidate
