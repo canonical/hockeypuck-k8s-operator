@@ -65,6 +65,7 @@ def test_route_published(context):
 
     databag = state_out.get_relation(relation.id).local_app_data
     config = yaml.safe_load(databag["config"])
+    assert config["tcp"]["routers"] == reconciliation_route.HOCKEYPUCK_TCP_ROUTER
     assert config["tcp"]["services"]["hockeypuck-tcp-service"] == {
         "loadBalancer": {"servers": [{"address": f"hockeypuck.local:{RECONCILIATION_PORT}"}]}
     }

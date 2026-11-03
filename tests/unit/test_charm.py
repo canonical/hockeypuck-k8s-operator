@@ -161,9 +161,15 @@ def test_lookup_key_returns_key(context, state, monkeypatch):
     assert: the key is returned.
     """
     monkeypatch.setattr(charm.HockeypuckK8SCharm, "is_ready", lambda _: True)
-    response = mock.MagicMock(text="PUBLIC KEY")
-    monkeypatch.setattr(requests, "get", mock.MagicMock(return_value=response))
+    response = requests.Response()
+    response.status_code = 200
+    response._content = b"PUBLIC KEY"  # pylint: disable=protected-access
+    get = mock.MagicMock(return_value=response)
+    monkeypatch.setattr(requests, "get", get)
 
     context.run(context.on.action("lookup-key", params={"keyword": "alice"}), state)
 
+    get.assert_called_once_with(
+        "http://127.0.0.1:11371/pks/lookup?op=get&search=alice", timeout=20
+    )
     assert context.action_results == {"result": "PUBLIC KEY"}

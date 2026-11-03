@@ -8,6 +8,12 @@ juju run postgresql-k8s/leader create-backup
 
 Additional information can be found about backing up in the [PostgreSQL charm's documentation](https://charmhub.io/postgresql-k8s/docs/h-configure-s3-aws).
 
+If you deployed with the `app-port` or `metrics-port` options, unset them first, because the charm no longer has these options:
+
+```bash
+juju config hockeypuck-k8s --reset app-port,metrics-port
+```
+
 Then you can upgrade the Hockeypuck charm:
 
 ```bash

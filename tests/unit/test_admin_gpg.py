@@ -12,7 +12,7 @@ from ops import testing
 
 import admin_gpg
 
-NUM_TRIES = 3
+DEFAULT_TRIES = 5
 
 
 class PushCharm(ops.CharmBase):
@@ -29,7 +29,7 @@ class PushCharm(ops.CharmBase):
 
     def _on_config_changed(self, _: ops.ConfigChangedEvent) -> None:
         """Push the admin key."""
-        admin_gpg.AdminGPG(self.model).push_admin_key(num_tries=NUM_TRIES)
+        admin_gpg.AdminGPG(self.model).push_admin_key()
 
 
 @pytest.fixture(name="context")
@@ -96,8 +96,9 @@ def test_push_admin_key_success(context, state, post):
 
     context.run(context.on.config_changed(), state)
 
-    post.assert_called_once()
-    assert post.call_args.kwargs["data"] == {"keytext": "PUBKEY"}
+    post.assert_called_once_with(
+        "http://127.0.0.1:11371/pks/add", timeout=20, data={"keytext": "PUBKEY"}
+    )
 
 
 def test_push_admin_key_retries(context, state, post):
@@ -110,7 +111,7 @@ def test_push_admin_key_retries(context, state, post):
 
     context.run(context.on.config_changed(), state)
 
-    assert post.call_count == NUM_TRIES
+    assert post.call_count == 3
 
 
 @pytest.mark.parametrize(
@@ -124,13 +125,13 @@ def test_push_admin_key_fails_after_all_attempts(context, state, post, outcome):
     act: push the admin key.
     assert: the error is raised after the last attempt, without a final sleep.
     """
-    post.side_effect = [outcome] * NUM_TRIES
+    post.side_effect = [outcome] * DEFAULT_TRIES
 
     with pytest.raises(testing.errors.UncaughtCharmError):
         context.run(context.on.config_changed(), state)
 
-    assert post.call_count == NUM_TRIES
-    assert admin_gpg.time.sleep.call_count == NUM_TRIES - 1
+    assert post.call_count == DEFAULT_TRIES
+    assert admin_gpg.time.sleep.call_count == DEFAULT_TRIES - 1
 
 
 def test_push_admin_key_without_secret(context, post):

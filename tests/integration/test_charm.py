@@ -141,19 +141,26 @@ async def test_reconciliation(
         )
         # Hockeypuck gossips with its peers about once a minute.
         deadline = time.monotonic() + 300
-        while True:
-            response = requests.get(
-                f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
-                f"?op=get&search=0x{gpg_key.fingerprint}",
-                timeout=20,
-            )
-            if response.status_code == 200 or time.monotonic() > deadline:
-                break
+        response = None
+        last_error = "no response"
+        while time.monotonic() < deadline:
+            try:
+                response = requests.get(
+                    f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
+                    f"?op=get&search=0x{gpg_key.fingerprint}",
+                    timeout=20,
+                )
+                last_error = f"status {response.status_code}"
+                if response.status_code == 200:
+                    break
+            except requests.RequestException as exc:
+                last_error = str(exc)
+                logger.info("Lookup on %s failed: %s", unit_address, exc)
             await asyncio.sleep(10)
 
         assert (
-            response.status_code == 200
-        ), f"Key not found in {unit_address} after 300 seconds: {response.status_code}"
+            response is not None and response.status_code == 200
+        ), f"Key not found in {unit_address} after 300 seconds: {last_error}"
         assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
 
 
@@ -246,6 +253,6 @@ async def test_traefik_route_integration(traefik_app: Application) -> None:
     try:
         with socket.create_connection((host, port), timeout=5):
             connected = True
-    except (socket.timeout, socket.error):
+    except socket.timeout, socket.error:
         connected = False
     assert connected, f"Failed to connect to {host}:{port}"
