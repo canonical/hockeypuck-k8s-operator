@@ -161,7 +161,8 @@ async def test_reconciliation(
         assert (
             response is not None and response.status_code == 200
         ), f"Key not found in {unit_address} after 300 seconds: {last_error}"
-        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
+        replicated = GPG().scan_keys_mem(response.text)
+        assert gpg_key.fingerprint in replicated.fingerprints, "Unexpected key replicated"
 
 
 @pytest.mark.dependency(depends=["test_adding_records"])
