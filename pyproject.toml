@@ -15,6 +15,43 @@ dependencies = [
 [dependency-groups]
 # PYDEPS from Charmhub libraries used by the charm.
 charmlibs-pydeps = []
+lint = [
+    "black",
+    "codespell",
+    "flake8",
+    "flake8-builtins",
+    "flake8-copyright",
+    "flake8-docstrings",
+    "flake8-docstrings-complete",
+    "flake8-test-docs",
+    "isort",
+    "mypy",
+    "pep8-naming",
+    "psycopg2-binary",
+    "pydocstyle>=2.10",
+    "pylint",
+    "pyproject-flake8",
+    "types-PyYAML",
+    "types-requests",
+    {include-group = "unit"},
+    {include-group = "integration"},
+]
+unit = [
+    "coverage[toml]",
+    "pytest",
+]
+static = [
+    "bandit[toml]",
+]
+integration = [
+    "allure-pytest>=2.8.18",
+    "allure-pytest-collection-report @ git+https://github.com/canonical/data-platform-workflows@v24.0.0#subdirectory=python/pytest_plugins/allure_pytest_collection_report",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-dependency",
+    "pytest-operator",
+    "pytest-rerunfailures",
+]
 
 [tool.bandit]
 exclude_dirs = ["/venv/"]
