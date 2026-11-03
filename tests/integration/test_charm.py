@@ -151,7 +151,9 @@ async def test_reconciliation(
                 break
             await asyncio.sleep(10)
 
-        assert response.status_code == 200, f"Key not found in {unit_address}"
+        assert (
+            response.status_code == 200
+        ), f"Key not found in {unit_address} after 300 seconds: {response.status_code}"
         assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
 
 

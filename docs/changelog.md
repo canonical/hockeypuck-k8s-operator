@@ -15,6 +15,8 @@ Each revision is versioned by the date of the revision.
   `app-secret-key` option (a Juju secret ID) and a `rotate-secret-key` action are provided by
   paas-charm. A fresh application secret key is generated on upgrade, which doesn't affect
   Hockeypuck itself.
+- A failure to push the admin key to Hockeypuck is now retried up to 5 times and then fails the
+  hook, instead of being ignored.
 - Replaced `requirements.txt` with `uv` dependency groups in `pyproject.toml`. Tox now runs with
   `uv` and Python 3.14.
 

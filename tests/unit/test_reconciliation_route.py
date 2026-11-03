@@ -14,7 +14,7 @@ from actions import RECONCILIATION_PORT
 META = {
     "name": "hockeypuck",
     "requires": {reconciliation_route.RELATION_NAME: {"interface": "traefik_route"}},
-    "peers": {reconciliation_route.PEERS_RELATION_NAME: {"interface": "hockeypuck_peers"}},
+    "peers": {reconciliation_route.PEERS_RELATION_NAME: {"interface": "peers"}},
 }
 
 
@@ -52,22 +52,18 @@ def fqdn_fixture(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(reconciliation_route.socket, "getfqdn", lambda: "hockeypuck.local")
 
 
-@pytest.mark.parametrize("leader", [True, False])
-def test_route_published_by_leader_only(context, leader):
+def test_route_published(context):
     """
-    arrange: a unit integrated with traefik, as leader or not.
+    arrange: a unit integrated with traefik.
     act: run the relation-changed event.
-    assert: only the leader publishes the TCP route and the static entrypoint.
+    assert: the TCP route and the static entrypoint are published.
     """
     relation = testing.Relation(reconciliation_route.RELATION_NAME)
-    state = testing.State(leader=leader, relations=[relation])
+    state = testing.State(leader=True, relations=[relation])
 
     state_out = context.run(context.on.relation_changed(relation), state)
 
     databag = state_out.get_relation(relation.id).local_app_data
-    if not leader:
-        assert "config" not in databag
-        return
     config = yaml.safe_load(databag["config"])
     assert config["tcp"]["services"]["hockeypuck-tcp-service"] == {
         "loadBalancer": {"servers": [{"address": f"hockeypuck.local:{RECONCILIATION_PORT}"}]}

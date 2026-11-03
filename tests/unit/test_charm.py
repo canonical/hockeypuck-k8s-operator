@@ -115,7 +115,7 @@ def test_admin_key_push_failure_is_raised(context, state, admin_gpg, monkeypatch
         pytest.param("BBBB,", f"BBBB,{ADMIN_FINGERPRINT}", id="trailing comma"),
     ],
 )
-def test_admin_keys_include_admin_fingerprint(context, state, admin_gpg, user_keys, expected):
+def test_admin_keys_include_admin_fingerprint(context, admin_gpg, user_keys, expected):
     """
     arrange: a charm with or without user defined admin keys.
     act: create the charm state.
