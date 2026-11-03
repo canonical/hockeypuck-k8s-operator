@@ -28,7 +28,7 @@ def _charm_metadata() -> dict[str, typing.Any]:
         "name": raw["name"],
         "containers": {"app": {"resource": "app-image"}},
         "resources": {"app-image": {"type": "oci-image"}},
-        "peers": raw["peers"],
+        "peers": {"peers": {"interface": "peers"}},
         "provides": {
             "metrics-endpoint": {"interface": "prometheus_scrape"},
             "grafana-dashboard": {"interface": "grafana_dashboard"},
