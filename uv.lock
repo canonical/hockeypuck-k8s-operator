@@ -785,7 +785,6 @@ name = "hockeypuck-k8s"
 version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
-    { name = "ops" },
     { name = "paas-charm" },
     { name = "python-gnupg" },
     { name = "requests" },
@@ -838,10 +837,9 @@ unit = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ops", specifier = "==3.9.0" },
-    { name = "paas-charm", specifier = "==2.0b1" },
-    { name = "python-gnupg", specifier = "==0.5.6" },
-    { name = "requests", specifier = "==2.34.2" },
+    { name = "paas-charm", specifier = ">=2.0b1,<3" },
+    { name = "python-gnupg", specifier = ">=0.5,<0.6" },
+    { name = "requests", specifier = ">=2.34,<3" },
 ]
 
 [package.metadata.requires-dev]

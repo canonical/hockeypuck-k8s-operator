@@ -6,10 +6,9 @@ requires-python = ">=3.14"
 # Dependencies of the charm code. Charm libraries from Charmhub are declared in the
 # charmcraft.yaml charm-libs block (or by the go-framework extension), not here.
 dependencies = [
-    "ops==3.9.0",
-    "paas-charm==2.0b1",
-    "python-gnupg==0.5.6",
-    "requests==2.34.2",
+    "paas-charm>=2.0b1,<3",
+    "python-gnupg>=0.5,<0.6",
+    "requests>=2.34,<3",
 ]
 
 [dependency-groups]
