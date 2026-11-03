@@ -13,3 +13,4 @@ jobs:
     with:
       vale-style-check: true
       charmcraft-channel: latest/edge
+      with-uv: true
