@@ -17,7 +17,7 @@ juju config hockeypuck-k8s --reset app-port,metrics-port
 Then you can upgrade the Hockeypuck charm:
 
 ```bash
-juju refresh hockeypuck-k8s
+juju refresh hockeypuck-k8s --base ubuntu@26.04
 ```
 After upgrading the Hockeypuck charm you need to rebuild the prefix tree:
 
