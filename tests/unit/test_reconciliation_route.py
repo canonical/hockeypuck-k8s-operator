@@ -14,7 +14,6 @@ from actions import RECONCILIATION_PORT
 META = {
     "name": "hockeypuck",
     "requires": {reconciliation_route.RELATION_NAME: {"interface": "traefik_route"}},
-    "peers": {reconciliation_route.PEERS_RELATION_NAME: {"interface": "peers"}},
 }
 
 

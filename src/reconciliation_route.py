@@ -13,7 +13,6 @@ from paas_charm.relations import CustomRelation, OnChange
 from actions import RECONCILIATION_PORT
 
 RELATION_NAME = "traefik-route"
-PEERS_RELATION_NAME = "peers"
 HOCKEYPUCK_TCP_ROUTER = {
     "hockeypuck-tcp-router": {
         "rule": "ClientIP(`0.0.0.0/0`)",
@@ -50,8 +49,6 @@ class ReconciliationRouteRelation(CustomRelation):
         for event in (
             self._requirer.on.ready,
             on[RELATION_NAME].relation_joined,
-            on[PEERS_RELATION_NAME].relation_joined,
-            on[PEERS_RELATION_NAME].relation_departed,
             on.leader_elected,
             on.upgrade_charm,
             on.config_changed,
@@ -78,22 +75,13 @@ class ReconciliationRouteRelation(CustomRelation):
     @property
     def _route_config(self) -> dict[str, dict[str, object]]:
         """Return the Traefik route configuration for the Hockeypuck service."""
-        address_list = []
-        address_list.append({"address": f"{socket.getfqdn()}:{RECONCILIATION_PORT}"})
-        peers_relation = self.model.get_relation(PEERS_RELATION_NAME)
-        unit_names = [unit.name for unit in peers_relation.units] if peers_relation else []
-        # unit fqdn format: <unit-name>.<app-name>-endpoints.<model-name>.svc.cluster.local
-        for unit_name in unit_names:
-            unit_name = unit_name.replace("/", "-")
-            app_name, model_name = self.charm.app.name, self.charm.model.name
-            unit_fqdn = f"{unit_name}.{app_name}-endpoints.{model_name}.svc"
-            address_list.append({"address": f"{unit_fqdn}:{RECONCILIATION_PORT}"})
+        address = {"address": f"{socket.getfqdn()}:{RECONCILIATION_PORT}"}
         route_config = {
             "tcp": {
                 "routers": HOCKEYPUCK_TCP_ROUTER,
                 "services": {
                     "hockeypuck-tcp-service": {
-                        "loadBalancer": {"servers": address_list},
+                        "loadBalancer": {"servers": [address]},
                     }
                 },
             }
