@@ -5,9 +5,11 @@
 
 """Integration tests."""
 
+import asyncio
 import json
 import logging
 import socket
+import time
 import typing
 from typing import Any
 
@@ -116,7 +118,6 @@ async def test_unit_limit(hockeypuck_k8s_app: Application) -> None:
 
 @pytest.mark.usefixtures("external_peer_config")
 @pytest.mark.dependency(depends=["test_adding_records"])
-@pytest.mark.flaky(reruns=10, reruns_delay=10)
 async def test_reconciliation(
     hockeypuck_secondary_app: Application,
     gpg_key: Any,
@@ -138,14 +139,30 @@ async def test_reconciliation(
             if isinstance(unit_status.address, bytes)
             else typing.cast(str, unit_status.address)
         )
-        response = requests.get(
-            f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
-            f"?op=get&search=0x{gpg_key.fingerprint}",
-            timeout=20,
-        )
+        # Hockeypuck gossips with its peers about once a minute.
+        deadline = time.monotonic() + 300
+        response = None
+        last_error = "no response"
+        while time.monotonic() < deadline:
+            try:
+                response = requests.get(
+                    f"http://{unit_address}:{HTTP_PORT}/pks/lookup"
+                    f"?op=get&search=0x{gpg_key.fingerprint}",
+                    timeout=20,
+                )
+                last_error = f"status {response.status_code}"
+                if response.status_code == 200:
+                    break
+            except requests.RequestException as exc:
+                last_error = str(exc)
+                logger.info("Lookup on %s failed: %s", unit_address, exc)
+            await asyncio.sleep(10)
 
-        assert response.status_code == 200, f"Key not found in {unit_address}"
-        assert "BEGIN PGP PUBLIC KEY BLOCK" in response.text, "Invalid response"
+        assert (
+            response is not None and response.status_code == 200
+        ), f"Key not found in {unit_address} after 300 seconds: {last_error}"
+        replicated = GPG().scan_keys_mem(response.text)
+        assert gpg_key.fingerprint in replicated.fingerprints, "Unexpected key replicated"
 
 
 @pytest.mark.dependency(depends=["test_adding_records"])
@@ -237,6 +254,6 @@ async def test_traefik_route_integration(traefik_app: Application) -> None:
     try:
         with socket.create_connection((host, port), timeout=5):
             connected = True
-    except (socket.timeout, socket.error):
+    except socket.timeout, socket.error:
         connected = False
     assert connected, f"Failed to connect to {host}:{port}"

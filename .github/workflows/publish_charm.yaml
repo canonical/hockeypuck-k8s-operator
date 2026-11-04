@@ -15,4 +15,5 @@ jobs:
     secrets: inherit
     with:
       channel: 2.2/edge
+      charmcraft-channel: latest/edge
       resource-mapping: '{"hockeypuck": "app-image"}'

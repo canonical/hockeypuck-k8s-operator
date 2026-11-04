@@ -13,7 +13,6 @@ import typing
 import gnupg
 import ops
 import requests
-from requests.exceptions import RequestException
 
 logger = logging.getLogger(__name__)
 
@@ -55,19 +54,15 @@ class AdminGPG:
             admin_secret = self.model.get_secret(label=ADMIN_LABEL)
         except ops.SecretNotFoundError:
             admin_secret = None
-        try:
-            if admin_secret is None:
-                admin_credentials = self._create_admin_gpg_key()
-                self._add_admin_to_juju_secret(admin_credentials)
-                return admin_credentials["admin-key"].fingerprint
+        if admin_secret is None:
+            admin_credentials = self._create_admin_gpg_key()
+            self._add_admin_to_juju_secret(admin_credentials)
+            return admin_credentials["admin-key"].fingerprint
 
-            admin_credentials = admin_secret.get_content()
-            self.gpg.import_keys(admin_credentials["adminpublickey"])
-            self.gpg.import_keys(admin_credentials["adminprivatekey"])
-            return admin_credentials["adminfingerprint"]
-        except ValueError as e:
-            logging.error("Error adding GPG key to secret: %s", e)
-            raise e
+        admin_credentials = admin_secret.get_content()
+        self.gpg.import_keys(admin_credentials["adminpublickey"])
+        self.gpg.import_keys(admin_credentials["adminprivatekey"])
+        return admin_credentials["adminfingerprint"]
 
     def _create_admin_gpg_key(self) -> dict[str, typing.Any]:
         """Generate a new GPG key for admin and return the admin credentials.
@@ -88,30 +83,26 @@ class AdminGPG:
         Args:
             admin_credentials: The admin credentials to add to the juju secret store.
         """
-        try:
-            admin_key = admin_credentials["admin-key"]
-            admin_password = admin_credentials["password"]
+        admin_key = admin_credentials["admin-key"]
+        admin_password = admin_credentials["password"]
 
-            admin_public_key = self.gpg.export_keys(admin_key.fingerprint)
-            admin_private_key = self.gpg.export_keys(  # pylint: disable=unexpected-keyword-arg
-                admin_key.fingerprint,
-                secret=True,
-                passphrase=admin_password,
-            )
+        admin_public_key = self.gpg.export_keys(admin_key.fingerprint)
+        admin_private_key = self.gpg.export_keys(  # pylint: disable=unexpected-keyword-arg
+            admin_key.fingerprint,
+            secret=True,
+            passphrase=admin_password,
+        )
 
-            # juju secrets don't allow underscores or hyphens in the key name
-            self.model.app.add_secret(
-                {
-                    "adminpublickey": admin_public_key,
-                    "adminprivatekey": admin_private_key,
-                    "adminfingerprint": admin_key.fingerprint,
-                    "adminpassword": admin_password,
-                },
-                label=ADMIN_LABEL,
-            )
-        except ValueError as e:
-            logging.error("Error adding GPG key to secret: %s", e)
-            raise e
+        # juju secrets don't allow underscores or hyphens in the key name
+        self.model.app.add_secret(
+            {
+                "adminpublickey": admin_public_key,
+                "adminprivatekey": admin_private_key,
+                "adminfingerprint": admin_key.fingerprint,
+                "adminpassword": admin_password,
+            },
+            label=ADMIN_LABEL,
+        )
 
     def push_admin_key(self, num_tries: int = 5) -> None:
         """Push the admin public key to the keyserver.
@@ -120,36 +111,30 @@ class AdminGPG:
             num_tries: Number of times to retry pushing the admin key to Hockeypuck.
 
         Raises:
-            RequestException: If there is an error pushing the admin key to Hockeypuck.
             RuntimeError: If the admin GPG key is not found in Juju secret store.
+            RequestException: If the key could not be pushed after all attempts.
         """
         try:
             admin_secret = self.model.get_secret(label=ADMIN_LABEL).get_content()
-            public_key = admin_secret["adminpublickey"]
-            trial = 0
-            while trial < num_tries:
+        except ops.SecretNotFoundError as e:
+            raise RuntimeError(f"Admin GPG key not found in Juju secret store. {e}") from e
+        for attempt in range(1, num_tries + 1):
+            try:
                 response = requests.post(
                     "http://127.0.0.1:11371/pks/add",
                     timeout=20,
-                    data={"keytext": public_key},
+                    data={"keytext": admin_secret["adminpublickey"]},
                 )
-                logging.info(
-                    "Pushing admin key to hockeypuck. Response text: %s, response code: %s",
-                    response.text,
-                    response.status_code,
-                )
-                if response.status_code == 200:
-                    return
-                trial += 1
-                logging.info("Waiting for Hockeypuck to be reachable")
-                time.sleep(5)
-            if trial == num_tries:
                 response.raise_for_status()
-        except RequestException as e:
-            logging.error("Error pushing admin key to Hockeypuck: %s", e)
-            raise RequestException(f"Failed to push admin key to Hockeypuck: {e}") from e
-        except ops.SecretNotFoundError as e:
-            raise RuntimeError(f"Admin GPG key not found in Juju secret store. {e}") from e
+                logger.info("Admin key pushed to hockeypuck (attempt %s/%s)", attempt, num_tries)
+                return
+            except requests.RequestException as exc:
+                logger.info(
+                    "Pushing admin key failed (attempt %s/%s): %s", attempt, num_tries, exc
+                )
+                if attempt == num_tries:
+                    raise
+                time.sleep(5)
 
     def generate_signature(self, request: str) -> str:
         """Generate signature for the given request.

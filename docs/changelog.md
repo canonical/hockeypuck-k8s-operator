@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## 2026-10-21
+
+- Migrated the charm and rock to paas-charm 2.0 and Ubuntu 26.04 LTS. The `app-port` and
+  `metrics-port` options are removed. The ports are now fixed in `paas-config.yaml` (HTTP on
+  11371, metrics on 9626), so unset both options before refreshing. The prefix tree moved to
+  `/app-data/ptree`. The `secret-storage` peer relation is renamed to `peers`. A new
+  `app-secret-key` option (a Juju secret ID) and a `rotate-secret-key` action are provided by
+  paas-charm. A fresh application secret key is generated on upgrade, which doesn't affect
+  Hockeypuck itself.
+- A failure to push the admin key to Hockeypuck is now retried up to 5 times and then fails the
+  hook, instead of being ignored.
+- Replaced `requirements.txt` with `uv` dependency groups in `pyproject.toml`. Tox now runs with
+  `uv` and Python 3.14.
+
 ## 2026-04-16
 
 - Added landing pages for How-to and Reference documentation sections.

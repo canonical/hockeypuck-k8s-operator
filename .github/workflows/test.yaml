@@ -12,3 +12,6 @@ jobs:
     secrets: inherit
     with:
       vale-style-check: true
+      charmcraft-channel: latest/edge
+      with-uv: true
+      python-version: '3.14'

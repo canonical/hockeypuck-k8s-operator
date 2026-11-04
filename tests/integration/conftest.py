@@ -16,7 +16,7 @@ from juju.model import Model
 from pytest import Config
 from pytest_operator.plugin import OpsTest
 
-from actions import HTTP_PORT, METRICS_PORT, RECONCILIATION_PORT
+from actions import HTTP_PORT, RECONCILIATION_PORT
 from admin_gpg import PASSWORD_ALPHABET
 
 logger = logging.getLogger(__name__)
@@ -112,10 +112,6 @@ async def hockeypuck_k8s_app_fixture(
     app = await model.deploy(
         f"./{hockeypuck_charm}",
         resources=resources,
-        config={
-            "app-port": HTTP_PORT,
-            "metrics-port": METRICS_PORT,
-        },
     )
     await model.add_relation(app.name, postgresql_app.name)
     await model.add_relation(app.name, f"{traefik_app.name}:ingress")
@@ -158,10 +154,6 @@ async def hockeypuck_secondary_app_fixture(
         app = await secondary_model.deploy(
             f"./{hockeypuck_charm}",
             resources=resources,
-            config={
-                "app-port": HTTP_PORT,
-                "metrics-port": METRICS_PORT,
-            },
         )
         postgresql_app = await secondary_model.deploy(
             "postgresql-k8s",
