@@ -12,7 +12,7 @@ from paas_charm.relations import CustomRelation, OnChange
 
 from actions import RECONCILIATION_PORT
 
-# TODO: replace the raw traefik-route relation with ingress-tcp once it is available.
+# This raw traefik-route relation will be replaced by ingress-tcp once it is available.
 RELATION_NAME = "traefik-route"
 HOCKEYPUCK_TCP_ROUTER = {
     "hockeypuck-tcp-router": {
