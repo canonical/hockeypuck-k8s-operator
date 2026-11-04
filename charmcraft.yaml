@@ -29,6 +29,14 @@ description: |
 extensions:
   - go-framework
 
+parts:
+  # The uv plugin does not copy cos_custom into the charm.
+  cos-custom:
+    plugin: dump
+    source: .
+    stage:
+      - cos_custom
+
 requires:
   postgresql:
     interface: postgresql_client
@@ -90,7 +98,8 @@ config:
         A comma-separated list of fingerprints that identify keys that may
         sign administration requests for this server.
 
-base: ubuntu@24.04
-build-base: ubuntu@24.04
+base: ubuntu@26.04
+# gnupg is installed with apt in the install hook, which requires root.
+charm-user: root
 platforms:
   amd64:

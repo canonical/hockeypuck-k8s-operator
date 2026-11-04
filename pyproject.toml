@@ -1,3 +1,58 @@
+[project]
+name = "hockeypuck-k8s"
+version = "0.0.1"
+requires-python = ">=3.14"
+
+# Dependencies of the charm code. Charm libraries from Charmhub are declared in the
+# charmcraft.yaml charm-libs block (or by the go-framework extension), not here.
+dependencies = [
+    "paas-charm>=2.0b1,<3",
+    "python-gnupg>=0.5,<0.6",
+    "requests>=2.34,<3",
+]
+
+[dependency-groups]
+# PYDEPS from Charmhub libraries used by the charm.
+charmlibs-pydeps = []
+lint = [
+    "black",
+    "codespell",
+    "flake8",
+    "flake8-builtins",
+    "flake8-copyright",
+    "flake8-docstrings",
+    "flake8-docstrings-complete",
+    "flake8-test-docs",
+    "isort",
+    "mypy",
+    "pep8-naming",
+    "psycopg2-binary",
+    "pydocstyle>=2.10",
+    "pylint",
+    "pyproject-flake8",
+    "types-PyYAML",
+    "types-requests",
+    {include-group = "unit"},
+    {include-group = "integration"},
+]
+unit = [
+    "coverage[toml]",
+    "ops[testing]",
+    "pytest",
+]
+static = [
+    "bandit[toml]",
+]
+integration = [
+    "allure-pytest>=2.8.18",
+    "allure-pytest-collection-report @ git+https://github.com/canonical/data-platform-workflows@v24.0.0#subdirectory=python/pytest_plugins/allure_pytest_collection_report",
+    # pytest-operator pins pytest-asyncio 0.21, which breaks on pytest 9.2.
+    "pytest<9.2",
+    "pytest-asyncio",
+    "pytest-dependency",
+    "pytest-operator",
+]
+
 [tool.bandit]
 exclude_dirs = ["/venv/"]
 [tool.bandit.assert_used]
@@ -10,7 +65,7 @@ branch = true
 # Formatting tools configuration
 [tool.black]
 line-length = 99
-target-version = ["py38"]
+target-version = ["py314"]
 
 [tool.coverage.report]
 show_missing = true
