@@ -11,10 +11,10 @@ DevOps and SRE teams can use the charm to run a service for publishing and looki
 | **Get started** | [Deploy your first Hockeypuck keyserver](https://charmhub.io/hockeypuck-k8s/docs/tutorial-getting-started) |
 | **Deployment and architecture** | [Charm architecture](https://charmhub.io/hockeypuck-k8s/docs/explanation-charm-architecture) \| [Configuration options](https://charmhub.io/hockeypuck-k8s/docs/reference-configurations) \| [Juju relation endpoints](https://charmhub.io/hockeypuck-k8s/docs/reference-integrations) \| [Network ports](https://charmhub.io/hockeypuck-k8s/docs/reference-ports) |
 | **Key management** | [Manage OpenPGP keys](https://charmhub.io/hockeypuck-k8s/docs/how-to-manage-gpg-keys) \| [Manage admin keys](https://charmhub.io/hockeypuck-k8s/docs/how-to-manage-admin-keys) \| [Juju actions](https://charmhub.io/hockeypuck-k8s/docs/reference-actions) |
-| **Keyserver peering** | [Synchronise keys between keyservers](https://charmhub.io/hockeypuck-k8s/docs/how-to-reconcile-between-two-keyservers) |
+| **Keyserver peering** | [Synchronise keys between servers](https://charmhub.io/hockeypuck-k8s/docs/how-to-reconcile-between-two-keyservers) |
 | **Maintenance and recovery** | [Upgrade the charm](https://charmhub.io/hockeypuck-k8s/docs/how-to-upgrade) \| [Back up and restore keyserver data](https://charmhub.io/hockeypuck-k8s/docs/how-to-backup-and-restore-hockeypuck) |
 | **Observability** | [Integrate with Canonical Observability Stack](https://charmhub.io/hockeypuck-k8s/docs/how-to-integrate-with-cos) \| [Server and reconciliation metrics](https://charmhub.io/hockeypuck-k8s/docs/reference-metrics) |
-| **Security** | [Risks and mitigations](https://charmhub.io/hockeypuck-k8s/docs/explanation-security) |
+| **Security** | [Risks and best practices](https://charmhub.io/hockeypuck-k8s/docs/explanation-security) |
 
 ## How this documentation is organised
 
