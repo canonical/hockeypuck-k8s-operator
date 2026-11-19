@@ -1,0 +1,14 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: git
+summary: Host SSH agent and persistent Git configuration
+plugs:
+  # Forwards the host SSH agent, for signing commits with an SSH key.
+  # Never connected automatically: run `workshop connect dev/git:ssh-agent`.
+  ssh-agent:
+    interface: ssh-agent
+  # Keeps `git config --global` settings across workshop refreshes.
+  git-config:
+    interface: mount
+    workshop-target: /home/workshop/.config/git

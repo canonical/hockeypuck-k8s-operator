@@ -1,0 +1,12 @@
+#!/bin/bash
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+# Some dependencies (e.g. backports-datetime-fromisoformat via the lint group)
+# have no wheels for the workshop's Python and must be compiled.
+# setup-base runs as root once, when the workshop is created.
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+apt-get install --yes --no-install-recommends build-essential python3-dev
