@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 Each revision is versioned by the date of the revision.
 
+## Unreleased
+
+- Reorganised the documentation home page around common Hockeypuck tasks and topics,
+  and added a guide to the documentation structure.
+
 ## 2026-10-21
 
 - Migrated the charm and rock to paas-charm 2.0 and Ubuntu 26.04 LTS. The `app-port` and

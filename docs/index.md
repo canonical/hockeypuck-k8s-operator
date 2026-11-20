@@ -1,42 +1,38 @@
 # Hockeypuck Kubernetes operator
 
-A [Juju](https://juju.is/) [charm](https://documentation.ubuntu.com/juju/3.6/reference/charm/) deploying and managing [Hockeypuck](https://hockeypuck.io/) on Kubernetes. Hockeypuck is an OpenPGP public key server tool used to manage public key infrastructure for PGP (Pretty Good Privacy). PGP is a system for securing communication through encryption and digital signatures.
+The Hockeypuck Kubernetes operator is a [Juju charm](https://canonical.com/juju/docs/juju-cli/3.6/reference/charm/) that deploys and manages [Hockeypuck](https://hockeypuck.io/), an OpenPGP public keyserver, on Kubernetes.
 
-The server provides interfaces to add, look up, replace and delete public keys from the key server. Hockeypuck can synchronize public key material with SKS (Synchronizing Key Server) and other Hockeypuck servers. It implements the HTTP Keyserver Protocol and the SKS database reconciliation protocol.
-
-For DevOps and SRE teams, this charm will make operating Hockeypuck simple and straightforward through Juju's clean interface.
+DevOps and SRE teams can use the charm to run a service for publishing and looking up public keys.
 
 ## In this documentation
 
 | | |
-|--|--|
-|  [Tutorials](https://charmhub.io/hockeypuck-k8s/docs/tutorial-getting-started)</br>  Get started - a hands-on introduction to using the charm for new users </br> |  [How-to guides](https://charmhub.io/hockeypuck-k8s/docs/how-to-index) </br> Step-by-step guides covering key operations and common tasks |
-| [Reference](https://charmhub.io/hockeypuck-k8s/docs/reference-index) </br> Technical information - specifications, APIs, architecture | [Explanation](https://charmhub.io/hockeypuck-k8s/docs/explanation-charm-architecture) </br> Concepts - discussion and clarification of key topics  |
+| --- | --- |
+| **Get started** | [Deploy your first Hockeypuck keyserver](https://charmhub.io/hockeypuck-k8s/docs/tutorial-getting-started) |
+| **Deployment and architecture** | [Charm architecture](https://charmhub.io/hockeypuck-k8s/docs/explanation-charm-architecture) \| [Configuration options](https://charmhub.io/hockeypuck-k8s/docs/reference-configurations) \| [Juju relation endpoints](https://charmhub.io/hockeypuck-k8s/docs/reference-integrations) \| [Network ports](https://charmhub.io/hockeypuck-k8s/docs/reference-ports) |
+| **Key management** | [Manage OpenPGP keys](https://charmhub.io/hockeypuck-k8s/docs/how-to-manage-gpg-keys) \| [Manage admin keys](https://charmhub.io/hockeypuck-k8s/docs/how-to-manage-admin-keys) \| [Juju actions](https://charmhub.io/hockeypuck-k8s/docs/reference-actions) |
+| **Keyserver management** | [Synchronize keys between servers](https://charmhub.io/hockeypuck-k8s/docs/how-to-reconcile-between-two-keyservers)  \| [Back up and restore keyserver data](https://charmhub.io/hockeypuck-k8s/docs/how-to-backup-and-restore-hockeypuck) |
+| **Observability** | [Integrate with Canonical Observability Stack](https://charmhub.io/hockeypuck-k8s/docs/how-to-integrate-with-cos) \| [Server and reconciliation metrics](https://charmhub.io/hockeypuck-k8s/docs/reference-metrics) |
+| **Security** | [Risks and best practices](https://charmhub.io/hockeypuck-k8s/docs/explanation-security) |
 
-## Contributing to this documentation
+## How this documentation is organized
 
-Documentation is an important part of this project, and we take the same open-source approach to the documentation as 
-the code. As such, we welcome community contributions, suggestions and constructive feedback on our documentation. 
-Our documentation is hosted on the [Charmhub forum](https://discourse.charmhub.io/) 
-to enable easy collaboration. Please use the "Help us improve this documentation" links on each documentation page to 
-either directly change something you see that's wrong, ask a question or make a suggestion about a potential change using 
-the comments section.
+This documentation uses the [Diátaxis documentation structure](https://diataxis.fr/).
 
-If there's a particular area of documentation that you'd like to see that's missing, please 
-[file a bug](https://github.com/canonical/hockeypuck-k8s-operator/issues).
+- The [tutorial](https://charmhub.io/hockeypuck-k8s/docs/tutorial-getting-started) walks you through deploying Hockeypuck on Kubernetes and accessing its web interface.
+- The [how-to guides on GitHub](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/docs/how-to/index.md) show you how to manage keys, set up peering and monitoring, and maintain a running keyserver.
+- The [reference on GitHub](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/docs/reference/index.md) describes the charm's actions, configuration options, relation endpoints, network ports, and metrics.
+- The [security explanation](https://charmhub.io/hockeypuck-k8s/docs/explanation-security) covers risks such as data loss and unencrypted traffic, and how to reduce them.
 
 ## Project and community
 
-The Hockeypuck Kubernetes operator is a member of the Ubuntu family. It's an open-source project that warmly welcomes community 
-projects, contributions, suggestions, fixes, and constructive feedback.
+The Hockeypuck Kubernetes operator is an open-source project in the Ubuntu family. We welcome contributions to the charm and its documentation.
 
-- [Code of conduct](https://ubuntu.com/community/code-of-conduct)
-- [Get support](https://discourse.charmhub.io/)
-- [Join our online chat](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)
-- [Contribute](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md)
-
-Thinking about using the Hockeypuck Kubernetes operator for your next project? 
-[Get in touch](https://matrix.to/#/#charmhub-charmdev:ubuntu.com)!
+- Get support on the [Discourse forum](https://discourse.charmhub.io/) or join the [Matrix chat](https://matrix.to/#/#charmhub-charmdev:ubuntu.com).
+- Contribute to the [charm](https://github.com/canonical/hockeypuck-k8s-operator/blob/main/CONTRIBUTING.md) or [documentation](https://charmhub.io/hockeypuck-k8s/docs/how-to-contribute).
+- Report bugs or suggest improvements on [GitHub Issues](https://github.com/canonical/hockeypuck-k8s-operator/issues).
+- Track changes across charm revisions in the [changelog](https://charmhub.io/hockeypuck-k8s/docs/changelog).
+- Read the [Ubuntu Code of Conduct](https://ubuntu.com/community/code-of-conduct).
 
 # Contents
 
