@@ -1,0 +1,24 @@
+# Copyright 2026 Canonical Ltd.
+# See LICENSE file for licensing details.
+
+name: dev
+base: ubuntu@26.04
+sdks:
+  - name: opencode
+    channel: 2/stable
+  - name: gh-cli
+    channel: latest/stable
+  - name: project-build-tools
+  - name: project-git
+  - name: uv
+    channel: latest/stable
+
+# tox environments live outside the project directory,
+# so they don't clash with the ones created by tox on the host.
+actions:
+  tox: uvx --with tox-uv tox --workdir ~/.cache/tox "$@"
+  fmt: uvx --with tox-uv tox --workdir ~/.cache/tox -e fmt
+  lint: uvx --with tox-uv tox --workdir ~/.cache/tox -e lint
+  static: uvx --with tox-uv tox --workdir ~/.cache/tox -e static
+  unit: uvx --with tox-uv tox --workdir ~/.cache/tox -e unit -- "$@"
+  check: uvx --with tox-uv tox --workdir ~/.cache/tox

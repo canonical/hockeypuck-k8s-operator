@@ -1,5 +1,5 @@
 venv/
-.venv/
+.venv
 build/
 *.charm
 .tox/
@@ -16,3 +16,4 @@ __pycache__/
 **/*.tfstate*
 **/*.tfvars
 *.asc
+.workshop.lock

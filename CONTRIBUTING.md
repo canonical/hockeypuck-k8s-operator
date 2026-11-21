@@ -124,6 +124,9 @@ uv sync --group lint
 source .venv/bin/activate
 ```
 
+You can also use the [Workshop](https://ubuntu.com/workshop) development environment,
+which runs the checks and includes OpenCode. See [`.workshop/README.md`](.workshop/README.md).
+
 ### Testing
 
 This project uses `tox` for managing test environments. There are some pre-configured environments
